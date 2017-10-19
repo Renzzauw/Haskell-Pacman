@@ -7,7 +7,7 @@ data InfoToShow = ShowNothing
                 | ShowAChar   Char
 
 nO_SECS_BETWEEN_CYCLES :: Float
-nO_SECS_BETWEEN_CYCLES = 5
+nO_SECS_BETWEEN_CYCLES = 1
 
 data GameState = GameState {
                    infoToShow  :: InfoToShow
