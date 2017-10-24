@@ -1,5 +1,7 @@
 module Level where
 
+import System.Directory    
+
 -- Data types
 data Field = Player | Wall | Point | BigPoint | Enemy | Empty
 
@@ -20,3 +22,6 @@ loadLevel filePath = do
     text <- readFile filePath
     let rows = lines text
     return $ (map . map) textToField rows
+
+getLevels :: FilePath -> IO [FilePath]
+getLevels = getDirectoryContents

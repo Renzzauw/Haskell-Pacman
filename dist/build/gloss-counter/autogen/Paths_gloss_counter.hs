@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\bin"
-libdir     = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0-8CACllsMzzC4pB1ddLt1JX"
-dynlibdir  = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1"
-datadir    = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0"
-libexecdir = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\gloss-counter-0.1.0.0-8CACllsMzzC4pB1ddLt1JX\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0"
-sysconfdir = "C:\\Users\\Renzo\\AppData\\Roaming\\cabal\\etc"
+bindir     = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\bin"
+libdir     = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0-8CACllsMzzC4pB1ddLt1JX"
+dynlibdir  = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1"
+datadir    = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0"
+libexecdir = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\gloss-counter-0.1.0.0-8CACllsMzzC4pB1ddLt1JX\\x86_64-windows-ghc-8.2.1\\gloss-counter-0.1.0.0"
+sysconfdir = "C:\\Users\\steve\\AppData\\Roaming\\cabal\\etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "gloss_counter_bindir") (\_ -> return bindir)
