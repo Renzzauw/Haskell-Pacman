@@ -6,7 +6,8 @@ import Data.List
 
 data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
 data Field = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
-data Player = Player { pos :: Position, dir :: Direction }
+data Player = Player { playerPos :: Position, playerDir :: Direction }
+data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
 type Row = [Field]
 type Level = [Row]
 type Points = [Bool]

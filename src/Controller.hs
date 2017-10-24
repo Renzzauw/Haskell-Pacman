@@ -18,8 +18,8 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char 'w') _ _ _) gstate = gstate { infoToShow = ShowString "omhoog", player = Player { pos = pos (player gstate), dir = DirUp } }
-inputKey (EventKey (Char 'a') _ _ _) gstate = gstate { infoToShow = ShowString "links", player = Player { pos = pos (player gstate), dir = DirLeft } }
-inputKey (EventKey (Char 's') _ _ _) gstate = gstate { infoToShow = ShowString "omlaag", player = Player { pos = pos (player gstate), dir = DirDown } }
-inputKey (EventKey (Char 'd') _ _ _) gstate = gstate { infoToShow = ShowString "rechts", player = Player { pos = pos (player gstate), dir = DirRight } }
+inputKey (EventKey (Char 'w') _ _ _) gstate = gstate { infoToShow = ShowString "omhoog", player = Player { playerPos = playerPos (player gstate), playerDir = DirUp } }
+inputKey (EventKey (Char 'a') _ _ _) gstate = gstate { infoToShow = ShowString "links", player = Player { playerPos = playerPos (player gstate), playerDir = DirLeft } }
+inputKey (EventKey (Char 's') _ _ _) gstate = gstate { infoToShow = ShowString "omlaag", player = Player { playerPos = playerPos (player gstate), playerDir = DirDown } }
+inputKey (EventKey (Char 'd') _ _ _) gstate = gstate { infoToShow = ShowString "rechts", player = Player { playerPos = playerPos (player gstate), playerDir = DirRight } }
 inputKey _ gstate = gstate -- Otherwise keep the same

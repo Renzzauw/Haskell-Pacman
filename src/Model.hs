@@ -9,16 +9,16 @@ data InfoToShow = ShowNothing
 
 data GameState = GameState {
   infoToShow :: InfoToShow,
-  level :: Level,
   initLevel :: Level,
   player :: Player,
-  pointList :: Points
+  pointList :: Points,
+  enemies :: [Enemy]
 }
 
 data GameMode = MainMenu | LevelChooser | DiedScreen | WonScreen | Paused | PlayingLevel
 
 initialState :: GameState
-initialState = GameState ShowNothing initialLevel initialLevel Player {pos = initialPlayerPos, dir = DirNone} initialPointList
+initialState = GameState ShowNothing initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
 
 initialLevel :: Level
 initialLevel = undefined
