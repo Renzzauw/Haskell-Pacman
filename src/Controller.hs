@@ -3,6 +3,7 @@
 module Controller where
 
 import Model
+import Level
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -17,9 +18,8 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char 'w') _ _ _) gstate = gstate { infoToShow = ShowString "omhoog", playerDir = DirUp }
-inputKey (EventKey (Char 'a') _ _ _) gstate = gstate { infoToShow = ShowString "links", playerDir = DirLeft }
-inputKey (EventKey (Char 's') _ _ _) gstate = gstate { infoToShow = ShowString "omlaag", playerDir = DirDown }
-inputKey (EventKey (Char 'd') _ _ _) gstate = gstate { infoToShow = ShowString "rechts", playerDir = DirRight }
-inputKey (EventKey (Char c) _ _ _) gstate = gstate { infoToShow = ShowAChar c }
+inputKey (EventKey (Char 'w') _ _ _) gstate = gstate { infoToShow = ShowString "omhoog", player = Player { pos = pos (player gstate), dir = DirUp } }
+inputKey (EventKey (Char 'a') _ _ _) gstate = gstate { infoToShow = ShowString "links", player = Player { pos = pos (player gstate), dir = DirLeft } }
+inputKey (EventKey (Char 's') _ _ _) gstate = gstate { infoToShow = ShowString "omlaag", player = Player { pos = pos (player gstate), dir = DirDown } }
+inputKey (EventKey (Char 'd') _ _ _) gstate = gstate { infoToShow = ShowString "rechts", player = Player { pos = pos (player gstate), dir = DirRight } }
 inputKey _ gstate = gstate -- Otherwise keep the same

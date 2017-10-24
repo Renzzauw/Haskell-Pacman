@@ -4,20 +4,22 @@ import System.Directory
 import Data.Maybe
 import Data.List
 
-data Field = Player | Wall | Point | BigPoint | Enemy | Empty
+data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
+data Field = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
+data Player = Player { pos :: Position, dir :: Direction }
 type Row = [Field]
-type Level = ([Row], Points, Position)
+type Level = [Row]
 type Points = [Bool]
 type Position = (Int, Int)
 
 -- Function for converting a Char from the textfile to a Field
 textToField :: Char -> Field 
-textToField 'P' = Player
-textToField 'W' = Wall
-textToField '.' = Point
-textToField '*' = BigPoint
-textToField 'E' = Enemy
-textToField ' ' = Empty
+textToField 'P' = PlayerField
+textToField 'W' = WallField
+textToField '.' = PointField
+textToField '*' = BigPointField
+textToField 'E' = EnemyField
+textToField ' ' = EmptyField
 
 findPoints :: String -> Points
 findPoints [] = []
@@ -32,7 +34,7 @@ findPlayerPos s | elemIndex 'P' s == Nothing = error "No Player found in level"
             xCoordinate = fromJust (find isJust indices)
             yCoordinate = elemIndex 'P' (rows !! (fromJust (indices !! (fromJust xCoordinate))))
 
-loadLevel :: FilePath -> IO Level
+loadLevel :: FilePath -> IO (Level, Points, Position)
 loadLevel filePath = do
     text <- readFile filePath
     let rows = lines text
