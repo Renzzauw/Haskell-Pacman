@@ -5,9 +5,13 @@ import Data.Maybe
 import Data.List
 
 data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
+    deriving (Eq)
 data Field = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
+    deriving (Eq)
 data Player = Player { playerPos :: Position, playerDir :: Direction }
+    deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
+    deriving (Eq)
 type Row = [Field]
 type Level = [Row]
 type Points = [Bool]

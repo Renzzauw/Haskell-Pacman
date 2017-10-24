@@ -6,19 +6,24 @@ import Level
 
 data InfoToShow = ShowNothing
                 | ShowString  String
+                  deriving (Eq)
 
-data GameState = GameState {
-  infoToShow :: InfoToShow,
-  initLevel :: Level,
-  player :: Player,
-  pointList :: Points,
-  enemies :: [Enemy]
-}
-
-data GameMode = MainMenu | LevelChooser | DiedScreen | WonScreen | Paused | PlayingLevel
+data GameState = 
+      PlayingLevel {
+          infoToShow :: InfoToShow,
+          initLevel :: Level,
+          player :: Player,
+          pointList :: Points,
+          enemies :: [Enemy] } 
+      | MainMenu 
+      | LevelChooser 
+      | DiedScreen 
+      | WonScreen 
+      | Paused
+        deriving (Eq)
 
 initialState :: GameState
-initialState = GameState ShowNothing initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
+initialState = PlayingLevel ShowNothing initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
 
 initialLevel :: Level
 initialLevel = undefined
