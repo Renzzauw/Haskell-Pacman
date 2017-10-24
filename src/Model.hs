@@ -18,7 +18,7 @@ data GameState = GameState {
   infoToShow :: InfoToShow,
   level :: Level,
   initLevel :: Level,
-  playerPos :: (Float, Float),
+  playerPos :: Position,
   playerDir :: Direction,
   pointList :: Points
 }
@@ -31,7 +31,7 @@ initialState = GameState ShowNothing initialLevel initialLevel initialPlayerPos 
 initialLevel :: Level
 initialLevel = undefined
 
-initialPlayerPos :: (Float, Float)
+initialPlayerPos :: Position
 initialPlayerPos = undefined
 
 initialPointList :: Points
