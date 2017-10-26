@@ -18,12 +18,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # Compiled files
-*/src/.hi
-*/src/.o
 *.hi
 *.o
-
-**/dist
 
 # =========================
 # Operating System Files
@@ -53,5 +49,3 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-*.hi
-*.o
