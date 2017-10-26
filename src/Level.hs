@@ -29,28 +29,45 @@ textToField ' ' = EmptyField
 -- Give a list of all the points that the player can collect
 findPoints :: String -> Points
 findPoints [] = []
-findPoints (x:xs)   | (x == '.' || x == '*') = [True] ++ findPoints xs
+findPoints (x:xs)   | x == '.' || x == '*' = [True] ++ findPoints xs
                     | otherwise = []
 
 levelComplete :: [Bool] -> Bool
 levelComplete xs = null xs
 
 findPlayerPos :: String -> Position
-findPlayerPos s | elemIndex 'P' s == Nothing = error "No Player found in level"    
-                | otherwise = (fromJust xCoordinate, fromJust yCoordinate)
+findPlayerPos s | index == Nothing = error "No Player found in level"
+                | otherwise = (x, y)
     where   rows = lines s
-            indices = map (elemIndex 'P') rows
-            xCoordinate = fromJust (find isJust indices)
-            yCoordinate = elemIndex 'P' (rows !! (fromJust (indices !! (fromJust xCoordinate))))
+            levelWidth = length (head rows)
+            x = (fromJust index) `mod` levelWidth
+            y = (fromJust index) `div` levelWidth
+            index = elemIndex 'P' string
+            string = filter (/= '\n') s
 
-loadLevel :: FilePath -> IO (Level, Points, Position)
+findEnemyPos :: String -> [Position]
+findEnemyPos s  | null indices = error "No Enemy found in level"
+                | otherwise = map createPos indices
+    where   rows = lines s
+            levelWidth = length (head rows)
+            x index = index `mod` levelWidth
+            y index = index `div` levelWidth
+            indices = elemIndices 'E' string
+            string = filter (/= '\n') s
+            createPos index = (x index, y index)
+
+loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
     let rows = lines text
     let levelValues = (map . map) textToField rows
     let pointList = findPoints text
-    let playerPos = findPlayerPos text
-    return $ (levelValues, pointList, playerPos)
+    let playerPosition = findPlayerPos text
+    let player = Player { playerPos = playerPosition, playerDir = DirNone }
+    let enemyPositions = findEnemyPos text
+    let enemies = map createEnemy enemyPositions
+    return $ (levelValues, pointList, player, enemies)
+    where createEnemy pos = Enemy { enemyPos = pos, enemyDir = DirNone }
 
 getLevels :: IO [FilePath]
 getLevels = do

@@ -11,7 +11,7 @@ data InfoToShow = ShowNothing
 data GameState = 
       PlayingLevel {
           infoToShow :: InfoToShow,
-          initLevel :: Level,
+          level :: Level,
           player :: Player,
           pointList :: Points,
           enemies :: [Enemy] } 
