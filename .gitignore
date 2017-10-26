@@ -18,8 +18,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # Compiled files
-**/src.hi
-**/src.o
+**/src/.hi
+**/src/.o
 *.hi
 *.o
 
