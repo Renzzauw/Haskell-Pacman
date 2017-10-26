@@ -26,10 +26,14 @@ textToField '*' = BigPointField
 textToField 'E' = EnemyField
 textToField ' ' = EmptyField
 
+-- Give a list of all the points that the player can collect
 findPoints :: String -> Points
 findPoints [] = []
-findPoints (x:xs)   | x == '.' = [True] ++ findPoints xs
+findPoints (x:xs)   | (x == '.' || x == '*') = [True] ++ findPoints xs
                     | otherwise = []
+
+levelComplete :: [Bool] -> Bool
+levelComplete xs = null xs
 
 findPlayerPos :: String -> Position
 findPlayerPos s | elemIndex 'P' s == Nothing = error "No Player found in level"    
@@ -48,5 +52,8 @@ loadLevel filePath = do
     let playerPos = findPlayerPos text
     return $ (levelValues, pointList, playerPos)
 
-getLevels :: FilePath -> IO [FilePath]
-getLevels = getDirectoryContents
+getLevels :: IO [FilePath]
+getLevels = do
+            files <- getDirectoryContents "../Levels"
+            let levels = filter (isInfixOf ".txt") files
+            return $ sort levels
