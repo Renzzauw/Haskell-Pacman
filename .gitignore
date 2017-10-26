@@ -18,10 +18,12 @@ $RECYCLE.BIN/
 *.lnk
 
 # Compiled files
-**.hi
-**.o
+**/src.hi
+**/src.o
+*.hi
+*.o
 
-**dist
+**/dist
 
 # =========================
 # Operating System Files
