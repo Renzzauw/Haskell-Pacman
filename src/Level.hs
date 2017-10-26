@@ -46,7 +46,7 @@ findPlayerPos s | index == Nothing = error "No Player found in level"
             string = filter (/= '\n') s
 
 findEnemyPos :: String -> [Position]
-findEnemyPos s  | null indices = error "No Enemy found in level"
+findEnemyPos s  | null indices = []
                 | otherwise = map createPos indices
     where   rows = lines s
             levelWidth = length (head rows)
@@ -63,11 +63,11 @@ loadLevel filePath = do
     let levelValues = (map . map) textToField rows
     let pointList = findPoints text
     let playerPosition = findPlayerPos text
-    let player = Player { playerPos = playerPosition, playerDir = DirNone }
+    let player = Player playerPosition DirNone
     let enemyPositions = findEnemyPos text
     let enemies = map createEnemy enemyPositions
     return $ (levelValues, pointList, player, enemies)
-    where createEnemy pos = Enemy { enemyPos = pos, enemyDir = DirNone }
+    where createEnemy pos = Enemy pos DirNone
 
 getLevels :: IO [FilePath]
 getLevels = do
