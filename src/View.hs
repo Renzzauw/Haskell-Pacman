@@ -3,6 +3,7 @@
 module View where
 
 import Graphics.Gloss
+import Graphics.Gloss.Game
 import Model
 
 view :: GameState -> IO Picture
@@ -18,3 +19,4 @@ viewPure gstate
     | otherwise = case infoToShow gstate of
               ShowNothing   -> blank
               ShowString  s -> color green (text s)
+              ShowPicture p -> bmp p

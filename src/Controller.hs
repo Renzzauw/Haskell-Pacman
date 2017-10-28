@@ -31,16 +31,19 @@ inputKey (EventKey (Char '4') _ _ _) gstate = DiedScreen
 inputKey (EventKey (Char '5') _ _ _) gstate = Paused
 inputKey (EventKey (Char '6') _ _ _) gstate = initialState
 inputKey (EventKey (Char 'w') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "omhoog", player = Player { playerPos = playerPos (player gstate), playerDir = DirUp } }
+    | isPlaying gstate = gstate { infoToShow = ShowString "omhoog", player = Player (playerPos (player gstate)) DirUp }
     | otherwise = gstate
 inputKey (EventKey (Char 'a') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "links", player = Player { playerPos = playerPos (player gstate), playerDir = DirLeft } }
+    | isPlaying gstate = gstate { infoToShow = ShowString "links", player = Player (playerPos (player gstate)) DirLeft }
     | otherwise = gstate
 inputKey (EventKey (Char 's') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "omlaag", player = Player { playerPos = playerPos (player gstate), playerDir = DirDown } }
+    | isPlaying gstate = gstate { infoToShow = ShowString "omlaag", player = Player (playerPos (player gstate)) DirDown }
     | otherwise = gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowString "rechts", player = Player { playerPos = playerPos (player gstate), playerDir = DirRight } }
+    | isPlaying gstate = gstate { infoToShow = ShowString "rechts", player = Player (playerPos (player gstate)) DirRight }
+    | otherwise = gstate
+inputKey (EventKey (Char 'b') _ _ _) gstate 
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.bmp", player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
 
