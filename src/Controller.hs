@@ -43,7 +43,10 @@ inputKey (EventKey (Char 'd') _ _ _) gstate
     | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 0, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
 inputKey (EventKey (Char 'b') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.png" 0, player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.png" 0 }
+    | otherwise = gstate
+inputKey (EventKey (Char 'l') _ _ _) gstate 
+    | isPlaying gstate = gstate { infoToShow = ShowLevel }
     | otherwise = gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
 
