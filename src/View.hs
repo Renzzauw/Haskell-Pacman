@@ -17,6 +17,12 @@ viewPure gstate
     | gstate == LevelChooser = color green (text "LevelChooser")
     | gstate == Paused = color green (text "Paused")
     | otherwise = case infoToShow gstate of
-              ShowNothing   -> blank
-              ShowString  s -> color green (text s)
-              ShowPicture p -> bmp p
+              ShowNothing       -> blank
+              ShowString  s     -> color green (text s)
+              ShowPicture p r   -> rotate r (png p)
+
+pacmanSprites :: [Picture]
+pacmanSprites = [png "Images/Pacman1.png", png "Images/Pacman2.png", png "Images/Pacman3.png"]
+
+wallTile :: Picture
+wallTile = png "Images/WallTile.png"

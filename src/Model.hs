@@ -6,7 +6,7 @@ import Level
 
 data InfoToShow = ShowNothing
                 | ShowString  String
-                | ShowPicture FilePath
+                | ShowPicture FilePath Float
                   deriving (Eq)
 
 data GameState = 

@@ -30,20 +30,20 @@ inputKey (EventKey (Char '3') _ _ _) gstate = WonScreen
 inputKey (EventKey (Char '4') _ _ _) gstate = DiedScreen
 inputKey (EventKey (Char '5') _ _ _) gstate = Paused
 inputKey (EventKey (Char '6') _ _ _) gstate = initialState
-inputKey (EventKey (Char 'w') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "omhoog", player = Player (playerPos (player gstate)) DirUp }
+inputKey (EventKey (Char 'w') _ _ _) gstate 
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 270, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
-inputKey (EventKey (Char 'a') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "links", player = Player (playerPos (player gstate)) DirLeft }
+inputKey (EventKey (Char 'a') _ _ _) gstate 
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 180, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
-inputKey (EventKey (Char 's') _ _ _) gstate
-    | isPlaying gstate = gstate { infoToShow = ShowString "omlaag", player = Player (playerPos (player gstate)) DirDown }
+inputKey (EventKey (Char 's') _ _ _) gstate 
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 90, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowString "rechts", player = Player (playerPos (player gstate)) DirRight }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 0, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
 inputKey (EventKey (Char 'b') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.bmp", player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.png" 0, player = Player (playerPos (player gstate)) DirNone }
     | otherwise = gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
 
