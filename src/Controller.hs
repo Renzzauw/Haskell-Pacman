@@ -31,16 +31,16 @@ inputKey (EventKey (Char '4') _ _ _) gstate = DiedScreen
 inputKey (EventKey (Char '5') _ _ _) gstate = Paused
 inputKey (EventKey (Char '6') _ _ _) gstate = initialState
 inputKey (EventKey (Char 'w') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 270, player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 270, player = Player (playerPos (player gstate)) DirUp }
     | otherwise = gstate
 inputKey (EventKey (Char 'a') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 180, player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 180, player = Player (playerPos (player gstate)) DirLeft }
     | otherwise = gstate
 inputKey (EventKey (Char 's') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 90, player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 90, player = Player (playerPos (player gstate)) DirDown }
     | otherwise = gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 0, player = Player (playerPos (player gstate)) DirNone }
+    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/Pacman2.png" 0, player = Player (playerPos (player gstate)) DirRight }
     | otherwise = gstate
 inputKey (EventKey (Char 'b') _ _ _) gstate 
     | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.png" 0 }
