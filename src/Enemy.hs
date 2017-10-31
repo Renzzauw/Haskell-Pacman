@@ -1,10 +1,11 @@
 module Enemy where
 
--- New data types
+-- Point : Data type for the x- and y-position of something
 data Point = Pt Int Int 
     deriving (Eq)
-data Path = [Point]
+{-data Path = [Point]
     deriving (Eq)
+    -}
 
 -- Function that returns a list of all the possible combinations of movements to get to the player
 calculatePathsToPlayer :: Point -> Point -> [[Point]]
@@ -32,6 +33,10 @@ getSurroundingFields (Pt x y) = map filter (>= (Pt 0 0)) pointList
 -- Function that returns the shortest path from all possible paths from the enemy to the player                                   
 getShortestPath :: [[Point]] -> [Point]
 getShortestPath points = minimum points                                  
+
+isPlayerDead :: Point -> Point -> Bool 
+isPlayerDead player enemy | player == enemy = True
+                          | otherwise       = False
 
 {-
 checkFieldInDirection :: Level -> Direction -> Field
