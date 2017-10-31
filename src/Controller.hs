@@ -4,6 +4,7 @@ module Controller where
 
 import Model
 import Level
+import Enemy (zipPointAndFieldType)
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -12,6 +13,7 @@ import System.Random
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate
+    | True = zipPointAndFieldType $ level gstate
     | gstate == MainMenu = return $ gstate
     | gstate == WonScreen = return $ gstate
     | gstate == DiedScreen = return $ gstate
