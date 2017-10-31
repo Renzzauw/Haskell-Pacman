@@ -15,7 +15,7 @@ data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
 type Row = [Field]
 type Level = [Row]
 type Points = [Bool]
-type Position = (Int, Int)
+type Position = (Float, Float)
 
 -- Function for converting a Char from the textfile to a Field
 textToField :: Char -> Field 
@@ -40,8 +40,8 @@ findPlayerPos s | index == Nothing = error "No Player found in level"
                 | otherwise = (x, y)
     where   rows = lines s
             levelWidth = length (head rows)
-            x = (fromJust index) `mod` levelWidth
-            y = (fromJust index) `div` levelWidth
+            x = fromIntegral ((fromJust index) `mod` levelWidth)
+            y = fromIntegral ((fromJust index) `div` levelWidth)
             index = elemIndex 'P' string
             string = filter (/= '\n') s
 
@@ -50,8 +50,8 @@ findEnemyPos s  | null indices = []
                 | otherwise = map createPos indices
     where   rows = lines s
             levelWidth = length (head rows)
-            x index = index `mod` levelWidth
-            y index = index `div` levelWidth
+            x index = fromIntegral (index `mod` levelWidth)
+            y index = fromIntegral (index `div` levelWidth)
             indices = elemIndices 'E' string
             string = filter (/= '\n') s
             createPos index = (x index, y index)

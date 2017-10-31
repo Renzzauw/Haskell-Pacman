@@ -56,31 +56,21 @@ getLevelTiles gstate = sequence (map (convertTiles gstate) (level gstate))
 createLevel :: GameState -> IO Picture
 createLevel gstate = do
     _pictures <- getLevelTiles gstate
+    _pacman <- drawPacman gstate
     let translatedRows = map (translateRowsInX levelWidth) _pictures
     let picturedRows = map pictures translatedRows
-    let translatedColumns = translateRows levelHeight picturedRows
+    let translatedColumns = translateRowsInY levelHeight picturedRows
     let total = pictures translatedColumns
-    let translatedTotal = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) total
+    let includingPacman = pictures (total : [_pacman])
+    let translatedTotal = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacman
     return $ translatedTotal
     where   levelWidth = length (head (level gstate))
             levelHeight = length (level gstate)
 
-{-drawLevel :: GameState -> Picture
-drawLevel gstate = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) (pictures (translateRows levelHeight rowPictures))
-    where   _level = level gstate
-            levelWidth = length (head _level)
-            levelHeight = length _level
-            rowPictures = map pictures (map (drawRow gstate levelWidth) _level)-}
-
-{-drawRow :: GameState -> Int -> Row -> [Picture]
-drawRow _ 0 _ = []
-drawRow _ _ [] = []
-drawRow gstate n list = translate (fromIntegral (spriteSize * (n-1))) 0 (drawTile gstate (last list)) : drawRow gstate (n-1) (init list)-}
-
-translateRows :: Int -> [Picture] -> [Picture]
-translateRows 1 list = list
-translateRows _ [] = []
-translateRows n (x:xs) = translate 0 (fromIntegral (spriteSize * (n-1))) x : translateRows (n-1) xs
+translateRowsInY :: Int -> [Picture] -> [Picture]
+translateRowsInY 1 list = list
+translateRowsInY _ [] = []
+translateRowsInY n (x:xs) = translate 0 (fromIntegral (spriteSize * (n-1))) x : translateRowsInY (n-1) xs
 
 translateRowsInX :: Int -> [Picture] -> [Picture]
 translateRowsInX 1 list = list
@@ -88,16 +78,21 @@ translateRowsInX _ [] = []
 translateRowsInX n list = translate (fromIntegral (spriteSize * (n-1))) 0 (last list) : translateRowsInX (n-1) (init list)
 
 drawTile :: GameState -> Field -> IO Picture
-drawTile gstate PlayerField = do
-    _pacman <- pacman
-    let rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) _pacman
-    return $ rotatedPacman
 drawTile _ WallField = wallTile
 drawTile _ PointField = pointTile
 drawTile _ BigPointField = bigPointTile
-drawTile gstate EnemyField = emptyTile -- hier moet nog iets bedacht worden voor de enemies aangezien deze in een list staan
+drawTile gstate EnemyField = emptyTile -- enemies moeten naar aparte functie verplaatst worden net zoals pacman
 drawTile _ EmptyField = emptyTile
 drawTile _ _ = emptyTile
+
+drawPacman :: GameState -> IO Picture
+drawPacman gstate = do
+    _pacman <- pacman
+    let rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) _pacman
+    let translatedPacman = translate (xPos * (fromIntegral spriteSize)) ((fromIntegral levelHeight - yPos - 1) * fromIntegral spriteSize) rotatedPacman 
+    return $ translatedPacman
+    where   (xPos, yPos) = playerPos (player gstate)
+            levelHeight = length (level gstate)
 
 calculateRotation :: Direction -> Float
 calculateRotation DirUp = 270
