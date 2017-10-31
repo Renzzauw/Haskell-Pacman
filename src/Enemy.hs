@@ -32,7 +32,7 @@ zipPointAndFieldType level point@(Pt x y) = (field, point)
 
 -- Get each point in a level and make tuples with the position and fieldtype                                
 mapZipPF :: Level -> [(Field, Point)]
-mapZipPF level = map (zipPointAndFieldType level) level
+mapZipPF level@(x:xs) = map (zipPointAndFieldType level) $ map snd level
 
 -- Function that returns a list of Points that surround a given Point
 getSurroundingFields :: Point -> [Point]
@@ -59,7 +59,7 @@ isPlayerDead :: Point -> Point -> Bool
 isPlayerDead player enemy | player == enemy = True
                           | otherwise       = False
 
-
+{-
 update :: GameState -> GameState
 update = do 
     let x = 
@@ -67,7 +67,7 @@ update = do
     case x of 1
         
     let 
-
+-}
 
 {-
 checkFieldInDirection :: Level -> Direction -> Field
