@@ -1,5 +1,6 @@
 module Enemy where
 
+-- New data types
 data Point = Pt Int Int 
     deriving (Eq)
 data Path = [Point]
@@ -7,10 +8,11 @@ data Path = [Point]
 
 -- Function that returns a list of all the possible combinations of movements to get to the player
 calculatePathsToPlayer :: Point -> Point -> [[Point]]
-calculatePathsToPlayer playerPos@(Pt pX pY) enemyPos@(Pt eX eY) | playerPos == enemyPos = []
-                                                                | elem playerPos surroundings == true = -- player is around the enemy
+calculatePathsToPlayer playerPos@(Pt pX pY) enemyPos@(Pt eX eY) | playerPos == enemyPos               = []
+                                                                | otherwise                           = map calculatePathsToPlayer surroundings
                                                             where surroundings = getSurroundingFields enemyPos
 
+-- Function that returns a list of Points that surround a given Point
 getSurroundingFields :: Point -> [Point]
 getSurroundingFields (Pt x y) = map filter (>= (Pt 0 0)) pointList
                             where left        = x - 1
@@ -27,7 +29,8 @@ getSurroundingFields (Pt x y) = map filter (>= (Pt 0 0)) pointList
                                   bottomRight = Pt right bottom
                                   pointList   = [topLeft, topMid, topRight, midLeft, midRight, bottomLeft, bottomMid, bottomRight]
 
-getShortestPath :: [[Point]] -> Point
+-- Function that returns the shortest path from all possible paths from the enemy to the player                                   
+getShortestPath :: [[Point]] -> [Point]
 getShortestPath points = minimum points                                  
 
 {-
