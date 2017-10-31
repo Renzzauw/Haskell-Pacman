@@ -33,17 +33,6 @@
   (major1) == 1 && (major2) == 11 && (minor) <= 1)
 #endif /* MIN_VERSION_gloss */
 
-/* package gloss-game-0.3.3.0 */
-#ifndef VERSION_gloss_game
-#define VERSION_gloss_game "0.3.3.0"
-#endif /* VERSION_gloss_game */
-#ifndef MIN_VERSION_gloss_game
-#define MIN_VERSION_gloss_game(major1,major2,minor) (\
-  (major1) <  0 || \
-  (major1) == 0 && (major2) <  3 || \
-  (major1) == 0 && (major2) == 3 && (minor) <= 3)
-#endif /* MIN_VERSION_gloss_game */
-
 /* package random-1.1 */
 #ifndef VERSION_random
 #define VERSION_random "1.1"

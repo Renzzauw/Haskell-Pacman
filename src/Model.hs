@@ -6,7 +6,6 @@ import Level
 
 data InfoToShow = ShowNothing
                 | ShowString  String
-                | ShowPicture FilePath Float
                 | ShowLevel
                   deriving (Eq)
 

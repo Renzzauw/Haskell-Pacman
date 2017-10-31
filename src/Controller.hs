@@ -42,9 +42,6 @@ inputKey (EventKey (Char 's') _ _ _) gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
     | isPlaying gstate = gstate { player = Player (playerPos (player gstate)) DirRight }
     | otherwise = gstate
-inputKey (EventKey (Char 'b') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowPicture "Images/test.png" 0 }
-    | otherwise = gstate
 inputKey (EventKey (Char 'l') _ _ _) gstate 
     | isPlaying gstate = gstate { infoToShow = ShowLevel }
     | otherwise = gstate
