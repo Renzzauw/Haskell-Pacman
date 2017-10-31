@@ -60,7 +60,8 @@ createLevel gstate = do
     let picturedRows = map pictures translatedRows
     let translatedColumns = translateRows levelHeight picturedRows
     let total = pictures translatedColumns
-    return $ total
+    let translatedTotal = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) total
+    return $ translatedTotal
     where   levelWidth = length (head (level gstate))
             levelHeight = length (level gstate)
 
@@ -77,14 +78,14 @@ drawRow _ _ [] = []
 drawRow gstate n list = translate (fromIntegral (spriteSize * (n-1))) 0 (drawTile gstate (last list)) : drawRow gstate (n-1) (init list)-}
 
 translateRows :: Int -> [Picture] -> [Picture]
-translateRows 0 list = list
+translateRows 1 list = list
 translateRows _ [] = []
 translateRows n (x:xs) = translate 0 (fromIntegral (spriteSize * (n-1))) x : translateRows (n-1) xs
 
 translateRowsInX :: Int -> [Picture] -> [Picture]
-translateRowsInX 0 list = list
+translateRowsInX 1 list = list
 translateRowsInX _ [] = []
-translateRowsInX n (x:xs) = translate (fromIntegral (spriteSize * (n-1))) 0 x : translateRows (n-1) xs
+translateRowsInX n list = translate (fromIntegral (spriteSize * (n-1))) 0 (last list) : translateRowsInX (n-1) (init list)
 
 drawTile :: GameState -> Field -> IO Picture
 drawTile gstate PlayerField = do
