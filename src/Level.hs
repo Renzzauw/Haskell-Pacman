@@ -61,7 +61,6 @@ loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
     let rows = lines text
-    --let levelValues = (map . map) textToField rows
     let levelValues = createRowsForLevel 0 rows
     let pointList = findPoints text
     let playerPosition = findPlayerPos text
