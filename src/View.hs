@@ -29,6 +29,30 @@ spriteSize = 40
 pacmanSprites :: [Picture]
 pacmanSprites = [png "Images/Pacman1.png", png "Images/Pacman2.png", png "Images/Pacman3.png", png "Images/Pacman2.png"]
 
+redGhostMovingUp :: [Picture]
+redGhostMovingUp = [png "Images/RedGhostUp1.png", png "Images/RedGhostUp2.png"]
+
+redGhostMovingDown :: [Picture]
+redGhostMovingDown = [png "Images/RedGhostDown1.png", png "Images/RedGhostDown2.png"]
+
+redGhostMovingLeft :: [Picture]
+redGhostMovingLeft = [png "Images/RedGhostLeft1.png", png "Images/RedGhostLeft2.png"]
+
+redGhostMovingRight :: [Picture]
+redGhostMovingRight = [png "Images/RedGhostRight1.png", png "Images/RedGhostRight2.png"]
+
+redGhostUp :: Picture
+redGhostUp = png "Images/RedGhostUp1.png"
+
+redGhostDown :: Picture
+redGhostDown = png "Images/RedGhostDown1.png"
+
+redGhostLeft :: Picture
+redGhostLeft = png "Images/RedGhostLeft1.png"
+
+redGhostRight :: Picture
+redGhostRight = png "Images/RedGhostRight1.png"
+
 pacman :: Picture
 pacman = png "Images/Pacman2.png"
 
@@ -50,7 +74,7 @@ drawLevel gstate = translatedLevel
             levelWidth = length (head _level)
             levelHeight = length _level
             totalLevel = pictures (map pictures ((map . map) drawTile _level))
-            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : [drawPacman gstate])
+            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : [drawPacman gstate])
             translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints
 
 drawTile :: Field -> Picture
@@ -71,6 +95,16 @@ drawPoints gstate = pictures (map drawPoint positions)
             usedTile (x, y)     | fst (((level gstate) !! round y) !! round x) == BigPointField = bigPointTile
                                 | otherwise = pointTile
             drawPoint pos@(x, y) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedTile pos)
+
+drawEnemies :: GameState -> Picture
+drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
+    where   _enemies = enemies gstate
+            enemy e = (enemyPos e, enemyDir e)
+            usedSprite dir  | dir == DirUp = redGhostUp
+                            | dir == DirDown = redGhostDown
+                            | dir == DirLeft = redGhostLeft
+                            | otherwise = redGhostRight
+            drawSprite ((x, y), dir) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir)
 
 calculateRotation :: Direction -> Float
 calculateRotation DirUp = 270
