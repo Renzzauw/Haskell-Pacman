@@ -15,7 +15,7 @@ data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
 type Field = (FieldType, Position)
 type Row = [Field]
 type Level = [Row]
-type Points = [Bool]
+type Points = [(Bool, Position)]
 type Position = (Float, Float)
 
 -- Function for converting a Char from the textfile to a Field
@@ -27,14 +27,8 @@ textToField '*' = BigPointField
 textToField 'E' = EnemyField
 textToField ' ' = EmptyField
 
--- Give a list of all the points that the player can collect
-findPoints :: String -> Points
-findPoints [] = []
-findPoints (x:xs)   | x == '.' || x == '*' = [True] ++ findPoints xs
-                    | otherwise = []
-
-levelComplete :: [Bool] -> Bool
-levelComplete xs = null xs
+levelComplete :: Points -> Bool
+levelComplete = null
 
 findPlayerPos :: String -> Position
 findPlayerPos s | index == Nothing = error "No Player found in level"
@@ -56,6 +50,21 @@ findEnemyPos s  | null indices = []
             indices = elemIndices 'E' string
             string = filter (/= '\n') s
             createPos index = (x index, y index)
+
+-- Give a list of all the points that the player can collect
+findPoints :: String -> Points
+findPoints s    | null indices1 && null indices2 = []
+                | otherwise = map createPoint indices
+    where   rows = lines s
+            levelWidth = length (head rows)
+            x index = fromIntegral (index `mod` levelWidth)
+            y index = fromIntegral (index `div` levelWidth)
+            indices1 = elemIndices '.' string
+            indices2 = elemIndices '*' string
+            indices = sort (indices1 ++ indices2)
+            string = filter (/= '\n') s
+            createPos index = (x index, y index)
+            createPoint index = (True, createPos index)
 
 loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
 loadLevel filePath = do

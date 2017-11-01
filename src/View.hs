@@ -50,15 +50,11 @@ drawLevel gstate = translatedLevel
             levelWidth = length (head _level)
             levelHeight = length _level
             totalLevel = pictures (map pictures ((map . map) drawTile _level))
-            includingPacman = pictures (totalLevel : [drawPacman gstate])
-            translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacman
+            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : [drawPacman gstate])
+            translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints
 
 drawTile :: Field -> Picture
 drawTile (WallField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) wallTile
-drawTile (PointField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) pointTile
-drawTile (BigPointField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) bigPointTile
-drawTile (EnemyField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile -- enemies moeten naar aparte functie verplaatst worden net zoals pacman
-drawTile (EmptyField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile
 drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile
 
 drawPacman :: GameState -> Picture
@@ -67,6 +63,14 @@ drawPacman gstate = translatedPacman
             translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             levelHeight = length (level gstate)
+
+drawPoints :: GameState -> Picture
+drawPoints gstate = pictures (map drawPoint positions)
+    where   usedPoints = filter ((==True).fst) (pointList gstate)
+            positions = map snd usedPoints
+            usedTile (x, y)     | fst (((level gstate) !! round y) !! round x) == BigPointField = bigPointTile
+                                | otherwise = pointTile
+            drawPoint pos@(x, y) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedTile pos)
 
 calculateRotation :: Direction -> Float
 calculateRotation DirUp = 270
