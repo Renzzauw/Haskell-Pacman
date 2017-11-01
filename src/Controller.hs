@@ -46,16 +46,16 @@ inputKey (EventKey (Char '4') _ _ _) gstate = DiedScreen
 inputKey (EventKey (Char '5') _ _ _) gstate = Paused
 inputKey (EventKey (Char '6') _ _ _) gstate = initialState
 inputKey (EventKey (Char 'w') _ _ _) gstate 
-    | isPlaying gstate = gstate { player = Player (playerPos (player gstate)) DirUp }
+    | isPlaying gstate && playerDir (player gstate) /= DirDown = gstate { player = Player (playerPos (player gstate)) DirUp }
     | otherwise = gstate
 inputKey (EventKey (Char 'a') _ _ _) gstate 
-    | isPlaying gstate = gstate { player = Player (playerPos (player gstate)) DirLeft }
+    | isPlaying gstate && playerDir (player gstate) /= DirRight = gstate { player = Player (playerPos (player gstate)) DirLeft }
     | otherwise = gstate
 inputKey (EventKey (Char 's') _ _ _) gstate 
-    | isPlaying gstate = gstate { player = Player (playerPos (player gstate)) DirDown }
+    | isPlaying gstate && playerDir (player gstate) /= DirUp = gstate { player = Player (playerPos (player gstate)) DirDown }
     | otherwise = gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
-    | isPlaying gstate = gstate { player = Player (playerPos (player gstate)) DirRight }
+    | isPlaying gstate && playerDir (player gstate) /= DirLeft = gstate { player = Player (playerPos (player gstate)) DirRight }
     | otherwise = gstate
 inputKey (EventKey (Char 'l') _ _ _) gstate 
     | isPlaying gstate = gstate { infoToShow = ShowLevel }
