@@ -49,39 +49,22 @@ drawLevel gstate = translatedLevel
     where   _level = level gstate
             levelWidth = length (head _level)
             levelHeight = length _level
-            rows = map (drawRow levelWidth) _level
-            translatedRows = translateRowsInY levelHeight rows
-            totalLevel = pictures translatedRows
+            totalLevel = pictures (map pictures ((map . map) drawTile _level))
             includingPacman = pictures (totalLevel : [drawPacman gstate])
-            translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacman
-
-drawRow :: Int -> Row -> Picture
-drawRow w row = pictures translatedRow
-    where   tiles = map drawTile row
-            translatedRow = translateRowsInX w tiles
-
-translateRowsInY :: Int -> [Picture] -> [Picture]
-translateRowsInY 1 list = list
-translateRowsInY _ [] = []
-translateRowsInY n (x:xs) = translate 0 (fromIntegral (spriteSize * (n-1))) x : translateRowsInY (n-1) xs
-
-translateRowsInX :: Int -> [Picture] -> [Picture]
-translateRowsInX 1 list = list
-translateRowsInX _ [] = []
-translateRowsInX n list = translate (fromIntegral (spriteSize * (n-1))) 0 (last list) : translateRowsInX (n-1) (init list)
+            translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacman
 
 drawTile :: Field -> Picture
-drawTile WallField = wallTile
-drawTile PointField = pointTile
-drawTile BigPointField = bigPointTile
-drawTile EnemyField = emptyTile -- enemies moeten naar aparte functie verplaatst worden net zoals pacman
-drawTile EmptyField = emptyTile
-drawTile _ = emptyTile
+drawTile (WallField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) wallTile
+drawTile (PointField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) pointTile
+drawTile (BigPointField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) bigPointTile
+drawTile (EnemyField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile -- enemies moeten naar aparte functie verplaatst worden net zoals pacman
+drawTile (EmptyField, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile
+drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) emptyTile
 
 drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
     where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) pacman
-            translatedPacman = translate (xPos * (fromIntegral spriteSize)) ((fromIntegral levelHeight - yPos - 1) * fromIntegral spriteSize) rotatedPacman 
+            translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             levelHeight = length (level gstate)
 
