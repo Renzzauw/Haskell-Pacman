@@ -27,7 +27,7 @@ spriteSize :: Int
 spriteSize = 40
 
 pacmanSprites :: [Picture]
-pacmanSprites = [png "Images/Pacman1.png", png "Images/Pacman2.png", png "Images/Pacman3.png"]
+pacmanSprites = [png "Images/Pacman1.png", png "Images/Pacman2.png", png "Images/Pacman3.png", png "Images/Pacman2.png"]
 
 pacman :: Picture
 pacman = png "Images/Pacman2.png"
