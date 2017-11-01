@@ -18,7 +18,6 @@ viewPure DiedScreen = color green (text "DiedScreen")
 viewPure LevelChooser = color green (text "LevelChooser")
 viewPure Paused = color green (text "Paused")
 viewPure gstate = case infoToShow gstate of
-              ShowNothing       -> blank
               ShowString  s     -> color green (text s)
               ShowLevel         -> drawLevel gstate
               _                 -> blank

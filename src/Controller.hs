@@ -19,7 +19,7 @@ step secs gstate
     | gstate == DiedScreen = return $ gstate
     | gstate == LevelChooser = return $ gstate
     | gstate == Paused = return $ gstate
-    | otherwise = return $ movePlayer gstate
+    | otherwise = return $ moveEnemies (movePlayer gstate)
 
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate { player = newPlayer }
@@ -33,6 +33,19 @@ movePlayer gstate = gstate { player = newPlayer }
                 DirLeft     ->  (oldXPos - playerVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
             newPlayer = Player newPos _playerDir
+
+moveEnemies :: GameState -> GameState
+moveEnemies gstate = gstate { enemies = newEnemies }
+    where   _enemies = enemies gstate
+            enemy e = (enemyPos e, enemyDir e)
+            newPos (oldXPos, oldYPos) dir = case dir of
+                DirUp       ->  (oldXPos, oldYPos - enemyVelocity)
+                DirDown     ->  (oldXPos, oldYPos + enemyVelocity)
+                DirRight    ->  (oldXPos + enemyVelocity, oldYPos)
+                DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
+                _           ->  (oldXPos, oldYPos)
+            newEnemy e = Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e))
+            newEnemies = map newEnemy _enemies
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState

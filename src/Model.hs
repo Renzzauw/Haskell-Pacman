@@ -37,3 +37,6 @@ initialPointList = undefined
 
 playerVelocity :: Float
 playerVelocity = 0.075
+
+enemyVelocity :: Float
+enemyVelocity = 0.03
