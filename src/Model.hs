@@ -5,7 +5,6 @@ module Model where
 import Level 
 
 data InfoToShow = ShowNothing
-                | ShowString  String
                 | ShowLevel
                   deriving (Eq)
 

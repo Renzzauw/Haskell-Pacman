@@ -18,7 +18,6 @@ viewPure DiedScreen = color green (text "DiedScreen")
 viewPure LevelChooser = color green (text "LevelChooser")
 viewPure Paused = color green (text "Paused")
 viewPure gstate = case infoToShow gstate of
-              ShowString  s     -> color green (text s)
               ShowLevel         -> drawLevel gstate
               _                 -> blank
 
@@ -26,46 +25,52 @@ spriteSize :: Int
 spriteSize = 40
 
 pacmanSprites :: [Picture]
-pacmanSprites = [png "Images/Pacman1.png", png "Images/Pacman2.png", png "Images/Pacman3.png", png "Images/Pacman2.png"]
+pacmanSprites = [scalePicture (png "Images/Pacman1.png"), scalePicture (png "Images/Pacman2.png"), scalePicture (png "Images/Pacman3.png"), scalePicture (png "Images/Pacman2.png")]
 
 redGhostMovingUp :: [Picture]
-redGhostMovingUp = [png "Images/RedGhostUp1.png", png "Images/RedGhostUp2.png"]
+redGhostMovingUp = [scalePicture (png "Images/RedGhostUp1.png"), scalePicture (png "Images/RedGhostUp2.png")]
 
 redGhostMovingDown :: [Picture]
-redGhostMovingDown = [png "Images/RedGhostDown1.png", png "Images/RedGhostDown2.png"]
+redGhostMovingDown = [scalePicture (png "Images/RedGhostDown1.png"), scalePicture (png "Images/RedGhostDown2.png")]
 
 redGhostMovingLeft :: [Picture]
-redGhostMovingLeft = [png "Images/RedGhostLeft1.png", png "Images/RedGhostLeft2.png"]
+redGhostMovingLeft = [scalePicture (png "Images/RedGhostLeft1.png"), scalePicture (png "Images/RedGhostLeft2.png")]
 
 redGhostMovingRight :: [Picture]
-redGhostMovingRight = [png "Images/RedGhostRight1.png", png "Images/RedGhostRight2.png"]
+redGhostMovingRight = [scalePicture (png "Images/RedGhostRight1.png"), scalePicture (png "Images/RedGhostRight2.png")]
 
 redGhostUp :: Picture
-redGhostUp = png "Images/RedGhostUp1.png"
+redGhostUp = scalePicture (png "Images/RedGhostUp1.png")
 
 redGhostDown :: Picture
-redGhostDown = png "Images/RedGhostDown1.png"
+redGhostDown = scalePicture (png "Images/RedGhostDown1.png")
 
 redGhostLeft :: Picture
-redGhostLeft = png "Images/RedGhostLeft1.png"
+redGhostLeft = scalePicture (png "Images/RedGhostLeft1.png")
 
 redGhostRight :: Picture
-redGhostRight = png "Images/RedGhostRight1.png"
+redGhostRight = scalePicture (png "Images/RedGhostRight1.png")
 
 pacman :: Picture
-pacman = png "Images/Pacman2.png"
+pacman = scalePicture (png "Images/Pacman2.png")
 
 wallTile :: Picture
-wallTile = png "Images/WallTile.png"
+wallTile = scalePicture (png "Images/WallTile.png")
 
 pointTile :: Picture
-pointTile = png "Images/PointTile.png"
+pointTile = scalePicture (png "Images/PointTile.png")
 
 bigPointTile :: Picture
-bigPointTile = png "Images/BigPointTile.png"
+bigPointTile = scalePicture (png "Images/BigPointTile.png")
 
 emptyTile :: Picture
-emptyTile = png "Images/Empty.png"
+emptyTile = scalePicture (png "Images/Empty.png")
+
+scalePicture :: Picture -> Picture
+scalePicture p = scale xScale yScale p
+    where   (_, (xSize, ySize)) = boundingBox p
+            xScale = fromIntegral spriteSize / xSize
+            yScale = fromIntegral spriteSize / ySize
 
 drawLevel :: GameState -> Picture
 drawLevel gstate = translatedLevel
