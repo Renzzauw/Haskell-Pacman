@@ -34,3 +34,6 @@ initialPlayerPos = undefined
 
 initialPointList :: Points
 initialPointList = undefined
+
+playerVelocity :: Float
+playerVelocity = 0.075

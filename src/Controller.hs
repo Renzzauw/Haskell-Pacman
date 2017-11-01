@@ -19,7 +19,20 @@ step secs gstate
     | gstate == DiedScreen = return $ gstate
     | gstate == LevelChooser = return $ gstate
     | gstate == Paused = return $ gstate
-    | otherwise = return $ gstate
+    | otherwise = return $ movePlayer gstate
+
+movePlayer :: GameState -> GameState
+movePlayer gstate = gstate { player = newPlayer }
+    where   _player = player gstate
+            _playerDir = playerDir _player
+            (oldXPos, oldYPos) = playerPos _player
+            newPos = case _playerDir of
+                DirUp       ->  (oldXPos, oldYPos - playerVelocity)
+                DirDown     ->  (oldXPos, oldYPos + playerVelocity)
+                DirRight    ->  (oldXPos + playerVelocity, oldYPos)
+                DirLeft     ->  (oldXPos - playerVelocity, oldYPos)
+                _           ->  (oldXPos, oldYPos)
+            newPlayer = Player newPos _playerDir
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState

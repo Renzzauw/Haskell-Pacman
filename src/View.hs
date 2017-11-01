@@ -52,7 +52,7 @@ drawLevel gstate = translatedLevel
             rows = map (drawRow levelWidth) _level
             translatedRows = translateRowsInY levelHeight rows
             totalLevel = pictures translatedRows
-            includingPacman = pictures (drawPacman gstate : [totalLevel])
+            includingPacman = pictures (totalLevel : [drawPacman gstate])
             translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacman
 
 drawRow :: Int -> Row -> Picture
