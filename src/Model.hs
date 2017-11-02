@@ -39,3 +39,13 @@ playerVelocity = 0.075
 
 enemyVelocity :: Float
 enemyVelocity = 0.03
+
+-- Renzo toegevoegd 
+getFieldType :: GameState -> Position -> FieldType
+getFieldType gs pos = fst ((currlevel !! y) !! x)
+                 where x = toInt (fst pos)
+                       y = toInt (snd pos)
+                       currlevel = level gs
+
+toInt :: Float -> Int
+toInt = round
