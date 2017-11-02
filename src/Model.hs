@@ -43,4 +43,4 @@ playerVelocity :: Float
 playerVelocity = 0.075
 
 enemyVelocity :: Float
-enemyVelocity = 0.03
+enemyVelocity = 0.01

@@ -4,7 +4,7 @@ module Controller where
 
 import Model
 import Level
---import Enemy (zipPointAndFieldType)
+import Enemy
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -18,7 +18,16 @@ step secs gstate
     | gstate == DiedScreen = return $ gstate
     | gstate == LevelChooser = return $ gstate
     | isPaused gstate = return $ gstate
-    | otherwise = return $ moveEnemies (movePlayer gstate)
+    | otherwise = return $ moveEnemies (updateEnemyDirection (movePlayer gstate))
+
+updateEnemyDirection :: GameState -> GameState
+updateEnemyDirection gstate = gstate { enemies = newEnemies }
+    where   _enemies = enemies gstate
+            enemy e = (enemyPos e, enemyDir e)
+            _playerPos = playerPos (player gstate)
+            newDir enemyPos = lookForPlayer gstate _playerPos enemyPos
+            newEnemy e = Enemy ((fst (enemy e))) (newDir (fst (enemy e)))
+            newEnemies = map newEnemy _enemies
 
 movePlayer :: GameState -> GameState
 movePlayer gstate = gstate { player = newPlayer }
@@ -51,7 +60,7 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char 'p') _ _ _) gstate
+inputKey (EventKey (Char 'p') (Down) _ _) gstate
     | isPlaying gstate = pauseGame gstate
     | otherwise = unPauseGame gstate
 inputKey (EventKey (Char 'w') _ _ _) gstate 
