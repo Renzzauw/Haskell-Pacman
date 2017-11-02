@@ -1,7 +1,7 @@
 module Enemy (zipPointAndFieldType) where
     
-    import Level
-    import Model
+import Level
+import Model
     
     {-
     -- Function that returns a list of all the possible combinations of movements to get to the player
@@ -14,8 +14,8 @@ module Enemy (zipPointAndFieldType) where
     -}
     
     -- Function that returns a list of all the possible combinations of movements to get to the player
-    calculatePathsToPlayer :: Position -> Position -> [[Point]]
-    calculatePathsToPlayer playerPos@(Pt pX pY) enemyPos@(Pt eX eY) = undefined
+calculatePathsToPlayer :: Position -> Position -> [[Point]]
+calculatePathsToPlayer playerPos@(pX, pY) enemyPos@(eX, eY) = undefined
     {-
     -- Function that zips a path with their field types                                                            
     zipPointAndFieldType :: Level -> Point -> (Field, Point)
@@ -24,14 +24,14 @@ module Enemy (zipPointAndFieldType) where
     -}
     
     -- Function that checks if a Field is valid to move to for the enemy
-    isValidMoveField :: Field -> Bool
-    isValidMoveField (Field (Pt x y) FieldType) | FieldType == WallField                                                           = False -- Check if field is a wall
-                                                | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight = True  -- doublecheck for movement outside of bounds
-                                                | otherwise   
+isValidMoveField :: Field -> Bool
+isValidMoveField (fieldType, (x, y))        | fieldType == WallField                                                            = False -- Check if field is a wall
+                                            | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight  = True  -- doublecheck for movement outside of bounds
+                                            | otherwise                                                                         = undefined
     
     -- Function that returns a list of Points that surround a given Point
-    getSurroundingFields :: GameState -> Field -> [Field]
-    getSurroundingFields gs (type, (Pt x y)) = filter isValidMoveField currlevel pointList
+getSurroundingFields :: GameState -> Field -> [Field]
+getSurroundingFields gs (_, (x, y)) = filter isValidMoveField currlevel pointList
                                         where topLeft     = ((getFieldType gs (Pt (x - 1) (y - 1))), (Pt (x - 1) (y - 1))) --YO MOET DIT - OF + ZIJN IVM AXIS BEGIN
                                               topMid      = ((getFieldType gs (Pt x (y - 1))), (Pt x (y - 1)))
                                               topRight    = ((getFieldType gs (Pt (x + 1) (y - 1))), (Pt (x + 1) (y - 1)))
@@ -43,18 +43,18 @@ module Enemy (zipPointAndFieldType) where
                                               pointList   = [topLeft, topMid, topRight, midLeft, midRight, bottomLeft, bottomMid, bottomRight]
     
     -- Function that returns the shortest path from all possible paths from the enemy to the player                                   
-    getShortestPath :: [[Position]] -> [Position]
-    getShortestPath points = minimum points                                  
+getShortestPath :: [[Position]] -> [Position]
+getShortestPath points = minimum points                                  
     
-    isPlayerDead :: Position -> Position -> Bool 
-    isPlayerDead player enemy | player == enemy = True
-                              | otherwise       = False
+isPlayerDead :: Position -> Position -> Bool 
+isPlayerDead player enemy   | player == enemy = True
+                            | otherwise       = False
     
     -- Function that checks if a Field is valid to move to for the enemy
-    isValidMoveField :: Field -> Bool
-    isValidMoveField (Field (Pt x y) FieldType) | FieldType == WallField                                                           = False -- Check if field is a wall
-                                                | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight = True  -- doublecheck for movement outside of bounds
-                                                | otherwise                                                                        = False
+isValidMoveField :: Field -> Bool
+isValidMoveField (Field (Pt x y) FieldType) | FieldType == WallField                                                           = False -- Check if field is a wall
+                                            | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight = True  -- doublecheck for movement outside of bounds
+                                            | otherwise                                                                        = False
     
     
     
