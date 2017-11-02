@@ -18,7 +18,9 @@ step secs gstate
     | gstate == DiedScreen = return $ gstate
     | gstate == LevelChooser = return $ gstate
     | isPaused gstate = return $ gstate
-    | otherwise = return $ moveEnemies (updateEnemyDirection (movePlayer gstate))
+    | otherwise = if levelComplete (pointList gstate)
+                    then return $ WonScreen
+                    else return $ moveEnemies (updateEnemyDirection (movePlayer gstate))
 
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
@@ -74,9 +76,6 @@ inputKey (EventKey (Char 's') _ _ _) gstate
     | otherwise = gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
     | isPlaying gstate && playerDir (player gstate) /= DirLeft = gstate { player = (player gstate) { playerDir = DirRight } }
-    | otherwise = gstate
-inputKey (EventKey (Char 'l') _ _ _) gstate 
-    | isPlaying gstate = gstate { infoToShow = ShowLevel }
     | otherwise = gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
 
