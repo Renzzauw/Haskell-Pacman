@@ -1,4 +1,4 @@
-module Enemy (zipPointAndFieldType) where
+module Enemy where
     
 import Level
 import Model
@@ -14,7 +14,7 @@ import Model
     -}
     
     -- Function that returns a list of all the possible combinations of movements to get to the player
-calculatePathsToPlayer :: Position -> Position -> [[Point]]
+calculatePathsToPlayer :: Position -> Position -> [[Position]]
 calculatePathsToPlayer playerPos@(pX, pY) enemyPos@(eX, eY) = undefined
     {-
     -- Function that zips a path with their field types                                                            
@@ -23,26 +23,24 @@ calculatePathsToPlayer playerPos@(pX, pY) enemyPos@(eX, eY) = undefined
                                     where field = ((level !! x) !! y)
     -}
     
-    -- Function that checks if a Field is valid to move to for the enemy
-isValidMoveField :: Field -> Bool
-isValidMoveField (fieldType, (x, y))        | fieldType == WallField                                                            = False -- Check if field is a wall
-                                            | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight  = True  -- doublecheck for movement outside of bounds
-                                            | otherwise                                                                         = undefined
     
     -- Function that returns a list of Points that surround a given Point
 getSurroundingFields :: GameState -> Field -> [Field]
-getSurroundingFields gs (_, (x, y)) = filter isValidMoveField currlevel pointList
-                                        where topLeft     = ((getFieldType gs (Pt (x - 1) (y - 1))), (Pt (x - 1) (y - 1))) --YO MOET DIT - OF + ZIJN IVM AXIS BEGIN
-                                              topMid      = ((getFieldType gs (Pt x (y - 1))), (Pt x (y - 1)))
-                                              topRight    = ((getFieldType gs (Pt (x + 1) (y - 1))), (Pt (x + 1) (y - 1)))
-                                              midLeft     = ((getFieldType gs (Pt (x - 1) y)), (Pt (x - 1) y))
-                                              midRight    = ((getFieldType gs (Pt (x + 1) y)), (Pt (x + 1) y))
-                                              bottomLeft  = ((getFieldType gs (Pt (x - 1) (y + 1))), (Pt (x - 1) (y + 1)))
-                                              bottomMid   = ((getFieldType gs (Pt x (y + 1))), (Pt x (y + 1)))
-                                              bottomRight = ((getFieldType gs (Pt (x + 1) (y + 1))) , (Pt (x + 1) (y + 1)))
-                                              pointList   = [topLeft, topMid, topRight, midLeft, midRight, bottomLeft, bottomMid, bottomRight]
-    
-    -- Function that returns the shortest path from all possible paths from the enemy to the player                                   
+getSurroundingFields gs (_, (x, y)) = filter (isValidMoveField gs) fieldList
+                                        where topLeft     = ((getFieldType gs ((x - 1), (y - 1))), ((x - 1), (y - 1))) --YO MOET DIT - OF + ZIJN IVM AXIS BEGIN
+                                              topMid      = ((getFieldType gs (x, (y - 1))), (x, (y - 1)))
+                                              topRight    = ((getFieldType gs ((x + 1), (y - 1))), ((x + 1), (y - 1)))
+                                              midLeft     = ((getFieldType gs ((x - 1), y)), ((x - 1), y))
+                                              midRight    = ((getFieldType gs ((x + 1), y)), ((x + 1), y))
+                                              bottomLeft  = ((getFieldType gs ((x - 1), (y + 1))), ((x - 1), (y + 1)))
+                                              bottomMid   = ((getFieldType gs (x, (y + 1))), (x, (y + 1)))
+                                              bottomRight = ((getFieldType gs ((x + 1), (y + 1))), ((x + 1), (y + 1)))
+                                              fieldList   = [topLeft, topMid, topRight, midLeft, midRight, bottomLeft, bottomMid, bottomRight]
+ 
+getFieldType :: GameState -> Position -> FieldType
+getFieldType gs (x, y) = fst (((level gs) !! round y) !! round x)
+
+-- Function that returns the shortest path from all possible paths from the enemy to the player                                   
 getShortestPath :: [[Position]] -> [Position]
 getShortestPath points = minimum points                                  
     
@@ -51,12 +49,14 @@ isPlayerDead player enemy   | player == enemy = True
                             | otherwise       = False
     
     -- Function that checks if a Field is valid to move to for the enemy
-isValidMoveField :: Field -> Bool
-isValidMoveField (Field (Pt x y) FieldType) | FieldType == WallField                                                           = False -- Check if field is a wall
-                                            | x > 0 && x < getLevelWidth currlevel && y > 0 && getLevelHeight < getLevelHeight = True  -- doublecheck for movement outside of bounds
-                                            | otherwise                                                                        = False
-    
-    
+isValidMoveField :: GameState -> Field -> Bool
+isValidMoveField gs (fieldType, (x, y)) | fieldType == WallField                          = False -- Check if field is a wall
+                                        | x > 0 && x < maxWidth && y > 0 && y < maxHeight = True  -- doublecheck for movement outside of bounds
+                                        | otherwise                                       = False
+                                        where lvl       = level gs
+                                              maxWidth  = fromIntegral (length (lvl !! 0))
+                                              maxHeight = fromIntegral (length lvl)
+       
     
     {-
     update :: GameState -> GameState
