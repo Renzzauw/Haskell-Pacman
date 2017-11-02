@@ -16,7 +16,7 @@ viewPure MainMenu = color green (text "MainMenu")
 viewPure WonScreen = color green (text "WonScreen")
 viewPure DiedScreen = color green (text "DiedScreen")
 viewPure LevelChooser = color green (text "LevelChooser")
-viewPure Paused = color green (text "Paused")
+viewPure (Paused _ _ _ _ _) = color green (text "Paused")
 viewPure gstate = case infoToShow gstate of
               ShowLevel         -> drawLevel gstate
               _                 -> blank

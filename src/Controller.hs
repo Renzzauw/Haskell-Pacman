@@ -13,12 +13,11 @@ import System.Random
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate
-    -- | True = zipPointAndFieldType $ level gstate
     | gstate == MainMenu = return $ gstate
     | gstate == WonScreen = return $ gstate
     | gstate == DiedScreen = return $ gstate
     | gstate == LevelChooser = return $ gstate
-    | gstate == Paused = return $ gstate
+    | isPaused gstate = return $ gstate
     | otherwise = return $ moveEnemies (movePlayer gstate)
 
 movePlayer :: GameState -> GameState
@@ -52,12 +51,9 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char '1') _ _ _) gstate = MainMenu
-inputKey (EventKey (Char '2') _ _ _) gstate = LevelChooser
-inputKey (EventKey (Char '3') _ _ _) gstate = WonScreen
-inputKey (EventKey (Char '4') _ _ _) gstate = DiedScreen
-inputKey (EventKey (Char '5') _ _ _) gstate = Paused
-inputKey (EventKey (Char '6') _ _ _) gstate = initialState
+inputKey (EventKey (Char 'p') _ _ _) gstate
+    | isPlaying gstate = pauseGame gstate
+    | otherwise = unPauseGame gstate
 inputKey (EventKey (Char 'w') _ _ _) gstate 
     | isPlaying gstate && playerDir (player gstate) /= DirDown = gstate { player = (player gstate) { playerDir = DirUp } }
     | otherwise = gstate
@@ -76,9 +72,25 @@ inputKey (EventKey (Char 'l') _ _ _) gstate
 inputKey _ gstate = gstate -- Otherwise keep the same
 
 isPlaying :: GameState -> Bool
-isPlaying MainMenu = False
-isPlaying LevelChooser = False
-isPlaying WonScreen = False
-isPlaying DiedScreen = False
-isPlaying Paused = False
-isPlaying _ = True
+isPlaying (PlayingLevel _ _ _ _ _) = True
+isPlaying _ = False
+
+isPaused :: GameState -> Bool
+isPaused (Paused _ _ _ _ _) = True
+isPaused _ = False
+
+pauseGame :: GameState -> GameState
+pauseGame gstate = Paused _infoToShow _level _player _pointList _enemies
+    where   _infoToShow = infoToShow gstate
+            _level = level gstate
+            _player = player gstate
+            _pointList = pointList gstate
+            _enemies = enemies gstate
+
+unPauseGame :: GameState -> GameState
+unPauseGame gstate = PlayingLevel _infoToShow _level _player _pointList _enemies
+    where   _infoToShow = infoToShow gstate
+            _level = level gstate
+            _player = player gstate
+            _pointList = pointList gstate
+            _enemies = enemies gstate

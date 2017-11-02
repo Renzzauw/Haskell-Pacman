@@ -19,7 +19,12 @@ data GameState =
       | LevelChooser 
       | DiedScreen 
       | WonScreen 
-      | Paused
+      | Paused {
+        infoToShow :: InfoToShow,
+        level :: Level,
+        player :: Player,
+        pointList :: Points,
+        enemies :: [Enemy] }
         deriving (Eq)
 
 initialState :: GameState
