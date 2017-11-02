@@ -60,7 +60,7 @@ input :: Event -> GameState -> IO GameState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (Char 'p') (Down) _ _) gstate
+inputKey (EventKey (Char 'p') Down _ _) gstate
     | isPlaying gstate = pauseGame gstate
     | otherwise = unPauseGame gstate
 inputKey (EventKey (Char 'w') _ _ _) gstate 
