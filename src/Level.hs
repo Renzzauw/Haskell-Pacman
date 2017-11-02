@@ -6,8 +6,8 @@ import Data.List
 
 data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
     deriving (Eq)
-data Field = Field { typeField :: TypeField, x :: Int , y ::Int } 
-    --deriving (Eq)
+data Field = Field { typeFIELD :: TypeField Int Int } 
+    deriving (Eq)
 data TypeField = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
     deriving (Show)
 data Player = Player { playerPos :: Position, playerDir :: Direction }
