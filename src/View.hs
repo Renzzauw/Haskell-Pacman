@@ -12,11 +12,11 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 viewPure :: GameState -> Picture
-viewPure MainMenu = color green (text "MainMenu")
-viewPure WonScreen = color green (text "WonScreen")
-viewPure DiedScreen = color green (text "DiedScreen")
-viewPure LevelChooser = color green (text "LevelChooser")
-viewPure (Paused _ _ _ _ _) = color green (text "Paused")
+viewPure MainMenu = translate (-266.67) 0 (color green (text "MainMenu"))
+viewPure WonScreen = translate (-300) 0 (color green (text "WonScreen"))
+viewPure DiedScreen = translate (-333.33) 0 (color green (text "DiedScreen"))
+viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
+viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
 viewPure gstate = case infoToShow gstate of
               ShowLevel         -> drawLevel gstate
               _                 -> blank
