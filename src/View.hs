@@ -16,7 +16,7 @@ view = return . viewPure
 viewPure :: GameState -> Picture
 viewPure MainMenu = translate (-266.67) 0 (color green (text "MainMenu"))
 viewPure (WonScreen score) = drawWonScreen (WonScreen score)
-viewPure (DiedScreen score) = translate (-333.33) 0 (color green (text "DiedScreen"))
+viewPure (DiedScreen score) = drawDiedScreen (DiedScreen score)
 viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
@@ -28,9 +28,12 @@ drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: 
 
  -- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
-drawWonScreen gs = pictures [(color red (text "Congratulations")), (color yellow (text ("You scored: " ++ show _score)))]
+drawWonScreen gs = pictures [translate (-300) 50 (scale 0.7 0.7 (color green (text "Congratulations!"))), translate (-300) (-100) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                  where _score = score gs
 
+drawDiedScreen :: GameState -> Picture
+drawDiedScreen gs = pictures [translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
+                where _score = score gs
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int
