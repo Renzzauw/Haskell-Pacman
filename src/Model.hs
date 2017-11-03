@@ -4,14 +4,10 @@ module Model where
   
 import Level 
 
-data InfoToShow = ShowNothing
-                | ShowLevel
-                  deriving (Eq)
-
 -- Data type for each state the game is currently in
 data GameState = 
       PlayingLevel {
-          infoToShow :: InfoToShow,
+          score :: Int,
           level :: Level,
           player :: Player,
           pointList :: Points,
@@ -21,7 +17,7 @@ data GameState =
       | DiedScreen 
       | WonScreen 
       | Paused {
-        infoToShow :: InfoToShow,
+        score :: Int,
         level :: Level,
         player :: Player,
         pointList :: Points,
@@ -29,7 +25,7 @@ data GameState =
         deriving (Eq)
       
 initialState :: GameState
-initialState = PlayingLevel ShowNothing initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
+initialState = PlayingLevel 0 initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
 
 initialLevel :: Level
 initialLevel = undefined

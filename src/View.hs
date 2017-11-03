@@ -19,9 +19,12 @@ viewPure WonScreen = translate (-300) 0 (color green (text "WonScreen"))
 viewPure DiedScreen = translate (-333.33) 0 (color green (text "DiedScreen"))
 viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
-viewPure gstate = case infoToShow gstate of
-              ShowLevel         -> drawLevel gstate
-              _                 -> blank
+viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
+
+
+drawScore :: GameState -> Picture
+drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: "++show _score))))
+           where _score = score gs
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int

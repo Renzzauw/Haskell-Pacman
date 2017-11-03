@@ -78,11 +78,12 @@ checkNewPosition gstate (x, y) = case field of
                                     else (_level !! round y) !! floor x
 
 checkCurrentPosition :: GameState -> GameState
-checkCurrentPosition gs | index /= Nothing = gs { pointList = (delete (fromIntegral (round x), fromIntegral (round y)) _pointlist) }
+checkCurrentPosition gs | index /= Nothing = gs { score = newscore, pointList = (delete (fromIntegral (round x), fromIntegral (round y)) _pointlist) }
                         | otherwise = gs
                         where (x, y)  = playerPos (player gs)
                               index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _pointlist
                               _pointlist = pointList gs 
+                              newscore   = score gs + 10
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -163,16 +164,16 @@ isPaused (Paused _ _ _ _ _) = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame gstate = Paused _infoToShow _level _player _pointList _enemies
-    where   _infoToShow = infoToShow gstate
+pauseGame gstate = Paused _score _level _player _pointList _enemies
+    where   _score = score gstate
             _level = level gstate
             _player = player gstate
             _pointList = pointList gstate
             _enemies = enemies gstate
 
 unPauseGame :: GameState -> GameState
-unPauseGame gstate = PlayingLevel _infoToShow _level _player _pointList _enemies
-    where   _infoToShow = infoToShow gstate
+unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies
+    where   _score = score gstate
             _level = level gstate
             _player = player gstate
             _pointList = pointList gstate

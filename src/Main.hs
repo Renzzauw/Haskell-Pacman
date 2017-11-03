@@ -11,7 +11,7 @@ import Graphics.Gloss.Interface.IO.Game
 main :: IO ()
 main = do 
        (level, points, player, enemies) <- loadLevel "Levels/Level01.txt"
-       let state = PlayingLevel ShowLevel level player points enemies
+       let state = PlayingLevel 0 level player points enemies
        playIO (InWindow "Pacman" (1280, 720) (320, 180)) -- Or FullScreen
               black            -- Background color
               60               -- Frames per second
