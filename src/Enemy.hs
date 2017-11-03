@@ -4,16 +4,53 @@ import Level
 import Model
 
 -- Function that returns a Direction for the enemy to move into based on the player position
-lookForPlayer :: GameState -> Position -> Position -> Direction
-lookForPlayer gs (px, py) enemypos@(ex, ey)
-      | py - ey < -0.05 && surroundings !! 0 /= WallField = DirUp
-      | py - ey > 0.05 && surroundings !! 1 /= WallField = DirDown
-      | px - ex < -0.05 && surroundings !! 2 /= WallField = DirLeft
-      | px - ex > 0.05 && surroundings !! 3 /= WallField = DirRight
-      | otherwise = DirNone
+lookForPlayer :: GameState -> Direction -> Position -> Position -> (Position, Direction)
+lookForPlayer gs currDir (px, py) enemypos@(ex, ey) = case currDir of
+                              DirUp       ->    upOrDown
+                              DirDown     ->    upOrDown
+                              DirLeft     ->    leftOrRight
+                              DirRight    ->    leftOrRight
+                              _           ->    noDir
       where surroundings = getSurroundingFields gs enemypos
+            newEnemyPosInX = if (ex - fromIntegral (floor ex)) < 0.2
+                                    then ((fromIntegral (floor ex)), ey)
+                                    else if ex - fromIntegral (floor ex) > 0.8
+                                          then ((fromIntegral (ceiling ex)), ey)
+                                          else (ex, ey)
+            newEnemyPosInY = if (ey - fromIntegral (floor ey)) < 0.2
+                                    then (ex, (fromIntegral (floor ey)))
+                                    else if ey - fromIntegral (floor ey) > 0.8
+                                          then (ex, (fromIntegral (ceiling ey)))
+                                          else (ex, ey)
+            upOrDown    | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (enemypos, DirUp)
+                        | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (enemypos, DirDown)
+                        | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (newEnemyPosInX, DirLeft)
+                        | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (newEnemyPosInX, DirRight)
+                        | otherwise = (enemypos, DirNone)
+            leftOrRight | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (enemypos, DirLeft)
+                        | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (enemypos, DirRight)
+                        | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (newEnemyPosInY, DirUp)
+                        | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (newEnemyPosInY, DirDown)
+                        | otherwise = (enemypos, DirNone)
+            noDir       | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (enemypos, DirUp)
+                        | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (enemypos, DirDown)
+                        | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (enemypos, DirLeft)
+                        | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (enemypos, DirRight)
+                        | otherwise = (enemypos, DirNone)
+ 
       
-      
+{-setPlayerDirectionToUp :: GameState -> GameState
+setPlayerDirectionToUp gstate = if (x - fromIntegral (floor x)) < 0.2 && checkUpperFieldFree (fromIntegral (floor x)) y
+                                    then gstate { player = Player (newPlayerPos (fromIntegral (floor x)) y) DirUp }
+                                    else if (x - fromIntegral (floor x)) > 0.8 && checkUpperFieldFree (fromIntegral (ceiling x)) y
+                                          then gstate { player = Player (newPlayerPos (fromIntegral (ceiling x)) y) DirUp }
+                                          else gstate
+      where   _level = level gstate
+            _player = player gstate
+            _playerDir = playerDir _player
+            (x, y) = playerPos _player
+            newPlayerPos _x _y = (_x, _y)
+            checkUpperFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos x (y - 1))-}
       
                                                 {-if py < ey
                                                       then  if surroundings !! 0 /= WallField 
@@ -74,23 +111,40 @@ lookForPlayer gs (px, py) enemypos@(ex, ey)
 getSurroundingFields :: GameState -> Position -> [FieldType]
 getSurroundingFields gs (x, y) = map fst fieldList
                                         where   _level = level gs
-                                                up    = (_level !! (floor y)) !! round x
-                                                left  = (_level !! (round y)) !! floor x
-                                                right = (_level !! (round y)) !! ceiling x
-                                                down  = (_level !! (ceiling y)) !! round x
+                                                up    = (_level !! ((floor y) - 1)) !! round x
+                                                left  = (_level !! (round y)) !! ((floor x) - 1)
+                                                right = (_level !! (round y)) !! ((ceiling x) + 1)
+                                                down  = (_level !! ((ceiling y) + 1)) !! round x
                                                 fieldList   = [up, down, left, right]
-    
--- Function that checks if a Field is valid to move to for the enemy
-isValidMoveField :: GameState -> Field -> Bool
-isValidMoveField gs (fieldType, (x, y)) | fieldType == WallField                          = False -- Check if field is a wall
-                                        | x > 0 && x < maxWidth && y > 0 && y < maxHeight = True  -- doublecheck for movement outside of bounds
-                                        | otherwise                                       = False
-                                        where lvl       = level gs
-                                              maxWidth  = fromIntegral (length (head lvl))
-                                              maxHeight = fromIntegral (length lvl)
+
+checkNewPosition :: GameState -> Direction -> Position -> Bool
+checkNewPosition gstate dir (x, y) = case field of
+                              WallField   -> False
+                              _           -> True
+      where _level = level gstate
+            (field, _) = if dir == DirUp
+                              then (_level !! floor y) !! round x
+                              else if dir == DirDown
+                                    then (_level !! ceiling y) !! round x
+                                    else if dir == DirRight
+                                    then (_level !! round y) !! ceiling x
+                                    else (_level !! round y) !! floor x 
+
+{-checkNewPlayerPosition :: GameState -> Position -> Bool
+checkNewPlayerPosition gstate (x, y) = case field of
+                                    WallField   -> False
+                                    _           -> True
+      where   _level = level gstate
+            _playerDir = playerDir (player gstate)
+            (field, _) = if _playerDir == DirUp
+                              then (_level !! floor y) !! round x
+                              else if _playerDir == DirDown
+                                    then (_level !! ceiling y) !! round x
+                                    else if _playerDir == DirRight
+                                    then (_level !! round y) !! ceiling x
+                                    else (_level !! round y) !! floor x-}    
 
 -- Function that checks if the Enemy is on the same position as the player                                              
 isPlayerDead :: Position -> Position -> Bool
 isPlayerDead player enemy | player == enemy = True
                           | otherwise       = False
-       

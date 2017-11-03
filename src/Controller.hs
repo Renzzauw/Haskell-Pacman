@@ -27,8 +27,8 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e)
             _playerPos = playerPos (player gstate)
-            newDir enemyPos = lookForPlayer gstate _playerPos enemyPos
-            newEnemy e = Enemy ((fst (enemy e))) (newDir (fst (enemy e)))
+            newDirAndPos (enemyPos, enemyDir) = lookForPlayer gstate enemyDir _playerPos enemyPos
+            newEnemy e = Enemy (fst (newDirAndPos (enemy e))) (snd (newDirAndPos (enemy e)))
             newEnemies = map newEnemy _enemies
 
 movePlayer :: GameState -> GameState
