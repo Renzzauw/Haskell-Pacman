@@ -14,11 +14,11 @@ view = return . viewPure
 
 -- Show the right screen with the given GameState
 viewPure :: GameState -> Picture
-viewPure MainMenu = translate (-266.67) 0 (color green (text "MainMenu"))
+viewPure MainMenu = mainmenuBackground
 viewPure (WonScreen score) = drawWonScreen (WonScreen score)
 viewPure (DiedScreen score) = drawDiedScreen (DiedScreen score)
 viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
-viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
+viewPure (Paused _ _ _ _ _) = pauseScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 
 -- Draw the score of the player on the screen
@@ -28,18 +28,30 @@ drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: 
 
  -- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
-drawWonScreen gs = pictures [translate (-300) 50 (scale 0.7 0.7 (color green (text "Congratulations!"))), translate (-300) (-100) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
+drawWonScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color green (text "Congratulations!"))), translate (-300) (-100) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                  where _score = score gs
 
 drawDiedScreen :: GameState -> Picture
-drawDiedScreen gs = pictures [translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
+drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                 where _score = score gs
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int
-spriteSize = 20
+spriteSize = 40
 
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
+gameBackground :: Picture
+gameBackground = png "Images/new/AchtergrondIngame.png"
+
+mainmenuBackground :: Picture 
+mainmenuBackground = png "Images/new/AchtergrondMenu.png"
+
+pauseScreen :: Picture
+pauseScreen = png "Images/new/PauseMenu.png"
+
+emptyBackground :: Picture
+emptyBackground = png "Images/new/emptybg.png"
+
 pacmanSprites :: [Picture]
 pacmanSprites = [scalePicture (png "Images/Pacman1.png"), scalePicture (png "Images/Pacman2.png"), scalePicture (png "Images/Pacman3.png"), scalePicture (png "Images/Pacman2.png")]
 
@@ -68,10 +80,10 @@ redGhostRight :: Picture
 redGhostRight = scalePicture (png "Images/RedGhostRight1.png")
 
 pacman :: Picture
-pacman = scalePicture (png "Images/Pacman2.png")
+pacman = scalePicture (png "Images/new/Pacman.png") 
 
 wallTile :: Picture
-wallTile = scalePicture (png "Images/WallTile.png")
+wallTile = scalePicture (png "Images/new/WallTile.png")
 
 pointTile :: Picture
 pointTile = scalePicture (png "Images/PointTile.png")
@@ -97,9 +109,9 @@ drawLevel gstate = translatedLevel
     where   _level = level gstate
             levelWidth = length (head _level)
             levelHeight = length _level
-            totalLevel = pictures (map pictures ((map . map) drawTile _level))
+            totalLevel = pictures ((map pictures ((map . map) drawTile _level)))
             includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : [drawPacman gstate])
-            translatedLevel = translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints
+            translatedLevel = pictures [gameBackground, (translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints)]
 
 -- Function that draws tiles
 drawTile :: Field -> Picture
