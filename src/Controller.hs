@@ -42,7 +42,10 @@ movePlayer gstate = gstate { player = newPlayer }
                 DirRight    ->  (oldXPos + playerVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - playerVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            newPlayer = Player newPos _playerDir
+            validNewPos = checkNewPosition gstate newPos
+            newPlayer = if validNewPos
+                            then Player newPos _playerDir
+                            else Player (oldXPos, oldYPos) _playerDir
 
 moveEnemies :: GameState -> GameState
 moveEnemies gstate = gstate { enemies = newEnemies }
@@ -54,8 +57,23 @@ moveEnemies gstate = gstate { enemies = newEnemies }
                 DirRight    ->  (oldXPos + enemyVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            newEnemy e = Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e))
+            newEnemy e = if (checkNewPosition gstate (newPos (fst (enemy e)) (snd (enemy e))))
+                            then Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e))
+                            else Enemy (fst (enemy e)) (snd (enemy e))
             newEnemies = map newEnemy _enemies
+
+checkNewPosition :: GameState -> Position -> Bool
+checkNewPosition gstate (x, y) = case field of
+    WallField   -> False
+    _           -> True
+    where   _level = level gstate
+            (field, _) = if (y - fromIntegral (floor y)) < 0.5
+                            then if (x - fromIntegral (floor x)) < 0.5
+                                then (_level !! ceiling y) !! ceiling x
+                                else (_level !! ceiling y) !! floor x
+                            else if (x - fromIntegral (floor x)) < 0.5
+                                then (_level !! floor y) !! ceiling x
+                                else (_level !! floor y) !! floor x
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
