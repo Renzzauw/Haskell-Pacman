@@ -86,10 +86,10 @@ wallTile :: Picture
 wallTile = scalePicture (png "Images/new/WallTile.png")
 
 pointTile :: Picture
-pointTile = scalePicture (png "Images/PointTile.png")
+pointTile = scalePicture (png "Images/new/PointTile.png")
 
 bigPointTile :: Picture
-bigPointTile = scalePicture (png "Images/BigPointTile.png")
+bigPointTile = scalePicture (png "Images/new/BigPointTile.png")
 
 emptyTile :: Picture
 emptyTile = scalePicture (png "Images/Empty.png")

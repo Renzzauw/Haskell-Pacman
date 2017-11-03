@@ -1,6 +1,7 @@
 module Level where
 
-import System.Directory    
+import System.Directory  
+import System.Random  
 import Data.Maybe
 import Data.List
 
