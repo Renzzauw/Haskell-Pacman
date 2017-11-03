@@ -1,7 +1,32 @@
-WWWWWWWWWWWWWWWWWWWW
-WWWWWWWW..........WW
-WWWWW..E..WWWWWWW.WW
-WWWW.........WWWW.WW
-W...P.*.........W.WW
-WWWW.....E........WW
-WWWWWWWWWWWWWWWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWW
+W............WW............W
+W.WWWW.WWWWW.WW.WWWWW.WWWW.W
+W*WWWW.WWWWW.WW.WWWWW.WWWW*W
+W.WWWW.WWWWW.WW.WWWWW.WWWW.W
+W..........................W
+W.WWWW.WW.WWWWWWWW.WW.WWWW.W
+W.WWWW.WW.WWWWWWWW.WW.WWWW.W
+W......WW....WW....WW......W
+WWWWWW.WWWWW WW WWWWW.WWWWWW
+     W.WWWWW WW WWWWW.W     
+     W.WW          WW.W     
+     W.WW          WW.W     
+     W.WW          WW.W     
+     W.      EE      .W     
+     W.      EE      .W     
+     W.WW          WW.W     
+     W.WW          WW.W     
+     W.WW          WW.W     
+     W.WW WWWWWWWW WW.W     
+WWWWWW.WW WWWWWWWW WW.WWWWWW
+W............WW............W
+W.WWWW.WWWWW.WW.WWWWW.WWWW.W
+W.WWWW.WWWWW.WW.WWWWW.WWWW.W
+W*..WW.......P........WW..*W
+WWW.WW.WW.WWWWWWWW.WW.WW.WWW
+WWW.WW.WW.WWWWWWWW.WW.WW.WWW
+W......WW....WW....WW......W
+W.WWWWWWWWWW.WW.WWWWWWWWWW.W
+W.WWWWWWWWWW.WW.WWWWWWWWWW.W
+W..........................W
+WWWWWWWWWWWWWWWWWWWWWWWWWWWW

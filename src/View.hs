@@ -15,20 +15,26 @@ view = return . viewPure
 -- Show the right screen with the given GameState
 viewPure :: GameState -> Picture
 viewPure MainMenu = translate (-266.67) 0 (color green (text "MainMenu"))
-viewPure (WonScreen score) = translate (-300) 0 (color green (text "WonScreen"))
+viewPure (WonScreen score) = drawWonScreen (WonScreen score)
 viewPure (DiedScreen score) = translate (-333.33) 0 (color green (text "DiedScreen"))
 viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 
-
+-- Draw the score of the player on the screen
 drawScore :: GameState -> Picture
-drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: "++show _score))))
+drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: " ++ show _score))))
            where _score = score gs
+
+ -- Draw the proper text when the player completes the level          
+drawWonScreen :: GameState -> Picture
+drawWonScreen gs = pictures [(color red (text "Congratulations")), (color yellow (text ("You scored: " ++ show _score)))]
+                 where _score = score gs
+
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int
-spriteSize = 40
+spriteSize = 20
 
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
 pacmanSprites :: [Picture]
