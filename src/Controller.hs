@@ -42,7 +42,7 @@ movePlayer gstate = gstate { player = newPlayer }
                 DirRight    ->  (oldXPos + playerVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - playerVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            validNewPos = checkNewPosition gstate newPos
+            validNewPos = checkNewPlayerPosition gstate newPos
             newPlayer = if validNewPos
                             then Player newPos _playerDir
                             else Player (oldXPos, oldYPos) _playerDir
@@ -57,13 +57,13 @@ moveEnemies gstate = gstate { enemies = newEnemies }
                 DirRight    ->  (oldXPos + enemyVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            newEnemy e = if (checkNewPosition gstate (newPos (fst (enemy e)) (snd (enemy e))))
+            newEnemy e = if (checkNewEnemyPosition gstate e (newPos (fst (enemy e)) (snd (enemy e))))
                             then Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e))
                             else Enemy (fst (enemy e)) (snd (enemy e))
             newEnemies = map newEnemy _enemies
 
-checkNewPosition :: GameState -> Position -> Bool
-checkNewPosition gstate (x, y) = case field of
+checkNewPlayerPosition :: GameState -> Position -> Bool
+checkNewPlayerPosition gstate (x, y) = case field of
                                     WallField   -> False
                                     _           -> True
     where   _level = level gstate
@@ -76,6 +76,20 @@ checkNewPosition gstate (x, y) = case field of
                                     then (_level !! round y) !! ceiling x
                                     else (_level !! round y) !! floor x
 
+checkNewEnemyPosition :: GameState -> Enemy -> Position -> Bool
+checkNewEnemyPosition gstate e (x, y) = case field of
+                                    WallField   -> False
+                                    _           -> True
+    where   _level = level gstate
+            _dir = enemyDir e
+            (field, _) = if _dir == DirUp
+                            then (_level !! floor y) !! round x
+                            else if _dir == DirDown
+                                then (_level !! ceiling y) !! round x
+                                else if _dir == DirRight
+                                    then (_level !! round y) !! ceiling x
+                                    else (_level !! round y) !! floor x
+                        
 checkCurrentPosition :: GameState -> GameState
 checkCurrentPosition gs | index /= Nothing = gs { score = newscore, pointList = (delete (fromIntegral (round x), fromIntegral (round y)) _pointlist) }
                         | otherwise = gs
@@ -117,7 +131,7 @@ setPlayerDirectionToUp gstate = if (x - fromIntegral (floor x)) < 0.2 && checkUp
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkUpperFieldFree x y = checkNewPosition gstate (newPlayerPos x (y - 1))
+            checkUpperFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos x (y - 1))
 
 setPlayerDirectionToDown :: GameState -> GameState
 setPlayerDirectionToDown gstate = if (x - fromIntegral (floor x)) < 0.2 && checkLowerFieldFree (fromIntegral (floor x)) y
@@ -130,7 +144,7 @@ setPlayerDirectionToDown gstate = if (x - fromIntegral (floor x)) < 0.2 && check
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkLowerFieldFree x y = checkNewPosition gstate (newPlayerPos x (y + 1))
+            checkLowerFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos x (y + 1))
             
 setPlayerDirectionToRight :: GameState -> GameState
 setPlayerDirectionToRight gstate = if (y - fromIntegral (floor y)) < 0.2 && checkRightFieldFree x (fromIntegral (floor y))
@@ -143,7 +157,7 @@ setPlayerDirectionToRight gstate = if (y - fromIntegral (floor y)) < 0.2 && chec
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkRightFieldFree x y = checkNewPosition gstate (newPlayerPos (x + 1) y)
+            checkRightFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos (x + 1) y)
             
 setPlayerDirectionToLeft :: GameState -> GameState
 setPlayerDirectionToLeft gstate = if (y - fromIntegral (floor y)) < 0.2 && checkLeftFieldFree x (fromIntegral (floor y))
@@ -156,7 +170,7 @@ setPlayerDirectionToLeft gstate = if (y - fromIntegral (floor y)) < 0.2 && check
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkLeftFieldFree x y = checkNewPosition gstate (newPlayerPos (x - 1) y)
+            checkLeftFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos (x - 1) y)
             
 isPlaying :: GameState -> Bool
 isPlaying (PlayingLevel _ _ _ _ _) = True
