@@ -38,7 +38,8 @@ isValidMoveField gs (fieldType, (x, y)) | fieldType == WallField                
                                               maxWidth  = fromIntegral (length (lvl !! 0))
                                               maxHeight = fromIntegral (length lvl)
 
-isPlayerDead :: GameState -> Position -> Position
-isPlayerDead gs player enemy | player == enemy = True
-                             | otherwise       = False
+-- Function that checks if the Enemy is on the same position as the player                                              
+isPlayerDead :: Position -> Position -> Bool
+isPlayerDead player enemy | player == enemy = True
+                          | otherwise       = False
        

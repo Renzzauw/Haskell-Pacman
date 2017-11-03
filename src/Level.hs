@@ -27,9 +27,11 @@ textToField '*' = BigPointField
 textToField 'E' = EnemyField
 textToField ' ' = EmptyField
 
+-- Function that checks if all points have been picked up, if so the player has completed the level
 levelComplete :: Points -> Bool
 levelComplete = null
 
+-- Function that looks up the player startposition in a given level
 findPlayerPos :: String -> Position
 findPlayerPos s | index == Nothing = error "No Player found in level"
                 | otherwise = (x, y)
@@ -40,6 +42,7 @@ findPlayerPos s | index == Nothing = error "No Player found in level"
             index = elemIndex 'P' string
             string = filter (/= '\n') s
 
+-- Function that looks up the enemy startpositions in a given level
 findEnemyPos :: String -> [Position]
 findEnemyPos s  | null indices = []
                 | otherwise = map createPos indices
@@ -66,6 +69,7 @@ findPoints s    | null indices1 && null indices2 = []
             createPos index = (x index, y index)
             createPoint index = (True, createPos index)
 
+-- Function that loads a level
 loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
@@ -79,14 +83,17 @@ loadLevel filePath = do
     return $ (levelValues, pointList, player, enemies)
     where createEnemy pos = Enemy pos DirNone
 
+-- Function that creates the rows
 createFieldsForRow :: Float -> Float -> String -> Row
 createFieldsForRow _ _ "" = []
 createFieldsForRow x y (i:is) = (textToField i, (x, y)) : createFieldsForRow (succ x) y is
 
+-- Function that creates a level out of rows
 createRowsForLevel :: Float -> [String] -> Level
 createRowsForLevel _ [] = []
 createRowsForLevel y (i:is) = createFieldsForRow 0 y i : createRowsForLevel (succ y) is
 
+-- Function that gets all the level files from the levels folder
 getLevels :: IO [FilePath]
 getLevels = do
             files <- getDirectoryContents "../Levels"

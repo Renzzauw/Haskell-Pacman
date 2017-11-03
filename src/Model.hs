@@ -8,6 +8,7 @@ data InfoToShow = ShowNothing
                 | ShowLevel
                   deriving (Eq)
 
+-- Data type for each state the game is currently in
 data GameState = 
       PlayingLevel {
           infoToShow :: InfoToShow,
@@ -26,7 +27,7 @@ data GameState =
         pointList :: Points,
         enemies :: [Enemy] }
         deriving (Eq)
-
+      
 initialState :: GameState
 initialState = PlayingLevel ShowNothing initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
 
