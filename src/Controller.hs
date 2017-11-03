@@ -9,6 +9,7 @@ import Enemy
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
+import Data.List
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -20,8 +21,8 @@ step secs gstate
     | isPaused gstate = return $ gstate
     | otherwise = if levelComplete (pointList gstate)
                     then return $ WonScreen
-                    else return $ moveEnemies (updateEnemyDirection (movePlayer gstate))
-
+                    else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
+                    
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
@@ -75,6 +76,13 @@ checkNewPosition gstate (x, y) = case field of
                                 else if _playerDir == DirRight
                                     then (_level !! round y) !! ceiling x
                                     else (_level !! round y) !! floor x
+
+checkCurrentPosition :: GameState -> GameState
+checkCurrentPosition gs | currfield == PointField || currfield == BigPointField = gs { pointList = (delete playerpos _pointlist) }
+                        | otherwise                                             = gs
+                       where playerpos  = playerPos (player gs)
+                             currfield  = getFieldType gs playerpos
+                             _pointlist = pointList gs 
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
