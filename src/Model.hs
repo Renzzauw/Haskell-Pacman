@@ -14,14 +14,16 @@ data GameState =
           enemies :: [Enemy] } 
       | MainMenu 
       | LevelChooser 
-      | DiedScreen 
-      | WonScreen 
+      | DiedScreen {
+          score :: Int }
+      | WonScreen {
+          score :: Int }
       | Paused {
-        score :: Int,
-        level :: Level,
-        player :: Player,
-        pointList :: Points,
-        enemies :: [Enemy] }
+          score :: Int,
+          level :: Level,
+          player :: Player,
+          pointList :: Points,
+          enemies :: [Enemy] }
         deriving (Eq)
       
 initialState :: GameState

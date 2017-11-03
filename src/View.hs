@@ -15,8 +15,8 @@ view = return . viewPure
 -- Show the right screen with the given GameState
 viewPure :: GameState -> Picture
 viewPure MainMenu = translate (-266.67) 0 (color green (text "MainMenu"))
-viewPure WonScreen = translate (-300) 0 (color green (text "WonScreen"))
-viewPure DiedScreen = translate (-333.33) 0 (color green (text "DiedScreen"))
+viewPure (WonScreen score) = translate (-300) 0 (color green (text "WonScreen"))
+viewPure (DiedScreen score) = translate (-333.33) 0 (color green (text "DiedScreen"))
 viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = translate (-200) 0 (color green (text "Paused"))
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])

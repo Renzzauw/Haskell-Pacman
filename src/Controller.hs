@@ -13,15 +13,14 @@ import Data.List
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate
-    | gstate == MainMenu = return $ gstate
-    | gstate == WonScreen = return $ gstate
-    | gstate == DiedScreen = return $ gstate
-    | gstate == LevelChooser = return $ gstate
-    | isPaused gstate = return $ gstate
-    | otherwise = if levelComplete (pointList gstate)
-                    then return $ WonScreen
-                    else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
+step _ gstate@MainMenu = return $ gstate
+step _ gstate@(WonScreen _) = return $ gstate
+step _ gstate@(DiedScreen _) = return $ gstate
+step _ gstate@LevelChooser = return $ gstate
+step _ gstate   | isPaused gstate = return $ gstate
+                | otherwise = if levelComplete (pointList gstate)
+                                then return $ WonScreen (score gstate)
+                                else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
                     
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
