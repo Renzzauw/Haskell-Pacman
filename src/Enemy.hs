@@ -27,7 +27,7 @@ getSurroundingFields gs (x, y) = map fst (filter (isValidMoveField gs) fieldList
 
 -- Function that returns the FieldType of a field at a given position                                              
 getFieldType :: GameState -> Position -> FieldType
-getFieldType gs (x, y) = fst (((level gs) !! round y) !! round x)                              
+getFieldType gs (x, y) = fst (((level gs) !! round y) !! round x)
     
 -- Function that checks if a Field is valid to move to for the enemy
 isValidMoveField :: GameState -> Field -> Bool

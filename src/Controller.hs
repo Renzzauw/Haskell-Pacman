@@ -78,11 +78,11 @@ checkNewPosition gstate (x, y) = case field of
                                     else (_level !! round y) !! floor x
 
 checkCurrentPosition :: GameState -> GameState
-checkCurrentPosition gs | currfield == PointField || currfield == BigPointField = gs { pointList = (delete playerpos _pointlist) }
-                        | otherwise                                             = gs
-                       where playerpos  = playerPos (player gs)
-                             currfield  = getFieldType gs playerpos
-                             _pointlist = pointList gs 
+checkCurrentPosition gs | index /= Nothing = gs { pointList = (delete (fromIntegral (round x), fromIntegral (round y)) _pointlist) }
+                        | otherwise = gs
+                        where (x, y)  = playerPos (player gs)
+                              index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _pointlist
+                              _pointlist = pointList gs 
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
