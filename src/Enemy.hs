@@ -145,6 +145,10 @@ checkNewPlayerPosition gstate (x, y) = case field of
                                     else (_level !! round y) !! floor x-}    
 
 -- Function that checks if the Enemy is on the same position as the player                                              
-isPlayerDead :: Position -> Position -> Bool
-isPlayerDead player enemy | player == enemy = True
-                          | otherwise       = False
+isPlayerDead :: GameState -> Bool
+isPlayerDead gstate = elem True checkPoss
+      where (px, py) = playerPos (player gstate)
+            enemyPoss = map enemyPos (enemies gstate)
+            checkPos (ex, ey) | abs (px - ex) < 0.3 && abs (py - ey) < 0.3 = True
+                              | otherwise = False
+            checkPoss = map checkPos enemyPoss

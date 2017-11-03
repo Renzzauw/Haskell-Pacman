@@ -20,7 +20,9 @@ step _ gstate@LevelChooser = return $ gstate
 step _ gstate   | isPaused gstate = return $ gstate
                 | otherwise = if levelComplete (pointList gstate)
                                 then return $ WonScreen (score gstate)
-                                else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
+                                else if isPlayerDead gstate
+                                    then return $ DiedScreen (score gstate)
+                                    else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
                     
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
