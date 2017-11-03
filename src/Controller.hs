@@ -67,13 +67,16 @@ checkNewPosition gstate (x, y) = case field of
     WallField   -> False
     _           -> True
     where   _level = level gstate
-            (field, _) = if (y - fromIntegral (floor y)) < 0.5
-                            then if (x - fromIntegral (floor x)) < 0.5
-                                then (_level !! ceiling y) !! ceiling x
-                                else (_level !! ceiling y) !! floor x
-                            else if (x - fromIntegral (floor x)) < 0.5
-                                then (_level !! floor y) !! ceiling x
-                                else (_level !! floor y) !! floor x
+            (field, _) = if (y - fromIntegral (round y)) < 0.5
+                            then 
+                                if (x - fromIntegral (round x)) < 0.5
+                                    then (_level !! ceiling y) !! ceiling x
+                                    else (_level !! ceiling y) !! floor x
+                            else 
+                                if (x - fromIntegral (round x)) < 0.5
+                                    then (_level !! floor y) !! ceiling x
+                                    else (_level !! floor y) !! floor x
+                                    -- KIJKEN NAAR 2 TILES IPV 1
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
