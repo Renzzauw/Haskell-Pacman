@@ -15,19 +15,44 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step _ gstate@(PlayingLevel _ _ _ _ _) = if levelComplete (pointList gstate)
-                                            then return $ WonScreen (score gstate)
-                                            else if isPlayerDead gstate
-                                                then return $ DiedScreen (score gstate)
-                                                else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
-step _ gstate = return $ gstate
-                    
+step secs gstate@(PlayingLevel _ _ _ _ _ _ _ _) = if levelComplete (pointList updatedGameState)
+                                                    then return $ WonScreen (score updatedGameState)
+                                                    else if isPlayerDead updatedGameState && isInvincible (powerUp updatedGameState) == False
+                                                        then return $ DiedScreen (score updatedGameState)
+                                                        else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition updatedGameState)))
+                                        where   updatedGameState = checkForNewPowerUps (updatePowerUp (updateTimeGState secs gstate))
+step secs gstate = return $ updateTimeGState secs gstate
+
+updateTimeGState :: Float -> GameState -> GameState
+updateTimeGState time gstate@(PlayingLevel _ _ _ _ _ _ _ _) = gstate { passedTime = (passedTime gstate + time) }
+updateTimeGState _ gstate = gstate
+
+updatePowerUp :: GameState -> GameState
+updatePowerUp gstate    | _powerUp /= NoPowerUp = if duration _powerUp <= secs
+                                                    then gstate { powerUp = NoPowerUp }
+                                                    else gstate
+                        | otherwise = gstate
+    where   _powerUp = powerUp gstate
+            secs = passedTime gstate
+
+checkForNewPowerUps :: GameState -> GameState
+checkForNewPowerUps gstate  | index == Nothing = gstate
+                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = secs + duration (newPowerUp (fromJust index)) }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps }
+    where   (x, y) = playerPos (player gstate)
+            _availablePowerUps = availablePowerUps gstate
+            _positions = map position _availablePowerUps
+            index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _positions
+            newPowerUp i = _availablePowerUps !! i
+            secs = passedTime gstate
+
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e)
             _playerPos = playerPos (player gstate)
-            newDirAndPos (enemyPos, enemyDir) = lookForPlayer gstate enemyDir _playerPos enemyPos
+            newDirAndPos (enemyPos, enemyDir) = if isInvertedEnemies (powerUp gstate)
+                                                    then invertedDirection gstate enemyDir _playerPos enemyPos
+                                                    else normalDirection gstate enemyDir _playerPos enemyPos
             newEnemy e = Enemy (fst (newDirAndPos (enemy e))) (snd (newDirAndPos (enemy e)))
             newEnemies = map newEnemy _enemies
 
@@ -36,16 +61,30 @@ movePlayer gstate = gstate { player = newPlayer }
     where   _player = player gstate
             _playerDir = playerDir _player
             (oldXPos, oldYPos) = playerPos _player
+            usedVelocity    | isSpeedUp (powerUp gstate) = playerVelocity * 1.2
+                            | otherwise = playerVelocity
             newPos = case _playerDir of
-                DirUp       ->  (oldXPos, oldYPos - playerVelocity)
-                DirDown     ->  (oldXPos, oldYPos + playerVelocity)
-                DirRight    ->  (oldXPos + playerVelocity, oldYPos)
-                DirLeft     ->  (oldXPos - playerVelocity, oldYPos)
+                DirUp       ->  (oldXPos, oldYPos - usedVelocity)
+                DirDown     ->  (oldXPos, oldYPos + usedVelocity)
+                DirRight    ->  (oldXPos + usedVelocity, oldYPos)
+                DirLeft     ->  (oldXPos - usedVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
             validNewPos = checkNewPlayerPosition gstate newPos
             newPlayer = if validNewPos
                             then Player newPos _playerDir
                             else Player (oldXPos, oldYPos) _playerDir
+
+isSpeedUp :: PowerUp -> Bool
+isSpeedUp (SpeedUp _ _) = True
+isSpeedUp _ = False
+
+isInvincible :: PowerUp -> Bool
+isInvincible (Invincible _ _) = True
+isInvincible _ = False
+
+isInvertedEnemies :: PowerUp -> Bool
+isInvertedEnemies (InvertedEnemies _ _) = True
+isInvertedEnemies _ = False
 
 moveEnemies :: GameState -> GameState
 moveEnemies gstate = gstate { enemies = newEnemies }
@@ -185,25 +224,31 @@ setPlayerDirectionToLeft gstate = if (y - fromIntegral (floor y)) < 0.2 && check
             checkLeftFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos (x - 1) y)
             
 isPlaying :: GameState -> Bool
-isPlaying (PlayingLevel _ _ _ _ _) = True
+isPlaying (PlayingLevel _ _ _ _ _ _ _ _) = True
 isPlaying _ = False
 
 isPaused :: GameState -> Bool
-isPaused (Paused _ _ _ _ _) = True
+isPaused (Paused _ _ _ _ _ _ _ _) = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame gstate = Paused _score _level _player _pointList _enemies
+pauseGame gstate = Paused _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime
     where   _score = score gstate
             _level = level gstate
             _player = player gstate
             _pointList = pointList gstate
             _enemies = enemies gstate
+            _powerUp = powerUp gstate
+            _availablePowerUps = availablePowerUps gstate
+            _passedTime = passedTime gstate
 
 unPauseGame :: GameState -> GameState
-unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies
+unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime
     where   _score = score gstate
             _level = level gstate
             _player = player gstate
             _pointList = pointList gstate
             _enemies = enemies gstate
+            _powerUp = powerUp gstate
+            _availablePowerUps = availablePowerUps gstate
+            _passedTime = passedTime gstate
