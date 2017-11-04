@@ -13,24 +13,24 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) = case currDir of
                               _           ->    noDir
       where surroundings = getSurroundingFields gs enemypos
             newEnemyPosInX = if (ex - fromIntegral (floor ex)) < 0.2
-                                    then ((fromIntegral (floor ex)), ey)
+                                    then (((fromIntegral (floor ex)), ey), True)
                                     else if ex - fromIntegral (floor ex) > 0.8
-                                          then ((fromIntegral (ceiling ex)), ey)
-                                          else (ex, ey)
+                                          then (((fromIntegral (ceiling ex)), ey), True)
+                                          else ((ex, ey), False)                             -- wordt de hele tijd aangeroepen
             newEnemyPosInY = if (ey - fromIntegral (floor ey)) < 0.2
-                                    then (ex, (fromIntegral (floor ey)))
+                                    then ((ex, (fromIntegral (floor ey))), True)
                                     else if ey - fromIntegral (floor ey) > 0.8
-                                          then (ex, (fromIntegral (ceiling ey)))
-                                          else (ex, ey)
+                                          then ((ex, (fromIntegral (ceiling ey))), True)
+                                          else ((ex, ey) , False)                            -- wordt de hele tijd aangeroepen
             upOrDown    | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (enemypos, DirUp)
                         | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (enemypos, DirDown)
-                        | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (newEnemyPosInX, DirLeft)
-                        | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (newEnemyPosInX, DirRight)
+                        | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) && snd newEnemyPosInY = (fst newEnemyPosInY, DirLeft)
+                        | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) && snd newEnemyPosInY = (fst newEnemyPosInY, DirRight)
                         | otherwise = (enemypos, DirNone)
             leftOrRight | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (enemypos, DirLeft)
                         | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (enemypos, DirRight)
-                        | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (newEnemyPosInY, DirUp)
-                        | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (newEnemyPosInY, DirDown)
+                        | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) && snd newEnemyPosInX = (fst newEnemyPosInX, DirUp)
+                        | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) && snd newEnemyPosInX = (fst newEnemyPosInX, DirDown)
                         | otherwise = (enemypos, DirNone)
             noDir       | py - ey < -0.05 && checkNewPosition gs DirUp (ex, ey - enemyVelocity) = (enemypos, DirUp)
                         | py - ey > 0.05 && checkNewPosition gs DirDown (ex, ey + enemyVelocity) = (enemypos, DirDown)

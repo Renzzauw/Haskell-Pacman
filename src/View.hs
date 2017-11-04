@@ -37,7 +37,7 @@ drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int
-spriteSize = 40
+spriteSize = 20
 
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
 gameBackground :: Picture
