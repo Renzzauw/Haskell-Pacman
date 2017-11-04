@@ -9,9 +9,11 @@ data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
     deriving (Eq)
 data FieldType = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
     deriving (Eq)
+data EnemyType = GoToPlayer | Random
+    deriving (Eq, Enum)
 data Player = Player { playerPos :: Position, playerDir :: Direction }
     deriving (Eq)
-data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
+data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
     deriving (Eq)
 type Field = (FieldType, Position)
 type Row = [Field]
@@ -75,15 +77,16 @@ findPoints s    | null indices1 && null indices2 = []
 loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
+    rng <- newStdGen
     let rows = lines text
     let levelValues = createRowsForLevel 0 rows
     let pointList = findPoints text
     let playerPosition = findPlayerPos text
     let player = Player playerPosition DirNone
     let enemyPositions = findEnemyPos text
-    let enemies = map createEnemy enemyPositions
+    let enemies = map (createEnemy rng) enemyPositions
     return $ (levelValues, pointList, player, enemies)
-    where createEnemy pos = Enemy pos DirNone
+    where createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! (fst (randomR (0 :: Int, 1 :: Int) rng)))
 
 -- Function that creates the rows
 createFieldsForRow :: Float -> Float -> String -> Row

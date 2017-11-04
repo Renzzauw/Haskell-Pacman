@@ -93,7 +93,7 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
             newDirAndPos (enemyPos, enemyDir) = if isInvertedEnemies (puType (powerUp gstate))
                                                     then invertedDirection gstate enemyDir _playerPos enemyPos
                                                     else normalDirection gstate enemyDir _playerPos enemyPos
-            newEnemy e = Enemy (fst (newDirAndPos (enemy e))) (snd (newDirAndPos (enemy e)))
+            newEnemy e = Enemy (fst (newDirAndPos (enemy e))) (snd (newDirAndPos (enemy e))) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 movePlayer :: GameState -> GameState
@@ -137,8 +137,8 @@ moveEnemies gstate = gstate { enemies = newEnemies }
                 DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
             newEnemy e = if (checkNewEnemyPosition gstate e (newPos (fst (enemy e)) (snd (enemy e))))
-                            then Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e))
-                            else Enemy (fst (enemy e)) (snd (enemy e))
+                            then Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e)) (enemyType e)
+                            else Enemy (fst (enemy e)) (snd (enemy e)) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 checkNewPlayerPosition :: GameState -> Position -> Bool

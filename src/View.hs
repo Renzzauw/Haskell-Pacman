@@ -83,28 +83,52 @@ pacmanSprites :: [Picture]
 pacmanSprites = [scalePicture (png "Images/Pacman1.png"), scalePicture (png "Images/Pacman2.png"), scalePicture (png "Images/Pacman3.png"), scalePicture (png "Images/Pacman2.png")]
 
 redGhostMovingUp :: [Picture]
-redGhostMovingUp = [scalePicture (png "Images/RedGhostUp1.png"), scalePicture (png "Images/RedGhostUp2.png")]
+redGhostMovingUp = [scalePicture (png "Images/Ghosts/RedGhostUp1.png"), scalePicture (png "Images/Ghosts/RedGhostUp2.png")]
 
 redGhostMovingDown :: [Picture]
-redGhostMovingDown = [scalePicture (png "Images/RedGhostDown1.png"), scalePicture (png "Images/RedGhostDown2.png")]
+redGhostMovingDown = [scalePicture (png "Images/Ghosts/RedGhostDown1.png"), scalePicture (png "Images/Ghosts/RedGhostDown2.png")]
 
 redGhostMovingLeft :: [Picture]
-redGhostMovingLeft = [scalePicture (png "Images/RedGhostLeft1.png"), scalePicture (png "Images/RedGhostLeft2.png")]
+redGhostMovingLeft = [scalePicture (png "Images/Ghosts/RedGhostLeft1.png"), scalePicture (png "Images/Ghosts/RedGhostLeft2.png")]
 
 redGhostMovingRight :: [Picture]
-redGhostMovingRight = [scalePicture (png "Images/RedGhostRight1.png"), scalePicture (png "Images/RedGhostRight2.png")]
+redGhostMovingRight = [scalePicture (png "Images/Ghosts/RedGhostRight1.png"), scalePicture (png "Images/Ghosts/RedGhostRight2.png")]
 
 redGhostUp :: Picture
-redGhostUp = scalePicture (png "Images/RedGhostUp1.png")
+redGhostUp = scalePicture (png "Images/Ghosts/RedGhostUp1.png")
 
 redGhostDown :: Picture
-redGhostDown = scalePicture (png "Images/RedGhostDown1.png")
+redGhostDown = scalePicture (png "Images/Ghosts/RedGhostDown1.png")
 
 redGhostLeft :: Picture
-redGhostLeft = scalePicture (png "Images/RedGhostLeft1.png")
+redGhostLeft = scalePicture (png "Images/Ghosts/RedGhostLeft1.png")
 
 redGhostRight :: Picture
-redGhostRight = scalePicture (png "Images/RedGhostRight1.png")
+redGhostRight = scalePicture (png "Images/Ghosts/RedGhostRight1.png")
+
+blueGhostMovingUp :: [Picture]
+blueGhostMovingUp = [scalePicture (png "Images/Ghosts/BluedGhostUp1.png"), scalePicture (png "Images/Ghosts/BlueGhostUp2.png")]
+
+blueGhostMovingDown :: [Picture]
+blueGhostMovingDown = [scalePicture (png "Images/Ghosts/BlueGhostDown1.png"), scalePicture (png "Images/Ghosts/BlueGhostDown2.png")]
+
+blueGhostMovingLeft :: [Picture]
+blueGhostMovingLeft = [scalePicture (png "Images/Ghosts/BlueGhostLeft1.png"), scalePicture (png "Images/Ghosts/BlueGhostLeft2.png")]
+
+blueGhostMovingRight :: [Picture]
+blueGhostMovingRight = [scalePicture (png "Images/Ghosts/BlueGhostRight1.png"), scalePicture (png "Images/Ghosts/BlueGhostRight2.png")]
+
+blueGhostUp :: Picture
+blueGhostUp = scalePicture (png "Images/Ghosts/BlueGhostUp1.png")
+
+blueGhostDown :: Picture
+blueGhostDown = scalePicture (png "Images/Ghosts/BlueGhostDown1.png")
+
+blueGhostLeft :: Picture
+blueGhostLeft = scalePicture (png "Images/Ghosts/BlueGhostLeft1.png")
+
+blueGhostRight :: Picture
+blueGhostRight = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
 
 pacman :: Picture
 pacman = scalePicture (png "Images/new/Pacman.png") 
@@ -174,12 +198,16 @@ drawPoints gstate = pictures (map drawPoint (map fst usedPoints))
 drawEnemies :: GameState -> Picture
 drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
     where   _enemies = enemies gstate
-            enemy e = (enemyPos e, enemyDir e)
-            usedSprite dir  | dir == DirUp = redGhostUp
-                            | dir == DirDown = redGhostDown
-                            | dir == DirLeft = redGhostLeft
-                            | otherwise = redGhostRight
-            drawSprite ((x, y), dir) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir)
+            enemy e = (enemyPos e, enemyDir e, enemyType e)
+            usedSprite dir eType    | dir == DirUp && eType == GoToPlayer = redGhostUp
+                                    | dir == DirDown && eType == GoToPlayer = redGhostDown
+                                    | dir == DirLeft && eType == GoToPlayer = redGhostLeft
+                                    | dir == DirRight && eType == GoToPlayer = redGhostRight
+                                    | dir == DirUp && eType == Random = blueGhostUp
+                                    | dir == DirDown && eType == Random = blueGhostDown
+                                    | dir == DirLeft && eType == Random = blueGhostLeft
+                                    | otherwise = blueGhostRight
+            drawSprite ((x, y), dir, eType) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir eType)
 
 -- Function that draws the available powerups
 drawPowerUps :: GameState -> Picture
