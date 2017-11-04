@@ -111,7 +111,7 @@ input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = MainMenu
-inputKey (EventKey (Char 'h') Down _ _) MainMenu = ControlsScreen
+inputKey (EventKey (Char 'c') Down _ _) (LevelChooser _) = ControlsScreen
 inputKey (EventKey (Char 'h') Down _ _) (LevelChooser _) = HelpScreen
 inputKey (EventKey (Char 'p') Down _ _) gstate
     | isPlaying gstate = pauseGame gstate
