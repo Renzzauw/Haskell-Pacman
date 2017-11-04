@@ -19,6 +19,7 @@ step _ gstate@MainMenu = return $ gstate
 step _ gstate@(WonScreen _) = return $ gstate
 step _ gstate@(DiedScreen _) = return $ gstate
 step _ gstate@(LevelChooser _) = return $ gstate
+step _ gstate@HelpScreen = return $ gstate
 step _ gstate   | isPaused gstate = return $ gstate
                 | otherwise = if levelComplete (pointList gstate)
                                 then return $ WonScreen (score gstate)
@@ -107,14 +108,15 @@ checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointL
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEnter) Down _ _) MainMenu = levelChooserState
-input (EventKey (Char c) Down _ _) (LevelChooser levelList) = if isDigit c && length levelList >= number
-                                                                then initialState (levelList !! (number - 1))
-                                                                else levelChooserState
-                                                            where   number = digitToInt c
+input e@(EventKey (Char c) Down _ _) gstate@(LevelChooser levelList) = if isDigit c && length levelList >= number
+                                                                            then initialState (levelList !! (number - 1))
+                                                                            else return (inputKey e gstate)
+                                                                 where   number = digitToInt c
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = MainMenu
+inputKey (EventKey (Char 'h') Down _ _) (LevelChooser _) = HelpScreen
 inputKey (EventKey (Char 'p') Down _ _) gstate
     | isPlaying gstate = pauseGame gstate
     | otherwise = unPauseGame gstate
