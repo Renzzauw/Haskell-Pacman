@@ -114,6 +114,7 @@ input (EventKey (Char c) Down _ _) (LevelChooser levelList) = if isDigit c && le
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = MainMenu
 inputKey (EventKey (Char 'p') Down _ _) gstate
     | isPlaying gstate = pauseGame gstate
     | otherwise = unPauseGame gstate
