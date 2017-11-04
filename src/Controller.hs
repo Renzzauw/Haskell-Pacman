@@ -90,10 +90,10 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e)
             _playerPos = playerPos (player gstate)
-            newDirAndPos (enemyPos, enemyDir) = if isInvertedEnemies (puType (powerUp gstate))
-                                                    then invertedDirection gstate enemyDir _playerPos enemyPos
-                                                    else normalDirection gstate enemyDir _playerPos enemyPos
-            newEnemy e = Enemy (fst (newDirAndPos (enemy e))) (snd (newDirAndPos (enemy e))) (enemyType e)
+            newDirAndPos (enemyPos, enemyDir) enemyType = if isInvertedEnemies (puType (powerUp gstate))
+                                                                then invertedDirection gstate enemyDir _playerPos enemyPos
+                                                                else normalDirection gstate enemyDir _playerPos enemyPos enemyType
+            newEnemy e = Enemy (fst (newDirAndPos (enemy e) (enemyType e))) (snd (newDirAndPos (enemy e) (enemyType e))) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 movePlayer :: GameState -> GameState
