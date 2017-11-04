@@ -4,6 +4,8 @@ module Model where
   
 import Level 
 
+import System.Random
+
 -- Data type for each state the game is currently in
 data GameState = 
       PlayingLevel {
@@ -14,7 +16,8 @@ data GameState =
           enemies :: [Enemy],
           powerUp :: PowerUp,
           availablePowerUps :: [PowerUp],
-          passedTime :: Float } 
+          passedTime :: Float,
+          rng :: StdGen } 
       | MainMenu 
       | LevelChooser {
           levels :: [FilePath] }
@@ -30,29 +33,32 @@ data GameState =
           enemies :: [Enemy],
           powerUp :: PowerUp,
           availablePowerUps :: [PowerUp],
-          passedTime :: Float }
+          passedTime :: Float,
+          rng :: StdGen }
       | HelpScreen
       | ControlsScreen
         deriving (Eq)
 
-data PowerUp = 
-    SpeedUp { 
-        duration :: Float,
-        position :: Position }
-    | Invincible {
-        duration :: Float,
-        position :: Position }
-    | InvertedEnemies {
-        duration :: Float,
-        position :: Position }
-    | NoPowerUp
+data PowerUp = PowerUp { 
+    puType :: PowerUpType, 
+    duration :: Float, 
+    position :: Position }
         deriving (Eq)
-        
+    
+data PowerUpType = SpeedUp | Invincible | InvertedEnemies | NoPowerUp
+    deriving (Eq, Enum)
+   
+instance Eq StdGen where
+        a == b = False
+        a /= b = True
+    
 initialState :: FilePath -> IO GameState
 initialState filePath = do
     (level, points, player, enemies) <- loadLevel ("Levels/" ++ filePath)
-    let state = PlayingLevel 0 level player points enemies NoPowerUp [InvertedEnemies 5 (18, 24)] 0
+    rng <- newStdGen
+    let state = PlayingLevel 0 level player points enemies powerUp [] 0 rng
     return $ state
+    where   powerUp = PowerUp NoPowerUp 0 (0, 0)
 
 levelChooserState :: IO GameState
 levelChooserState = do

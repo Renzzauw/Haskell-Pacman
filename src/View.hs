@@ -18,7 +18,7 @@ viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate--translate (-400) 0 (color green (text "LevelChooser"))
-viewPure (Paused _ _ _ _ _ _ _ _) = pauseScreen
+viewPure (Paused _ _ _ _ _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
 viewPure ControlsScreen = controlsScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
@@ -118,6 +118,15 @@ bigPointTile = scalePicture (png "Images/new/BigPointTile.png")
 emptyTile :: Picture
 emptyTile = scalePicture (png "Images/Empty.png")
 
+speedUpPowerUp :: Picture
+speedUpPowerUp = scalePicture (png "Images/Pacman1.png")
+
+invertedEnemiesPowerUp :: Picture
+invertedEnemiesPowerUp = scalePicture (png "Images/Pacman2.png")
+
+invinciblePowerUp :: Picture
+invinciblePowerUp = scalePicture (png "Images/Pacman3.png")
+
 -- #############################################################################################################################################################################
 
 -- Function that scales sprites 
@@ -134,7 +143,7 @@ drawLevel gstate = translatedLevel
             levelWidth = length (head _level)
             levelHeight = length _level
             totalLevel = pictures ((map pictures ((map . map) drawTile _level)))
-            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : [drawPacman gstate])
+            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : drawPowerUps gstate : [drawPacman gstate])
             translatedLevel = pictures [gameBackground, (translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints)]
 
 -- Function that draws tiles
@@ -168,6 +177,16 @@ drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
                             | dir == DirLeft = redGhostLeft
                             | otherwise = redGhostRight
             drawSprite ((x, y), dir) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir)
+
+drawPowerUps :: GameState -> Picture
+drawPowerUps gstate = pictures (map drawPowerUp powerUps)
+    where   powerUps = availablePowerUps gstate
+            sprite x = case x of
+                SpeedUp         -> speedUpPowerUp
+                InvertedEnemies -> invertedEnemiesPowerUp
+                Invincible      -> invinciblePowerUp
+                _               -> emptyTile
+            drawPowerUp powerUp = translate (fst (position powerUp) * (fromIntegral spriteSize)) (-snd (position powerUp) * fromIntegral spriteSize) (sprite (puType powerUp))
 
 -- Function that calculates the rotation of the player sprite with a given direction he should move into
 calculateRotation :: Direction -> Float
