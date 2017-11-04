@@ -130,8 +130,8 @@ blueGhostLeft = scalePicture (png "Images/Ghosts/BlueGhostLeft1.png")
 blueGhostRight :: Picture
 blueGhostRight = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
 
-pacman :: Picture
-pacman = scalePicture (png "Images/new/Pacman.png") 
+pacmanseq :: [Picture]
+pacmanseq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
 
 wallTile :: Picture
 wallTile = scalePicture (png "Images/new/WallTile.png")
@@ -181,10 +181,20 @@ drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos *
 -- Function that draws the player
 drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
-    where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) pacman
+    where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (giveCurrentPacman (frame gstate))
             translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             levelHeight = length (level gstate)
+            currframe   = frame gstate
+
+-- Function that gives the proper animation frame of the pacman sprite sequence           
+giveCurrentPacman :: Int -> Picture
+giveCurrentPacman framenumber | framediv == 0 = pacmanseq !! 0
+                              | framediv == 1 = pacmanseq !! 1
+                              | framediv == 2 = pacmanseq !! 2
+                              | framediv == 3 = pacmanseq !! 3
+                              | otherwise     = pacmanseq !! 0
+                            where framediv = framenumber `div` 10
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
