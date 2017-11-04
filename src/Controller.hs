@@ -11,13 +11,14 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Data.List
 import Data.Maybe
+import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step _ gstate@MainMenu = return $ gstate
 step _ gstate@(WonScreen _) = return $ gstate
 step _ gstate@(DiedScreen _) = return $ gstate
-step _ gstate@LevelChooser = return $ gstate
+step _ gstate@(LevelChooser _) = return $ gstate
 step _ gstate   | isPaused gstate = return $ gstate
                 | otherwise = if levelComplete (pointList gstate)
                                 then return $ WonScreen (score gstate)
@@ -105,7 +106,11 @@ checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointL
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
-input (EventKey (SpecialKey KeyEnter) Down _ _) MainMenu = initialState
+input (EventKey (SpecialKey KeyEnter) Down _ _) MainMenu = levelChooserState
+input (EventKey (Char c) Down _ _) (LevelChooser levelList) = if isDigit c && length levelList >= number
+                                                                then initialState (levelList !! (number - 1))
+                                                                else levelChooserState
+                                                            where   number = digitToInt c
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState

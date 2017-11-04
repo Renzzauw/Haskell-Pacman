@@ -98,6 +98,7 @@ createRowsForLevel y (i:is) = createFieldsForRow 0 y i : createRowsForLevel (suc
 -- Function that gets all the level files from the levels folder
 getLevels :: IO [FilePath]
 getLevels = do
-            files <- getDirectoryContents "../Levels"
-            let levels = filter (isInfixOf ".txt") files
-            return $ sort levels
+            files <- getDirectoryContents "Levels"
+            let levels1 = filter (isInfixOf ".txt") files
+            let levels2 = take 9 levels1
+            return $ sort levels2

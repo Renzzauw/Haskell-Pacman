@@ -13,7 +13,8 @@ data GameState =
           pointList :: Points,
           enemies :: [Enemy] } 
       | MainMenu 
-      | LevelChooser 
+      | LevelChooser {
+          levels :: [FilePath] }
       | DiedScreen {
           score :: Int }
       | WonScreen {
@@ -26,10 +27,16 @@ data GameState =
           enemies :: [Enemy] }
         deriving (Eq)
       
-initialState :: IO GameState
-initialState = do
-    (level, points, player, enemies) <- loadLevel "Levels/Level02.txt"
+initialState :: FilePath -> IO GameState
+initialState filePath = do
+    (level, points, player, enemies) <- loadLevel ("Levels/" ++ filePath)
     let state = PlayingLevel 0 level player points enemies
+    return $ state
+
+levelChooserState :: IO GameState
+levelChooserState = do
+    _levels <- getLevels
+    let state = LevelChooser _levels
     return $ state
 
 playerVelocity :: Float

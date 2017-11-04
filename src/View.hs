@@ -15,9 +15,9 @@ view = return . viewPure
 -- Show the right screen with the given GameState
 viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
-viewPure (WonScreen score) = drawWonScreen (WonScreen score)
-viewPure (DiedScreen score) = drawDiedScreen (DiedScreen score)
-viewPure LevelChooser = translate (-400) 0 (color green (text "LevelChooser"))
+viewPure gstate@(WonScreen _) = drawWonScreen gstate
+viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
+viewPure gstate@(LevelChooser _) = drawLevelChooser gstate--translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = pauseScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 
@@ -34,6 +34,19 @@ drawWonScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7
 drawDiedScreen :: GameState -> Picture
 drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                 where _score = score gs
+
+drawLevelChooser :: GameState -> Picture
+drawLevelChooser gs = translate (-600) (-fromIntegral amountOfLevels * 35 - 45) (pictures (translateLoadLevelText amountOfLevels (map createPicture numbers)))
+    where   list = levels gs
+            amountOfLevels = length list
+            numbers = [1..amountOfLevels]
+            createText number = "Press \'" ++ show number ++ "\' to load " ++ list !! (number - 1)
+            createPicture n = scale 0.4 0.4 (color green (text (createText n)))
+
+translateLoadLevelText :: Int -> [Picture] -> [Picture]
+translateLoadLevelText 0 p = p
+translateLoadLevelText _ [] = []
+translateLoadLevelText n (p:ps) = translate 0 (70 * fromIntegral n) p : translateLoadLevelText (n - 1) ps
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int
