@@ -17,7 +17,7 @@ viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
-viewPure gstate@(LevelChooser _) = drawLevelChooser gstate--translate (-400) 0 (color green (text "LevelChooser"))
+viewPure gstate@(LevelChooser _) = drawLevelChooser gstate
 viewPure (Paused _ _ _ _ _ _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
 viewPure ControlsScreen = controlsScreen
@@ -28,15 +28,17 @@ drawScore :: GameState -> Picture
 drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: " ++ show _score))))
            where _score = score gs
 
- -- Draw the proper text when the player completes the level          
+-- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
 drawWonScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color green (text "Congratulations!"))), translate (-300) (-100) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                  where _score = score gs
 
+-- Draw the proper text when the player dies
 drawDiedScreen :: GameState -> Picture
 drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                 where _score = score gs
 
+-- Draw the proper text when the player has to choose a level
 drawLevelChooser :: GameState -> Picture
 drawLevelChooser gs = pictures (levelSelectScreen : [translate (-600) (-fromIntegral amountOfLevels * 35 - 25) (pictures (translateLoadLevelText amountOfLevels (map createPicture numbers)))])
     where   list = levels gs
@@ -45,6 +47,7 @@ drawLevelChooser gs = pictures (levelSelectScreen : [translate (-600) (-fromInte
             createText number = "Press \'" ++ show number ++ "\' to load " ++ list !! (number - 1)
             createPicture n = scale 0.4 0.4 (color green (text (createText n)))
 
+-- Translate the texts for each level the player can choose
 translateLoadLevelText :: Int -> [Picture] -> [Picture]
 translateLoadLevelText 0 p = p
 translateLoadLevelText _ [] = []
@@ -178,6 +181,7 @@ drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
                             | otherwise = redGhostRight
             drawSprite ((x, y), dir) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir)
 
+-- Function that draws the available powerups
 drawPowerUps :: GameState -> Picture
 drawPowerUps gstate = pictures (map drawPowerUp powerUps)
     where   powerUps = availablePowerUps gstate
