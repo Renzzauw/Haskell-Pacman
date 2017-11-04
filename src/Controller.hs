@@ -20,7 +20,7 @@ step secs gstate@(PlayingLevel _ _ _ _ _ _ _ _ _) = if levelComplete (pointList 
                                                     else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
                                                         then return $ DiedScreen (score updatedGameState)
                                                         else updateRNG (moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition updatedGameState))))
-                                        where   updatedGameState = checkForNewPowerUps (createNewPowerUps (updatePowerUp (updateTimeGState secs gstate)))
+                                        where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateTimeGState secs gstate))))
 step secs gstate = return $ updateTimeGState secs gstate
 
 updateTimeGState :: Float -> GameState -> GameState
@@ -33,6 +33,14 @@ updateRNG gstate = do
     let newState = gstate { rng = newRng }
     return $ newState
 
+deleteOldPowerUps :: GameState -> GameState
+deleteOldPowerUps gstate = gstate { availablePowerUps = foldr (++) [] (map checkDuration powerUps) }
+    where   secs = passedTime gstate
+            powerUps = availablePowerUps gstate
+            checkDuration pu = if duration pu > secs
+                                    then [pu]
+                                    else []
+
 createNewPowerUps :: GameState -> GameState
 createNewPowerUps gstate    | chance < 0.005 && field /= WallField && elem newPowerUp (availablePowerUps gstate) == False = gstate { availablePowerUps = availablePowerUps gstate ++ [newPowerUp] }
                             | otherwise = gstate
@@ -41,7 +49,7 @@ createNewPowerUps gstate    | chance < 0.005 && field /= WallField && elem newPo
             (powerUp, random3) = randomR (1 :: Int, 3 :: Int) random2
             (xPos, random4) = randomR (0 :: Int, (levelWidth - 1)) random3
             (yPos, random5) = randomR (0 :: Int, (levelHeight - 1)) random4
-            (randomDuration, random6) = randomR (5 :: Float, 20 :: Float) random5
+            (randomDuration, random6) = randomR (10 :: Float, 30 :: Float) random5
             _level = level gstate
             (field, pos) = _level !! yPos !! xPos
             levelWidth = length (head _level)
@@ -59,10 +67,11 @@ updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <=
 
 checkForNewPowerUps :: GameState -> GameState
 checkForNewPowerUps gstate  | index == Nothing = gstate
-                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = secs + duration (newPowerUp (fromJust index)) }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps }
+                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps }
     where   (x, y) = playerPos (player gstate)
             _availablePowerUps = availablePowerUps gstate
             _positions = map position _availablePowerUps
+            (randomDuration, _) = randomR (5 :: Float, 20 :: Float) (rng gstate)
             index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _positions
             newPowerUp i = _availablePowerUps !! i
             secs = passedTime gstate
