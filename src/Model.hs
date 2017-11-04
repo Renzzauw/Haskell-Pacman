@@ -17,7 +17,8 @@ data GameState =
           powerUp :: PowerUp,
           availablePowerUps :: [PowerUp],
           passedTime :: Float,
-          rng :: StdGen } 
+          rng :: StdGen,
+          frame :: Int } 
       | MainMenu 
       | LevelChooser {
           levels :: [FilePath] }
@@ -34,7 +35,8 @@ data GameState =
           powerUp :: PowerUp,
           availablePowerUps :: [PowerUp],
           passedTime :: Float,
-          rng :: StdGen }
+          rng :: StdGen,
+          frame :: Int }
       | HelpScreen
       | ControlsScreen
         deriving (Eq)
@@ -56,7 +58,7 @@ initialState :: FilePath -> IO GameState
 initialState filePath = do
     (level, points, player, enemies) <- loadLevel ("Levels/" ++ filePath)
     rng <- newStdGen
-    let state = PlayingLevel 0 level player points enemies powerUp [] 0 rng
+    let state = PlayingLevel 0 level player points enemies powerUp [] 0 rng 1
     return $ state
     where   powerUp = PowerUp NoPowerUp 0 (0, 0)
 

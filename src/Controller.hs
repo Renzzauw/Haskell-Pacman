@@ -15,17 +15,25 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate@(PlayingLevel _ _ _ _ _ _ _ _ _) = if levelComplete (pointList updatedGameState)
-                                                    then return $ WonScreen (score updatedGameState)
-                                                    else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
-                                                        then return $ DiedScreen (score updatedGameState)
-                                                        else updateRNG (moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition updatedGameState))))
-                                        where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateTimeGState secs gstate))))
+step secs gstate@(PlayingLevel _ _ _ _ _ _ _ _ _ _) = if levelComplete (pointList updatedGameState)
+                                                        then return $ WonScreen (score updatedGameState)
+                                                        else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
+                                                            then return $ DiedScreen (score updatedGameState)
+                                                            else updateRNG (moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition updatedGameState))))
+                                        where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
 step secs gstate = return $ updateTimeGState secs gstate
 
 updateTimeGState :: Float -> GameState -> GameState
-updateTimeGState time gstate@(PlayingLevel _ _ _ _ _ _ _ _ _) = gstate { passedTime = (passedTime gstate + time) }
+updateTimeGState time gstate@(PlayingLevel _ _ _ _ _ _ _ _ _ _) = gstate { passedTime = (passedTime gstate + time) }
 updateTimeGState _ gstate = gstate
+
+updateFrameGState :: GameState -> GameState
+updateFrameGState gstate = gstate { frame = newFrame }
+    where   _frame = frame gstate
+            frameIncrement = _frame + 1
+            newFrame = if frameIncrement > 60
+                            then frameIncrement - 60
+                            else frameIncrement
 
 updateRNG :: GameState -> IO GameState
 updateRNG gstate = do
@@ -256,15 +264,15 @@ setPlayerDirectionToLeft gstate = if (y - fromIntegral (floor y)) < 0.2 && check
             checkLeftFieldFree x y = checkNewPlayerPosition gstate (newPlayerPos (x - 1) y)
             
 isPlaying :: GameState -> Bool
-isPlaying (PlayingLevel _ _ _ _ _ _ _ _ _) = True
+isPlaying (PlayingLevel _ _ _ _ _ _ _ _ _ _) = True
 isPlaying _ = False
 
 isPaused :: GameState -> Bool
-isPaused (Paused _ _ _ _ _ _ _ _ _) = True
+isPaused (Paused _ _ _ _ _ _ _ _ _ _) = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame gstate = Paused _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime _rng
+pauseGame gstate = Paused _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
     where   _score = score gstate
             _level = level gstate
             _player = player gstate
@@ -274,9 +282,10 @@ pauseGame gstate = Paused _score _level _player _pointList _enemies _powerUp _av
             _availablePowerUps = availablePowerUps gstate
             _passedTime = passedTime gstate
             _rng = rng gstate
+            _frame = frame gstate
 
 unPauseGame :: GameState -> GameState
-unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime _rng
+unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
     where   _score = score gstate
             _level = level gstate
             _player = player gstate
@@ -286,3 +295,4 @@ unPauseGame gstate = PlayingLevel _score _level _player _pointList _enemies _pow
             _availablePowerUps = availablePowerUps gstate
             _passedTime = passedTime gstate
             _rng = rng gstate
+            _frame = frame gstate
