@@ -37,8 +37,7 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) = case currDir of
                         | px - ex < -0.05 && checkNewPosition gs DirLeft (ex - enemyVelocity, ey) = (enemypos, DirLeft)
                         | px - ex > 0.05 && checkNewPosition gs DirRight (ex + enemyVelocity, ey) = (enemypos, DirRight)
                         | otherwise = (enemypos, DirNone)
- 
-      
+                        
 {-setPlayerDirectionToUp :: GameState -> GameState
 setPlayerDirectionToUp gstate = if (x - fromIntegral (floor x)) < 0.2 && checkUpperFieldFree (fromIntegral (floor x)) y
                                     then gstate { player = Player (newPlayerPos (fromIntegral (floor x)) y) DirUp }

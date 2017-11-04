@@ -128,7 +128,7 @@ drawPacman gstate = translatedPacman
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
-drawPoints gstate = pictures (map drawPoint usedPoints)
+drawPoints gstate = pictures (map drawPoint (map fst usedPoints))
     where   usedPoints = pointList gstate
             usedTile (x, y)     | fst (((level gstate) !! round y) !! round x) == BigPointField = bigPointTile
                                 | otherwise = pointTile

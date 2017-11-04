@@ -16,7 +16,7 @@ data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction }
 type Field = (FieldType, Position)
 type Row = [Field]
 type Level = [Row]
-type Points = [Position]
+type Points = [(Position, Bool)]
 type Position = (Float, Float)
 
 -- Function for converting a Char from the textfile to a Field
@@ -58,7 +58,7 @@ findEnemyPos s  | null indices = []
 -- Give a list of all the points that the player can collect
 findPoints :: String -> Points
 findPoints s    | null indices1 && null indices2 = []
-                | otherwise = map createPos indices
+                | otherwise = map createPoint indices
     where   rows = lines s
             levelWidth = length (head rows)
             x index = fromIntegral (index `mod` levelWidth)
@@ -68,6 +68,8 @@ findPoints s    | null indices1 && null indices2 = []
             indices = sort (indices1 ++ indices2)
             string = filter (/= '\n') s
             createPos index = (x index, y index)
+            createPoint index   | elem index indices1 = (createPos index, False)
+                                | elem index indices2 = (createPos index, True)
 
 -- Function that loads a level
 loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])

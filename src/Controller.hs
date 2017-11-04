@@ -10,6 +10,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Data.List
+import Data.Maybe
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -93,12 +94,14 @@ checkNewEnemyPosition gstate e (x, y) = case field of
                                     else (_level !! round y) !! floor x
                         
 checkCurrentPosition :: GameState -> GameState
-checkCurrentPosition gs | index /= Nothing = gs { score = newscore, pointList = (delete (fromIntegral (round x), fromIntegral (round y)) _pointlist) }
+checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointList = (delete ((fromIntegral (round x), fromIntegral (round y)), _bool index) _pointlist) }
                         | otherwise = gs
                         where (x, y)  = playerPos (player gs)
-                              index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _pointlist
+                              index = elemIndex (fromIntegral (round x), fromIntegral (round y)) (map fst _pointlist)
                               _pointlist = pointList gs 
-                              newscore   = score gs + 10
+                              newscore index    | _bool index = score gs + 25
+                                                | otherwise = score gs + 10
+                              _bool index = snd (_pointlist !! (fromJust index))
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
