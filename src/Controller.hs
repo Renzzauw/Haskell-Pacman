@@ -54,8 +54,9 @@ createNewPowerUps gstate    | chance < 0.005 && field /= WallField && elem newPo
             (field, pos) = _level !! yPos !! xPos
             levelWidth = length (head _level)
             levelHeight = length _level
-            newPowerUp = PowerUp (types !! (powerUp - 1)) randomDuration pos
+            newPowerUp = PowerUp (types !! (powerUp - 1)) (randomDuration + secs) pos
             types = init [SpeedUp ..]
+            secs = passedTime gstate
 
 updatePowerUp :: GameState -> GameState
 updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <= secs

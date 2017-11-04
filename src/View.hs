@@ -119,13 +119,13 @@ emptyTile :: Picture
 emptyTile = scalePicture (png "Images/Empty.png")
 
 speedUpPowerUp :: Picture
-speedUpPowerUp = scalePicture (png "Images/Pacman1.png")
+speedUpPowerUp = scalePicture (png "Images/New/PowerUpSpeed.png")
 
 invertedEnemiesPowerUp :: Picture
-invertedEnemiesPowerUp = scalePicture (png "Images/Pacman2.png")
+invertedEnemiesPowerUp = scalePicture (png "Images/New/PowerUpReverse.png")
 
 invinciblePowerUp :: Picture
-invinciblePowerUp = scalePicture (png "Images/Pacman3.png")
+invinciblePowerUp = scalePicture (png "Images/New/PowerUpImmune.png")
 
 -- #############################################################################################################################################################################
 
