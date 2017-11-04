@@ -105,6 +105,7 @@ checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointL
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
+input (EventKey (SpecialKey KeyEnter) Down _ _) MainMenu = initialState
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
@@ -123,6 +124,8 @@ inputKey (EventKey (Char 's') _ _ _) gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
     | isPlaying gstate && playerDir (player gstate) /= DirLeft = setPlayerDirectionToRight gstate
     | otherwise = gstate
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
 inputKey _ gstate = gstate -- Otherwise keep the same
 
 setPlayerDirectionToUp :: GameState -> GameState

@@ -26,17 +26,11 @@ data GameState =
           enemies :: [Enemy] }
         deriving (Eq)
       
-initialState :: GameState
-initialState = PlayingLevel 0 initialLevel Player { playerPos = initialPlayerPos, playerDir = DirNone} initialPointList []
-
-initialLevel :: Level
-initialLevel = undefined
-
-initialPlayerPos :: Position
-initialPlayerPos = undefined
-
-initialPointList :: Points
-initialPointList = undefined
+initialState :: IO GameState
+initialState = do
+    (level, points, player, enemies) <- loadLevel "Levels/Level02.txt"
+    let state = PlayingLevel 0 level player points enemies
+    return $ state
 
 playerVelocity :: Float
 playerVelocity = 0.04
