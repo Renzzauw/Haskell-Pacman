@@ -84,9 +84,17 @@ loadLevel filePath = do
     let playerPosition = findPlayerPos text
     let player = Player playerPosition DirNone
     let enemyPositions = findEnemyPos text
-    let enemies = map (createEnemy rng) enemyPositions
+    let amountOfEnemies = length enemyPositions
+    let rngs = createRNGs rng amountOfEnemies
+    let enemies = map (\(_rng, _pos) -> createEnemy _rng _pos) $ zip rngs enemyPositions
     return $ (levelValues, pointList, player, enemies)
-    where createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! (fst (randomR (0 :: Int, 1 :: Int) rng)))
+    where   createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! (fst (randomR (0 :: Int, 1 :: Int) rng)))
+
+-- Create multiple StdGens, one for each enemy so they are all random types
+createRNGs :: StdGen -> Int -> [StdGen]
+createRNGs _ 0 = []
+createRNGs rng n = newRNG : createRNGs newRNG (n-1)
+    where newRNG = snd (randomR (0 :: Float, 1 :: Float) rng)
 
 -- Function that creates the rows
 createFieldsForRow :: Float -> Float -> String -> Row
