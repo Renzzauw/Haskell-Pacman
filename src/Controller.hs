@@ -15,17 +15,12 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step _ gstate@MainMenu = return $ gstate
-step _ gstate@(WonScreen _) = return $ gstate
-step _ gstate@(DiedScreen _) = return $ gstate
-step _ gstate@(LevelChooser _) = return $ gstate
-step _ gstate@HelpScreen = return $ gstate
-step _ gstate   | isPaused gstate = return $ gstate
-                | otherwise = if levelComplete (pointList gstate)
-                                then return $ WonScreen (score gstate)
-                                else if isPlayerDead gstate
-                                    then return $ DiedScreen (score gstate)
-                                    else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
+step _ gstate@(PlayingLevel _ _ _ _ _) = if levelComplete (pointList gstate)
+                                            then return $ WonScreen (score gstate)
+                                            else if isPlayerDead gstate
+                                                then return $ DiedScreen (score gstate)
+                                                else return $ moveEnemies (updateEnemyDirection (movePlayer (checkCurrentPosition gstate)))
+step _ gstate = return $ gstate
                     
 updateEnemyDirection :: GameState -> GameState
 updateEnemyDirection gstate = gstate { enemies = newEnemies }
@@ -116,6 +111,7 @@ input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = MainMenu
+inputKey (EventKey (Char 'h') Down _ _) MainMenu = ControlsScreen
 inputKey (EventKey (Char 'h') Down _ _) (LevelChooser _) = HelpScreen
 inputKey (EventKey (Char 'p') Down _ _) gstate
     | isPlaying gstate = pauseGame gstate
