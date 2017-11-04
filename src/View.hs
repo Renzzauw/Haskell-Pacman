@@ -20,6 +20,7 @@ viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate--translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = drawHelpScreen
+viewPure ControlsScreen = drawControlsScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 
 -- Draw the score of the player on the screen
@@ -51,7 +52,10 @@ translateLoadLevelText _ [] = []
 translateLoadLevelText n (p:ps) = translate 0 (70 * fromIntegral n) p : translateLoadLevelText (n - 1) ps
 
 drawHelpScreen :: Picture
-drawHelpScreen = color green (text ("HALP"))
+drawHelpScreen = color green (text "HALP")
+
+drawControlsScreen :: Picture
+drawControlsScreen = color green (text "Controls")
 
 -- A fixed size for each Field, each image is scaled to this value
 spriteSize :: Int

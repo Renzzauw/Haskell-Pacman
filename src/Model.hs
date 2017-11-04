@@ -26,6 +26,7 @@ data GameState =
           pointList :: Points,
           enemies :: [Enemy] }
       | HelpScreen
+      | ControlsScreen
         deriving (Eq)
       
 initialState :: FilePath -> IO GameState
