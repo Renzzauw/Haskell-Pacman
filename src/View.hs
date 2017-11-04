@@ -20,6 +20,7 @@ viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate--translate (-400) 0 (color green (text "LevelChooser"))
 viewPure (Paused _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
+viewPure ControlsScreen = controlsScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 
 -- Draw the score of the player on the screen
@@ -37,13 +38,12 @@ drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.
                 where _score = score gs
 
 drawLevelChooser :: GameState -> Picture
-drawLevelChooser gs = pictures (helpText : [translate (-600) (-fromIntegral amountOfLevels * 35 - 25) (pictures (translateLoadLevelText amountOfLevels (map createPicture numbers)))])
+drawLevelChooser gs = pictures (levelSelectScreen : [translate (-600) (-fromIntegral amountOfLevels * 35 - 25) (pictures (translateLoadLevelText amountOfLevels (map createPicture numbers)))])
     where   list = levels gs
             amountOfLevels = length list
             numbers = [1..amountOfLevels]
             createText number = "Press \'" ++ show number ++ "\' to load " ++ list !! (number - 1)
             createPicture n = scale 0.4 0.4 (color green (text (createText n)))
-            helpText = translate (-400) (-350) (scale 0.2 0.2 (color green (text "Press \'H\' to go to the explanation for creating your own levels")))
 
 translateLoadLevelText :: Int -> [Picture] -> [Picture]
 translateLoadLevelText 0 p = p
@@ -66,6 +66,9 @@ levelTutScreen = png "Images/new/LevelTutScreen.png"
 
 controlsScreen :: Picture
 controlsScreen = png "Images/new/ControlsScreen.png"
+
+levelSelectScreen :: Picture
+levelSelectScreen = png "Images/new/LevelSelect.png"
 
 pauseScreen :: Picture
 pauseScreen = png "Images/new/PauseMenu.png"
