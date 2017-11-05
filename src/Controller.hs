@@ -15,11 +15,16 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate@(PlayingLevel _ _ _ _ _ _ _ _ _ _ _) = if levelComplete (pointList updatedGameState)
-                                                        then return $ WonScreen (score updatedGameState)
-                                                        else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
-                                                            then return $ DiedScreen (score updatedGameState)
-                                                            else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+step secs gstate@(PlayingLevel _ _ _ player2 _ _ _ _ _ _ _) | isNothing player2 = if levelComplete (pointList updatedGameState)
+                                                                                    then return $ WonScreen (score updatedGameState)
+                                                                                    else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                        then return $ DiedScreen (score updatedGameState)
+                                                                                        else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+                                                            | otherwise = if levelComplete (pointList updatedGameState)
+                                                                            then return $ Player1WonScreen (score updatedGameState)
+                                                                            else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                then return $ Player2WonScreen (score updatedGameState)
+                                                                                else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                         where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
 step secs gstate = return $ updateTimeGState secs gstate
 
@@ -40,6 +45,13 @@ updateRNG gstate = do
     newRng <- newStdGen
     let newState = gstate { rng = newRng }
     return $ newState
+
+checkPlayer2Won :: GameState -> Bool
+checkPlayer2Won gstate = checkPos
+    where   (p1x, p1y) = playerPos (player gstate)
+            (p2x, p2y) = playerPos (fromJust (player2 gstate))
+            checkPos    | abs (p1x - p2x) < 0.3 && abs (p1y - p2y) < 0.3 = True
+                        | otherwise = False
 
 deleteOldPowerUps :: GameState -> GameState
 deleteOldPowerUps gstate = gstate { availablePowerUps = foldr (++) [] (map checkDuration powerUps) }
@@ -228,6 +240,8 @@ inputKey (EventKey (SpecialKey KeyRight) _ _ _) gstate
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player1WonScreen _) = MainMenu
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player2WonScreen _) = MainMenu
 inputKey _ gstate = gstate -- Otherwise keep the same
 
 setPlayerDirectionToUp :: GameState -> Player -> GameState

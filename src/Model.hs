@@ -27,6 +27,10 @@ data GameState =
           score :: Int }
       | WonScreen {
           score :: Int }
+      | Player1WonScreen {
+          score :: Int }
+      | Player2WonScreen {
+          score :: Int }
       | Paused {
           score :: Int,
           level :: Level,

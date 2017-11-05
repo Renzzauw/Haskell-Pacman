@@ -19,6 +19,8 @@ viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
+viewPure gstate@(Player1WonScreen _) = color green (text "P1 Won")
+viewPure gstate@(Player2WonScreen _) = color green (text "P2 Won")
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate
 viewPure (Paused _ _ _ _ _ _ _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
@@ -101,14 +103,18 @@ giveCurrentPacman framenumber | framediv == 0 = pacmanseq !! 0
                               | otherwise     = pacmanseq !! 0
                             where framediv = framenumber `div` 10
 
+-- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
-drawPlayer2 gstate = translatedPacman
-        where   rotatedPacman = rotate (calculateRotation (playerDir _player2)) (redGhostMovingLeft !! 0)
-                translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
+drawPlayer2 gstate = translatedPlayer
+        where   sprite  | _dir == DirUp = greenGhostUp
+                        | _dir == DirDown = greenGhostDown
+                        | _dir == DirLeft = greenGhostLeft
+                        | otherwise = greenGhostRight
+                translatedPlayer = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) sprite 
                 (xPos, yPos) = playerPos _player2
                 levelHeight = length (level gstate)
                 _player2 = fromJust (player2 gstate)
-
+                _dir = playerDir _player2
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
@@ -261,6 +267,30 @@ invertedGhostLeft = scalePicture (png "Images/Ghosts/InvertedGhostLeft1.png")
 
 invertedGhostRight :: Picture
 invertedGhostRight = scalePicture (png "Images/Ghosts/InvertedGhostRight1.png")
+
+greenGhostMovingUp :: [Picture]
+greenGhostMovingUp = [scalePicture (png "Images/Ghosts/GreenGhostUp1.png"), scalePicture (png "Images/Ghosts/GreenGhostUp2.png")]
+
+greenGhostMovingDown :: [Picture]
+greenGhostMovingDown = [scalePicture (png "Images/Ghosts/GreenGhostDown1.png"), scalePicture (png "Images/Ghosts/GreenGhostDown2.png")]
+
+greenGhostMovingLeft :: [Picture]
+greenGhostMovingLeft = [scalePicture (png "Images/Ghosts/GreenGhostLeft1.png"), scalePicture (png "Images/Ghosts/GreenGhostLeft2.png")]
+
+greenGhostMovingRight :: [Picture]
+greenGhostMovingRight = [scalePicture (png "Images/Ghosts/GreenGhostRight1.png"), scalePicture (png "Images/Ghosts/GreenGhostRight2.png")]
+
+greenGhostUp :: Picture
+greenGhostUp = scalePicture (png "Images/Ghosts/GreenGhostUp1.png")
+
+greenGhostDown :: Picture
+greenGhostDown = scalePicture (png "Images/Ghosts/GreenGhostDown1.png")
+
+greenGhostLeft :: Picture
+greenGhostLeft = scalePicture (png "Images/Ghosts/GreenGhostLeft1.png")
+
+greenGhostRight :: Picture
+greenGhostRight = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 
 pacmanseq :: [Picture]
 pacmanseq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
