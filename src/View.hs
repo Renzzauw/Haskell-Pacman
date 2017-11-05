@@ -212,10 +212,11 @@ drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
             usedSprite dir eType    | dir == DirUp && eType == GoToPlayer = redGhostUp
                                     | dir == DirDown && eType == GoToPlayer = redGhostDown
                                     | dir == DirLeft && eType == GoToPlayer = redGhostLeft
-                                    | dir == DirRight && eType == GoToPlayer = redGhostRight
+                                    | (dir == DirRight || dir == DirNone) && eType == GoToPlayer = redGhostRight
                                     | dir == DirUp && eType == Random = blueGhostUp
                                     | dir == DirDown && eType == Random = blueGhostDown
                                     | dir == DirLeft && eType == Random = blueGhostLeft
+                                    | dir == DirRight && eType == Random = blueGhostRight
                                     | otherwise = blueGhostRight
             drawSprite ((x, y), dir, eType) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir eType)
 
