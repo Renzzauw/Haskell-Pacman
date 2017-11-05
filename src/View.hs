@@ -19,8 +19,8 @@ viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
-viewPure gstate@(Player1WonScreen _) = color green (text "P1 Won")
-viewPure gstate@(Player2WonScreen _) = color green (text "P2 Won")
+viewPure gstate@(Player1WonScreen _) = playerWins !! 0
+viewPure gstate@(Player2WonScreen _) = playerWins !! 1
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate
 viewPure (Paused _ _ _ _ _ _ _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
@@ -192,6 +192,9 @@ pauseScreen = png "Images/new/PauseMenu.png"
 
 emptyBackground :: Picture
 emptyBackground = png "Images/new/emptybg.png"
+
+playerWins :: [Picture]
+playerWins = [png "Images/new/Player1Wins.png", png "Images/new/Player2Wins.png"]
 
 pacmanSprites :: [Picture]
 pacmanSprites = [scalePicture (png "Images/Pacman1.png"), scalePicture (png "Images/Pacman2.png"), scalePicture (png "Images/Pacman3.png"), scalePicture (png "Images/Pacman2.png")]
