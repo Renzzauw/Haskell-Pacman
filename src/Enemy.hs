@@ -13,16 +13,18 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                               DirLeft     ->    leftOrRight
                               DirRight    ->    leftOrRight
                               _           ->    noDir
+                        -- firstOp is in normal situations <, when the enemies are inverted, it is >
+                        -- secondOp is in normal situations >, when the enemies are inverted, it is <
       where upOrDown    | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && currDir /= DirDown = (enemypos, DirUp)
                         | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && currDir /= DirUp = (enemypos, DirDown)
                         -- | {-deltaY `firstOp` (-0.05) && -}checkNewPosition gs DirUp upPos && currDir /= DirDown = (enemypos, DirUp)
                         -- | {-deltaY `secondOp` 0.05 && -}checkNewPosition gs DirDown downPos && currDir /= DirUp = (enemypos, DirDown)
                         -- | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
                         -- | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
-                        | deltaX `secondOp` 1 == False && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
-                        | deltaX `firstOp` (-1) == False && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
                         | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
                         | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
+                        | deltaX `secondOp` 1 && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
+                        | deltaX `firstOp` (-1) && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
                         | otherwise = {-error "upOrDown" -- -} (enemypos, currDir)
             leftOrRight | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && currDir /= DirRight = (enemypos, DirLeft)
                         | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && currDir /= DirLeft = (enemypos, DirRight)
@@ -30,16 +32,20 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                         -- | {-deltaX `secondOp` 0.05 && -}checkNewPosition gs DirRight rightPos && currDir /= DirLeft = (enemypos, DirRight)
                         -- | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
                         -- | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
-                        | deltaY `secondOp` 1 == False && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
-                        | deltaY `firstOp` (-1) == False && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
                         | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
                         | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | deltaY `secondOp` 1 && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
+                        | deltaY `firstOp` (-1) && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
                         | otherwise = {-error "leftOrRight" -- -} (enemypos, currDir)
             noDir       | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
                         | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
                         | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
                         | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
                         | otherwise = (centerPosition enemypos, DirNone)
+
+
+            -- HET GAAT NU FOUT ALS DE SPELER LINKSONDER DE ENEMY ZIT, MAAR DE ENEMY IN EEN HOEK MET LINKS EN ONDER ZICH EEN BLOKJE, DAN GLITCHT HET NOG. GELDT OOK VOOR LINKSBOVEN, RECHTSBOVEN EN RECHTSONDER NATUURLIJK
+
             upPos = (ex, ey - enemyVelocity)
             downPos = (ex, ey + enemyVelocity)
             leftPos = (ex - enemyVelocity, ey)
