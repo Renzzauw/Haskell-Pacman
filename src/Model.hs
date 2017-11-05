@@ -12,6 +12,7 @@ data GameState =
           score :: Int,
           level :: Level,
           player :: Player,
+          player2 :: Player2,
           pointList :: Points,
           enemies :: [Enemy],
           powerUp :: PowerUp,
@@ -56,9 +57,9 @@ instance Eq StdGen where
     
 initialState :: FilePath -> IO GameState
 initialState filePath = do
-    (level, points, player, enemies) <- loadLevel ("Levels/" ++ filePath)
+    (level, points, player, player2, enemies) <- loadLevel ("Levels/" ++ filePath)
     rng <- newStdGen
-    let state = PlayingLevel 0 level player points enemies powerUp [] 0 rng 1
+    let state = PlayingLevel 0 level player player2 points enemies powerUp [] 0 rng 1
     return $ state
     where   powerUp = PowerUp NoPowerUp 0 (0, 0)
 

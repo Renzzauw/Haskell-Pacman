@@ -13,6 +13,8 @@ data EnemyType = GoToPlayer | Random
     deriving (Eq, Enum)
 data Player = Player { playerPos :: Position, playerDir :: Direction }
     deriving (Eq)
+data Player2 = Player2 { player2Pos :: Position, player2Dir :: Direction }
+    deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
     deriving (Eq)
 type Field = (FieldType, Position)
@@ -46,6 +48,16 @@ findPlayerPos s | index == Nothing = error "No Player found in level"
             index = elemIndex 'P' string
             string = filter (/= '\n') s
 
+findPlayer2Pos :: String -> Maybe Position
+findPlayer2Pos s | index == Nothing = Nothing
+                 | otherwise = Just (x, y)
+    where   rows = lines s
+            levelWidth = length (head rows)
+            x = fromIntegral ((fromJust index) `mod` levelWidth)
+            y = fromIntegral ((fromJust index) `div` levelWidth)
+            index = elemIndex 'Q' string
+            string = filter (/= '\n') s
+
 -- Function that looks up the enemy startpositions in a given level
 findEnemyPos :: String -> [Position]
 findEnemyPos s  | null indices = []
@@ -75,7 +87,7 @@ findPoints s    | null indices1 && null indices2 = []
                                 | elem index indices2 = (createPos index, True)
 
 -- Function that loads a level
-loadLevel :: FilePath -> IO (Level, Points, Player, [Enemy])
+loadLevel :: FilePath -> IO (Level, Points, Player, Player2, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
     rng <- newStdGen
@@ -84,11 +96,13 @@ loadLevel filePath = do
     let pointList = findPoints text
     let playerPosition = findPlayerPos text
     let player = Player playerPosition DirNone
+    let player2Position = findPlayer2Pos text
+    let player2 = Player2 (fromJust player2Position) DirNone
     let enemyPositions = findEnemyPos text
     let amountOfEnemies = length enemyPositions
     let rngs = createRNGs rng amountOfEnemies
     let enemies = map (\(_rng, _pos) -> createEnemy _rng _pos) $ zip rngs enemyPositions
-    return $ (levelValues, pointList, player, enemies)
+    return $ (levelValues, pointList, player, player2, enemies)
     where   createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! (fst (randomR (0 :: Int, 1 :: Int) rng)))
 
 -- Create multiple StdGens, one for each enemy so they are all random types
