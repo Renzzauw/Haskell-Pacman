@@ -207,6 +207,18 @@ inputKey (EventKey (Char 's') _ _ _) gstate
 inputKey (EventKey (Char 'd') _ _ _) gstate 
     | isPlaying gstate && playerDir (player gstate) /= DirLeft = setPlayerDirectionToRight gstate
     | otherwise = gstate
+inputKey (EventKey (keyUp) _ _ _) gstate 
+    | isPlaying gstate && playerDir (player2 gstate) /= DirDown = setPlayerDirectionToUp gstate
+    | otherwise = gstate
+inputKey (EventKey (keyLeft) _ _ _) gstate 
+    | isPlaying gstate && playerDir (player2 gstate) /= DirRight = setPlayerDirectionToLeft gstate
+    | otherwise = gstate
+inputKey (EventKey (keyDown) _ _ _) gstate 
+    | isPlaying gstate && playerDir (player2 gstate) /= DirUp = setPlayerDirectionToDown gstate
+    | otherwise = gstate
+inputKey (EventKey (keyRight) _ _ _) gstate 
+    | isPlaying gstate && playerDir (player2 gstate) /= DirLeft = setPlayerDirectionToRight gstate
+    | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
 inputKey _ gstate = gstate -- Otherwise keep the same
@@ -268,14 +280,15 @@ isPlaying (PlayingLevel _ _ _ _ _ _ _ _ _ _ _) = True
 isPlaying _ = False
 
 isPaused :: GameState -> Bool
-isPaused (Paused _ _ _ _ _ _ _ _ _ _) = True
+isPaused (Paused _ _ _ _ _ _ _ _ _ _ _) = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame gstate = Paused _score _level _player _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
+pauseGame gstate = Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
     where   _score = score gstate
             _level = level gstate
             _player = player gstate
+            _player2 = player2 gstate
             _pointList = pointList gstate
             _enemies = enemies gstate
             _powerUp = powerUp gstate

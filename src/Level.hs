@@ -13,8 +13,6 @@ data EnemyType = GoToPlayer | Random
     deriving (Eq, Enum)
 data Player = Player { playerPos :: Position, playerDir :: Direction }
     deriving (Eq)
-data Player2 = Player2 { player2Pos :: Position, player2Dir :: Direction }
-    deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
     deriving (Eq)
 type Field = (FieldType, Position)
@@ -48,9 +46,9 @@ findPlayerPos s | index == Nothing = error "No Player found in level"
             index = elemIndex 'P' string
             string = filter (/= '\n') s
 
-findPlayer2Pos :: String -> Maybe Position
-findPlayer2Pos s | index == Nothing = Nothing
-                 | otherwise = Just (x, y)
+findPlayer2Pos :: String -> Position
+findPlayer2Pos s | index == Nothing = (999999,9999999)--error "No player 2 found in level"
+                 | otherwise = (x, y)
     where   rows = lines s
             levelWidth = length (head rows)
             x = fromIntegral ((fromJust index) `mod` levelWidth)
@@ -87,7 +85,7 @@ findPoints s    | null indices1 && null indices2 = []
                                 | elem index indices2 = (createPos index, True)
 
 -- Function that loads a level
-loadLevel :: FilePath -> IO (Level, Points, Player, Player2, [Enemy])
+loadLevel :: FilePath -> IO (Level, Points, Player, Player, [Enemy])
 loadLevel filePath = do
     text <- readFile filePath
     rng <- newStdGen
@@ -97,7 +95,7 @@ loadLevel filePath = do
     let playerPosition = findPlayerPos text
     let player = Player playerPosition DirNone
     let player2Position = findPlayer2Pos text
-    let player2 = Player2 (fromJust player2Position) DirNone
+    let player2 = Player player2Position DirNone
     let enemyPositions = findEnemyPos text
     let amountOfEnemies = length enemyPositions
     let rngs = createRNGs rng amountOfEnemies
