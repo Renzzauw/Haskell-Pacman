@@ -13,25 +13,43 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                               DirLeft     ->    leftOrRight
                               DirRight    ->    leftOrRight
                               _           ->    noDir
-      where upOrDown    | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos = (enemypos, DirUp)
-                        | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos = (enemypos, DirDown)
-                        | firstOp (px - ex) (-0.05) && checkNewPosition gs DirLeft leftPos && snd (newEnemyPosInY leftPos) = (fst (newEnemyPosInY leftPos), DirLeft)
-                        | secondOp (px - ex) 0.05 && checkNewPosition gs DirRight rightPos && snd (newEnemyPosInY rightPos) = (fst (newEnemyPosInY rightPos), DirRight)
-                        | otherwise = (centerPosition enemypos, DirNone)
-            leftOrRight | firstOp (px - ex) (-0.05) && checkNewPosition gs DirLeft leftPos = (enemypos, DirLeft)
-                        | secondOp (px - ex) 0.05 && checkNewPosition gs DirRight rightPos = (enemypos, DirRight)
-                        | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos && snd (newEnemyPosInX upPos) = (fst (newEnemyPosInX upPos), DirUp)
-                        | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos && snd (newEnemyPosInX downPos) = (fst (newEnemyPosInX downPos), DirDown)
-                        | otherwise = (centerPosition enemypos, DirNone)
-            noDir       | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos && snd (newEnemyPosInX upPos) = (fst (newEnemyPosInX upPos), DirUp)
-                        | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos && snd (newEnemyPosInX downPos) = (fst (newEnemyPosInX downPos), DirDown)
-                        | firstOp (px - ex) (-0.05) && checkNewPosition gs DirLeft leftPos && snd (newEnemyPosInY leftPos) = (fst (newEnemyPosInY leftPos), DirLeft)
-                        | secondOp (px - ex) 0.05 && checkNewPosition gs DirRight rightPos && snd (newEnemyPosInY rightPos) = (fst (newEnemyPosInY rightPos), DirRight)
+      where upOrDown    | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && currDir /= DirDown = (enemypos, DirUp)
+                        | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && currDir /= DirUp = (enemypos, DirDown)
+                        -- | {-deltaY `firstOp` (-0.05) && -}checkNewPosition gs DirUp upPos && currDir /= DirDown = (enemypos, DirUp)
+                        -- | {-deltaY `secondOp` 0.05 && -}checkNewPosition gs DirDown downPos && currDir /= DirUp = (enemypos, DirDown)
+                        -- | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
+                        -- | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
+                        | deltaX `secondOp` 1 == False && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
+                        | deltaX `firstOp` (-1) == False && (deltaY `firstOp` (-1) || deltaY `secondOp` 1) && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
+                        | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
+                        | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
+                        | otherwise = {-error "upOrDown" -- -} (enemypos, currDir)
+            leftOrRight | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && currDir /= DirRight = (enemypos, DirLeft)
+                        | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && currDir /= DirLeft = (enemypos, DirRight)
+                        -- | {-deltaX `firstOp` (-0.05) && -}checkNewPosition gs DirLeft leftPos && currDir /= DirRight = (enemypos, DirLeft)
+                        -- | {-deltaX `secondOp` 0.05 && -}checkNewPosition gs DirRight rightPos && currDir /= DirLeft = (enemypos, DirRight)
+                        -- | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
+                        -- | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | deltaY `secondOp` 1 == False && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
+                        | deltaY `firstOp` (-1) == False && (deltaX `firstOp` (-1) || deltaX `secondOp` 1) && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
+                        | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | otherwise = {-error "leftOrRight" -- -} (enemypos, currDir)
+            noDir       | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
+                        | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
+                        | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
                         | otherwise = (centerPosition enemypos, DirNone)
             upPos = (ex, ey - enemyVelocity)
             downPos = (ex, ey + enemyVelocity)
             leftPos = (ex - enemyVelocity, ey)
             rightPos = (ex + enemyVelocity, ey)
+            newUp = newEnemyPosInX upPos
+            newDown = newEnemyPosInX downPos
+            newLeft = newEnemyPosInY leftPos
+            newRight = newEnemyPosInY rightPos
+            deltaY = py - ey
+            deltaX = px - ex
 
 centerPosition :: Position -> Position
 centerPosition pos = fst (newEnemyPosInX (fst (newEnemyPosInY pos)))
