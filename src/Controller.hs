@@ -231,20 +231,20 @@ inputKey (EventKey (Char 'd') _ _ _) gstate
     | isPlaying gstate = setPlayerDirectionToRight gstate (player gstate)
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyUp) _ _ _) gstate 
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False && isPlaying gstate = setPlayerDirectionToUp gstate (fromJust (player2 gstate))
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True && isPlaying gstate = setPlayerDirectionToDown gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToUp gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToDown gstate (fromJust (player2 gstate))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyLeft) _ _ _) gstate 
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False && isPlaying gstate = setPlayerDirectionToLeft gstate (fromJust (player2 gstate))
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True && isPlaying gstate = setPlayerDirectionToRight gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToLeft gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToRight gstate (fromJust (player2 gstate))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyDown) _ _ _) gstate 
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False && isPlaying gstate = setPlayerDirectionToDown gstate (fromJust (player2 gstate))
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True && isPlaying gstate = setPlayerDirectionToUp gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToDown gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToUp gstate (fromJust (player2 gstate))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyRight) _ _ _) gstate 
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False && isPlaying gstate = setPlayerDirectionToRight gstate (fromJust (player2 gstate))
-    | isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True && isPlaying gstate = setPlayerDirectionToLeft gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToRight gstate (fromJust (player2 gstate))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToLeft gstate (fromJust (player2 gstate))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu

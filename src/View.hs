@@ -19,8 +19,8 @@ viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
-viewPure gstate@(Player1WonScreen _) = playerWins !! 0
-viewPure gstate@(Player2WonScreen _) = playerWins !! 1
+viewPure (Player1WonScreen _) = playerWins !! 0
+viewPure (Player2WonScreen _) = playerWins !! 1
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate
 viewPure (Paused _ _ _ _ _ _ _ _ _ _ _) = pauseScreen
 viewPure HelpScreen = levelTutScreen
