@@ -7,7 +7,7 @@ import Data.List
 
 data Direction = DirUp | DirDown | DirLeft | DirRight | DirNone
     deriving (Eq)
-data FieldType = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField
+data FieldType = PlayerField | WallField | PointField | BigPointField | EnemyField | EmptyField | Player2Field
     deriving (Eq)
 data EnemyType = GoToPlayer | Random
     deriving (Eq, Enum)
@@ -28,6 +28,7 @@ textToField 'W' = WallField
 textToField '.' = PointField
 textToField '*' = BigPointField
 textToField 'E' = EnemyField
+textToField 'Q' = Player2Field
 textToField ' ' = EmptyField
 
 -- Function that checks if all points have been picked up, if so the player has completed the level
