@@ -23,10 +23,10 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                         | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos && snd (newEnemyPosInX upPos) = (fst (newEnemyPosInX upPos), DirUp)
                         | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos && snd (newEnemyPosInX downPos) = (fst (newEnemyPosInX downPos), DirDown)
                         | otherwise = (enemypos, DirNone)
-            noDir       | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos = (enemypos, DirUp)
-                        | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos = (enemypos, DirDown)
-                        | firstOp (px - ex) (-0.05) && checkNewPosition gs DirLeft leftPos = (enemypos, DirLeft)
-                        | secondOp (px - ex) 0.05 && checkNewPosition gs DirRight rightPos = (enemypos, DirRight)
+            noDir       | firstOp (py - ey) (-0.05) && checkNewPosition gs DirUp upPos && snd (newEnemyPosInX upPos) = (fst (newEnemyPosInX upPos), DirUp)
+                        | secondOp (py - ey) 0.05 && checkNewPosition gs DirDown downPos && snd (newEnemyPosInX downPos) = (fst (newEnemyPosInX downPos), DirDown)
+                        | firstOp (px - ex) (-0.05) && checkNewPosition gs DirLeft leftPos && snd (newEnemyPosInY leftPos) = (fst (newEnemyPosInY leftPos), DirLeft)
+                        | secondOp (px - ex) 0.05 && checkNewPosition gs DirRight rightPos && snd (newEnemyPosInY rightPos) = (fst (newEnemyPosInY rightPos), DirRight)
                         | otherwise = (enemypos, DirNone)
             upPos = (ex, ey - enemyVelocity)
             downPos = (ex, ey + enemyVelocity)
@@ -91,8 +91,8 @@ checkNewPosition gstate dir (x, y) = case field of
                               else if dir == DirDown
                                     then (_level !! ceiling y) !! round x
                                     else if dir == DirRight
-                                    then (_level !! round y) !! ceiling x
-                                    else (_level !! round y) !! floor x 
+                                          then (_level !! round y) !! ceiling x
+                                          else (_level !! round y) !! floor x 
 
 -- Function that checks if the Enemy is on the same position as the player                                              
 isPlayerDead :: GameState -> Bool

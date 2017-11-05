@@ -106,7 +106,11 @@ giveCurrentPacman framenumber | framediv == 0 = pacmanseq !! 0
 -- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
 drawPlayer2 gstate = translatedPlayer
-        where   sprite  | _dir == DirUp = greenGhostUp
+        where   sprite  | _powerUp == InvertedEnemies && _dir == DirUp = invertedGhostUp
+                        | _powerUp == InvertedEnemies && _dir == DirDown = invertedGhostDown
+                        | _powerUp == InvertedEnemies && _dir == DirLeft = invertedGhostLeft
+                        | _powerUp == InvertedEnemies = invertedGhostRight
+                        | _dir == DirUp = greenGhostUp
                         | _dir == DirDown = greenGhostDown
                         | _dir == DirLeft = greenGhostLeft
                         | otherwise = greenGhostRight
@@ -115,6 +119,7 @@ drawPlayer2 gstate = translatedPlayer
                 levelHeight = length (level gstate)
                 _player2 = fromJust (player2 gstate)
                 _dir = playerDir _player2
+                _powerUp = puType (powerUp gstate)
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
