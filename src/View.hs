@@ -34,7 +34,7 @@ drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: 
 
 -- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
-drawWonScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color green (text "Player 1 won!"))), translate (-300) (-100) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
+drawWonScreen gs = pictures [playerWins !! 0, translate (-300) (-120) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                  where _score = score gs
 
 -- Draw the proper text when the player dies
