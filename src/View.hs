@@ -107,7 +107,7 @@ redGhostRight :: Picture
 redGhostRight = scalePicture (png "Images/Ghosts/RedGhostRight1.png")
 
 blueGhostMovingUp :: [Picture]
-blueGhostMovingUp = [scalePicture (png "Images/Ghosts/BluedGhostUp1.png"), scalePicture (png "Images/Ghosts/BlueGhostUp2.png")]
+blueGhostMovingUp = [scalePicture (png "Images/Ghosts/BlueGhostUp1.png"), scalePicture (png "Images/Ghosts/BlueGhostUp2.png")]
 
 blueGhostMovingDown :: [Picture]
 blueGhostMovingDown = [scalePicture (png "Images/Ghosts/BlueGhostDown1.png"), scalePicture (png "Images/Ghosts/BlueGhostDown2.png")]
@@ -129,6 +129,30 @@ blueGhostLeft = scalePicture (png "Images/Ghosts/BlueGhostLeft1.png")
 
 blueGhostRight :: Picture
 blueGhostRight = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
+
+invertedGhostMovingUp :: [Picture]
+invertedGhostMovingUp = [scalePicture (png "Images/Ghosts/InvertedGhostUp1.png"), scalePicture (png "Images/Ghosts/InvertedGhostUp2.png")]
+
+invertedGhostMovingDown :: [Picture]
+invertedGhostMovingDown = [scalePicture (png "Images/Ghosts/InvertedGhostDown1.png"), scalePicture (png "Images/Ghosts/InvertedGhostDown2.png")]
+
+invertedGhostMovingLeft :: [Picture]
+invertedGhostMovingLeft = [scalePicture (png "Images/Ghosts/InvertedGhostLeft1.png"), scalePicture (png "Images/Ghosts/InvertedGhostLeft2.png")]
+
+invertedGhostMovingRight :: [Picture]
+invertedGhostMovingRight = [scalePicture (png "Images/Ghosts/InvertedGhostRight1.png"), scalePicture (png "Images/Ghosts/InvertedGhostRight2.png")]
+
+invertedGhostUp :: Picture
+invertedGhostUp = scalePicture (png "Images/Ghosts/InvertedGhostUp1.png")
+
+invertedGhostDown :: Picture
+invertedGhostDown = scalePicture (png "Images/Ghosts/InvertedGhostDown1.png")
+
+invertedGhostLeft :: Picture
+invertedGhostLeft = scalePicture (png "Images/Ghosts/InvertedGhostLeft1.png")
+
+invertedGhostRight :: Picture
+invertedGhostRight = scalePicture (png "Images/Ghosts/InvertedGhostRight1.png")
 
 pacmanseq :: [Picture]
 pacmanseq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
@@ -207,17 +231,29 @@ drawPoints gstate = pictures (map drawPoint (map fst usedPoints))
 -- Function that draws the ghosts
 drawEnemies :: GameState -> Picture
 drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
-    where   _enemies = enemies gstate
+    where   _powerUp = puType (powerUp gstate)
+            _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e, enemyType e)
-            usedSprite dir eType    | dir == DirUp && eType == GoToPlayer = redGhostUp
-                                    | dir == DirDown && eType == GoToPlayer = redGhostDown
-                                    | dir == DirLeft && eType == GoToPlayer = redGhostLeft
-                                    | (dir == DirRight || dir == DirNone) && eType == GoToPlayer = redGhostRight
-                                    | dir == DirUp && eType == Random = blueGhostUp
-                                    | dir == DirDown && eType == Random = blueGhostDown
-                                    | dir == DirLeft && eType == Random = blueGhostLeft
-                                    | dir == DirRight && eType == Random = blueGhostRight
-                                    | otherwise = blueGhostRight
+            usedSprite dir eType    | dir == DirUp = if _powerUp == InvertedEnemies
+                                                        then invertedGhostUp
+                                                        else if eType == GoToPlayer
+                                                                then redGhostUp
+                                                                else blueGhostUp
+                                    | dir == DirDown = if _powerUp == InvertedEnemies
+                                                        then invertedGhostDown
+                                                        else if eType == GoToPlayer
+                                                                then redGhostDown
+                                                                else blueGhostDown
+                                    | dir == DirLeft = if _powerUp == InvertedEnemies
+                                                        then invertedGhostLeft
+                                                        else if eType == GoToPlayer
+                                                                then redGhostLeft
+                                                                else blueGhostLeft
+                                    | otherwise = if _powerUp == InvertedEnemies
+                                                    then invertedGhostRight
+                                                    else if eType == GoToPlayer
+                                                            then redGhostRight
+                                                            else blueGhostRight
             drawSprite ((x, y), dir, eType) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir eType)
 
 -- Function that draws the available powerups
