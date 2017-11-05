@@ -8,6 +8,8 @@ import Graphics.Gloss.Game
 import Model
 import Level
 
+import Data.Maybe
+
 -- Draw loop fro drawing images on the game window
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -71,7 +73,9 @@ drawLevel gstate = translatedLevel
             levelWidth = length (head _level)
             levelHeight = length _level
             totalLevel = pictures ((map pictures ((map . map) drawTile _level)))
-            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : drawPowerUps gstate : (drawPlayer2 gstate) : [drawPacman gstate])
+            startList   | isNothing (player2 gstate) = []
+                        | otherwise = [drawPlayer2 gstate]
+            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : drawPowerUps gstate : drawPacman gstate : startList)
             translatedLevel = pictures [gameBackground, (translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints)]
 
 -- Function that draws tiles
@@ -99,10 +103,11 @@ giveCurrentPacman framenumber | framediv == 0 = pacmanseq !! 0
 
 drawPlayer2 :: GameState -> Picture
 drawPlayer2 gstate = translatedPacman
-        where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (redGhostMovingLeft !! 0)
+        where   rotatedPacman = rotate (calculateRotation (playerDir _player2)) (redGhostMovingLeft !! 0)
                 translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
-                (xPos, yPos) = playerPos (player2 gstate)
+                (xPos, yPos) = playerPos _player2
                 levelHeight = length (level gstate)
+                _player2 = fromJust (player2 gstate)
 
 
 -- Function that draws collectable points
