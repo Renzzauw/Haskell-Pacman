@@ -88,20 +88,11 @@ drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos *
 -- Function that draws the player
 drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
-    where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (giveCurrentPacman (frame gstate))
+    where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (calculateAnimationFrame currframe 2 pacmanseq)
             translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             levelHeight = length (level gstate)
             currframe   = frame gstate
-
--- Function that gives the proper animation frame of the pacman sprite sequence           
-giveCurrentPacman :: Int -> Picture
-giveCurrentPacman framenumber | framediv == 0 = pacmanseq !! 0
-                              | framediv == 1 = pacmanseq !! 1
-                              | framediv == 2 = pacmanseq !! 2
-                              | framediv == 3 = pacmanseq !! 3
-                              | otherwise     = pacmanseq !! 0
-                            where framediv = framenumber `div` 10
 
 -- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
@@ -174,6 +165,13 @@ calculateRotation DirUp = 270
 calculateRotation DirLeft = 180
 calculateRotation DirDown = 90
 calculateRotation _ = 0
+
+-- Function that gives the current frame of an animation from a list based on the amount of cycles per second and the current frame
+calculateAnimationFrame :: Int -> Int -> [Picture] -> Picture
+calculateAnimationFrame frame cycles list = list !! usedIndex
+    where   index = (frame * _length * cycles) `div` 60
+            usedIndex = index `mod` _length
+            _length = length list
 
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
 
