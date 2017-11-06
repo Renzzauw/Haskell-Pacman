@@ -104,7 +104,7 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
             _playerPos = playerPos (player gstate)
             newDirAndPos (enemyPos, enemyDir) enemyType = if isInvertedEnemies (puType (powerUp gstate))
                                                                 then invertedDirection gstate enemyDir _playerPos enemyPos
-                                                                else normalDirection gstate enemyDir _playerPos enemyPos enemyType
+                                                                else normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) enemyDir _playerPos enemyPos enemyType
             newEnemy e = Enemy (fst (newDirAndPos (enemy e) (enemyType e))) (snd (newDirAndPos (enemy e) (enemyType e))) (enemyType e)
             newEnemies = map newEnemy _enemies
 
