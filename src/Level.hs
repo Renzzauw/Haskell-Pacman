@@ -29,7 +29,7 @@ textToField '.' = PointField
 textToField '*' = BigPointField
 textToField 'E' = EnemyField
 textToField 'Q' = Player2Field
-textToField ' ' = EmptyField
+textToField _ = EmptyField
 
 -- Function that checks if all points have been picked up, if so the player has completed the level
 levelComplete :: Points -> Bool
