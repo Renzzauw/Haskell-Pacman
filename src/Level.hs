@@ -36,22 +36,22 @@ levelComplete = null
 
 -- Function that looks up the player startposition in a given level
 findPlayerPos :: String -> Position
-findPlayerPos s | index == Nothing = error "No Player found in level"
+findPlayerPos s | isNothing index = error "No Player found in level"
                 | otherwise = (x, y)
     where   rows = lines s
             levelWidth = length (head rows)
-            x = fromIntegral ((fromJust index) `mod` levelWidth)
-            y = fromIntegral ((fromJust index) `div` levelWidth)
+            x = fromIntegral (fromJust index `mod` levelWidth)
+            y = fromIntegral (fromJust index `div` levelWidth)
             index = elemIndex 'P' string
             string = filter (/= '\n') s
 
 findPlayer2Pos :: String -> Maybe Position
-findPlayer2Pos s | index == Nothing = Nothing
+findPlayer2Pos s | isNothing index = Nothing
                  | otherwise = Just (x, y)
     where   rows = lines s
             levelWidth = length (head rows)
-            x = fromIntegral ((fromJust index) `mod` levelWidth)
-            y = fromIntegral ((fromJust index) `div` levelWidth)
+            x = fromIntegral (fromJust index `mod` levelWidth)
+            y = fromIntegral (fromJust index `div` levelWidth)
             index = elemIndex 'Q' string
             string = filter (/= '\n') s
 
@@ -80,7 +80,7 @@ findPoints s    | null indices1 && null indices2 = []
             indices = sort (indices1 ++ indices2)
             string = filter (/= '\n') s
             createPos index = (x index, y index)
-            createPoint index   | elem index indices1 = (createPos index, False)
+            createPoint index   | index `elem` indices1 = (createPos index, False)
                                 | otherwise = (createPos index, True)
 
 -- Function that loads a level
@@ -99,9 +99,9 @@ loadLevel filePath = do
     let enemyPositions = findEnemyPos text
     let amountOfEnemies = length enemyPositions
     let rngs = createRNGs rng amountOfEnemies
-    let enemies = map (\(_rng, _pos) -> createEnemy _rng _pos) $ zip rngs enemyPositions
-    return $ (levelValues, pointList, player, player2, enemies)
-    where   createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! (fst (randomR (0 :: Int, 1 :: Int) rng)))
+    let enemies = zipWith createEnemy rngs enemyPositions
+    return (levelValues, pointList, player, player2, enemies)
+    where   createEnemy rng pos = Enemy pos DirNone ([GoToPlayer ..] !! fst (randomR (0 :: Int, 1 :: Int) rng))
 
 -- Create multiple StdGens, one for each enemy so they are all random types
 createRNGs :: StdGen -> Int -> [StdGen]

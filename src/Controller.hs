@@ -16,19 +16,19 @@ import Data.Char
 step :: Float -> GameState -> IO GameState
 step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _)    | isNothing _player2 = if levelComplete (pointList updatedGameState)
                                                                                         then return $ WonScreen (score updatedGameState)
-                                                                                        else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                        else if isPlayerDead updatedGameState && not (isInvincible (puType (powerUp updatedGameState)))
                                                                                             then return $ DiedScreen (score updatedGameState)
                                                                                             else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                                                 | otherwise = if levelComplete (pointList updatedGameState)
                                                                                 then return $ Player1WonScreen (score updatedGameState)
-                                                                                else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && not (isInvincible (puType (powerUp updatedGameState)))
                                                                                     then return $ Player2WonScreen (score updatedGameState)
                                                                                     else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                         where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
 step secs gstate = return $ updateTimeGState secs gstate
 
 updateTimeGState :: Float -> GameState -> GameState
-updateTimeGState time gstate@(PlayingLevel _ _ _ _ _ _ _ _ _ _ _) = gstate { passedTime = (passedTime gstate + time) }
+updateTimeGState time gstate@PlayingLevel {} = gstate { passedTime = passedTime gstate + time }
 updateTimeGState _ gstate = gstate
 
 updateFrameGState :: GameState -> GameState
@@ -43,7 +43,7 @@ updateRNG :: GameState -> IO GameState
 updateRNG gstate = do
     newRng <- newStdGen
     let newState = gstate { rng = newRng }
-    return $ newState
+    return newState
 
 checkPlayer2Won :: GameState -> Bool
 checkPlayer2Won gstate = checkPos
@@ -53,21 +53,19 @@ checkPlayer2Won gstate = checkPos
                         | otherwise = False
 
 deleteOldPowerUps :: GameState -> GameState
-deleteOldPowerUps gstate = gstate { availablePowerUps = foldr (++) [] (map checkDuration powerUps) }
+deleteOldPowerUps gstate = gstate { availablePowerUps = foldr ((++) . checkDuration) [] powerUps }
     where   secs = passedTime gstate
             powerUps = availablePowerUps gstate
-            checkDuration pu = if duration pu > secs
-                                    then [pu]
-                                    else []
+            checkDuration pu = [pu | duration pu > secs]
 
 createNewPowerUps :: GameState -> GameState
-createNewPowerUps gstate    | chance < 0.005 && field /= WallField && elem newPowerUp (availablePowerUps gstate) == False = gstate { availablePowerUps = availablePowerUps gstate ++ [newPowerUp] }
+createNewPowerUps gstate    | chance < 0.005 && field /= WallField && notElem newPowerUp (availablePowerUps gstate) = gstate { availablePowerUps = availablePowerUps gstate ++ [newPowerUp] }
                             | otherwise = gstate
     where   random1 = rng gstate
             (chance, random2) = randomR (0 :: Float, 1 :: Float) random1
             (_powerUp, random3) = randomR (1 :: Int, 3 :: Int) random2
-            (xPos, random4) = randomR (0 :: Int, (levelWidth - 1)) random3
-            (yPos, random5) = randomR (0 :: Int, (levelHeight - 1)) random4
+            (xPos, random4) = randomR (0 :: Int, levelWidth - 1) random3
+            (yPos, random5) = randomR (0 :: Int, levelHeight - 1) random4
             (randomDuration, _) = randomR (10 :: Float, 30 :: Float) random5
             _level = level gstate
             (field, pos) = _level !! yPos !! xPos
@@ -86,7 +84,7 @@ updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <=
             secs = passedTime gstate
 
 checkForNewPowerUps :: GameState -> GameState
-checkForNewPowerUps gstate  | index == Nothing = gstate
+checkForNewPowerUps gstate  | isNothing index = gstate
                             | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps }
     where   (x, y) = playerPos (player gstate)
             _availablePowerUps = availablePowerUps gstate
@@ -104,7 +102,7 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
             newDirAndPos (_enemyPos, _enemyDir) _enemyType = if isInvertedEnemies (puType (powerUp gstate))
                                                                 then invertedDirection gstate _enemyDir _playerPos _enemyPos
                                                                 else normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) _enemyDir _playerPos _enemyPos _enemyType
-            newEnemy e = Enemy (fst (newDirAndPos (enemy e) (enemyType e))) (snd (newDirAndPos (enemy e) (enemyType e))) (enemyType e)
+            newEnemy e = uncurry Enemy (newDirAndPos (enemy e) (enemyType e)) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 movePlayers :: GameState -> GameState
@@ -132,11 +130,9 @@ movePlayer _player gstate   | _player == player gstate = gstate { player = newPl
                 DirLeft     ->  (oldXPos - usedVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
             validNewPos = checkNewPlayerPosition gstate _player newPos
-            newPlayer = if validNewPos && _playerDir /= DirNone
-                            then Player newPos _playerDir _playerDir
-                            else if validNewPos
-                                then Player newPos _playerDir (lastDir (player gstate))
-                                else Player (oldXPos, oldYPos) DirNone _playerDir
+            newPlayer   | validNewPos && _playerDir /= DirNone = Player newPos _playerDir _playerDir
+                        | validNewPos = Player newPos _playerDir (lastDir (player gstate))
+                        | otherwise = Player (oldXPos, oldYPos) DirNone _playerDir
 
 isSpeedUp :: PowerUpType -> Bool
 isSpeedUp SpeedUp = True
@@ -160,9 +156,9 @@ moveEnemies gstate = gstate { enemies = newEnemies }
                 DirRight    ->  (oldXPos + enemyVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            newEnemy e = if (checkNewEnemyPosition gstate e (newPos (fst (enemy e)) (snd (enemy e))))
-                            then Enemy (newPos (fst (enemy e)) (snd (enemy e))) (snd (enemy e)) (enemyType e)
-                            else Enemy (fst (enemy e)) (snd (enemy e)) (enemyType e)
+            newEnemy e = if checkNewEnemyPosition gstate e (uncurry newPos (enemy e))
+                            then Enemy (uncurry newPos (enemy e)) (snd (enemy e)) (enemyType e)
+                            else uncurry Enemy (enemy e) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 checkNewPlayerPosition :: GameState -> Player -> Position -> Bool
@@ -171,13 +167,10 @@ checkNewPlayerPosition gstate _player (x, y) = case field of
                                     _           -> True
     where   _level = level gstate
             _playerDir = playerDir _player
-            (field, _) = if _playerDir == DirUp
-                            then (_level !! floor y) !! round x
-                            else if _playerDir == DirDown
-                                then (_level !! ceiling y) !! round x
-                                else if _playerDir == DirRight
-                                    then (_level !! round y) !! ceiling x
-                                    else (_level !! round y) !! floor x
+            (field, _)  | _playerDir == DirUp = (_level !! floor y) !! round x
+                        | _playerDir == DirDown = (_level !! ceiling y) !! round x
+                        | _playerDir == DirRight = (_level !! round y) !! ceiling x
+                        | otherwise = (_level !! round y) !! floor x
 
 checkNewEnemyPosition :: GameState -> Enemy -> Position -> Bool
 checkNewEnemyPosition gstate e (x, y) = case field of
@@ -185,23 +178,20 @@ checkNewEnemyPosition gstate e (x, y) = case field of
                                     _           -> True
     where   _level = level gstate
             _dir = enemyDir e
-            (field, _) = if _dir == DirUp
-                            then (_level !! floor y) !! round x
-                            else if _dir == DirDown
-                                then (_level !! ceiling y) !! round x
-                                else if _dir == DirRight
-                                    then (_level !! round y) !! ceiling x
-                                    else (_level !! round y) !! floor x
+            (field, _)  | _dir == DirUp = (_level !! floor y) !! round x
+                        | _dir == DirDown = (_level !! ceiling y) !! round x
+                        | _dir == DirRight = (_level !! round y) !! ceiling x
+                        | otherwise = (_level !! round y) !! floor x
                         
 checkCurrentPosition :: GameState -> GameState
-checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointList = (delete ((fromInteger (round x), fromInteger (round y)), _bool index) _pointlist) }
+checkCurrentPosition gs | isJust index = gs { score = newscore index, pointList = delete ((fromInteger (round x), fromInteger (round y)), _bool index) _pointlist }
                         | otherwise = gs
                         where (x, y)  = playerPos (player gs)
                               index = elemIndex (fromInteger (round x), fromInteger (round y)) (map fst _pointlist)
                               _pointlist = pointList gs 
                               newscore _index   | _bool _index = score gs + 25
                                                 | otherwise = score gs + 10
-                              _bool i = snd (_pointlist !! (fromJust i))
+                              _bool i = snd (_pointlist !! fromJust i)
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -232,20 +222,20 @@ inputKey (EventKey (Char 'd') _ _ _) gstate
     | isPlaying gstate = setPlayerDirectionToRight gstate (player gstate) (playerDir (player gstate))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyUp) _ _ _) gstate 
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToUp gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToDown gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && not (isInvertedEnemies (puType (powerUp gstate))) = setPlayerDirectionToUp gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) = setPlayerDirectionToDown gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyLeft) _ _ _) gstate 
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToRight gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && not (isInvertedEnemies (puType (powerUp gstate))) = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) = setPlayerDirectionToRight gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyDown) _ _ _) gstate 
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToDown gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToUp gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && not (isInvertedEnemies (puType (powerUp gstate))) = setPlayerDirectionToDown gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) = setPlayerDirectionToUp gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyRight) _ _ _) gstate 
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == False = setPlayerDirectionToRight gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
-    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) == True = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && not (isInvertedEnemies (puType (powerUp gstate))) = setPlayerDirectionToRight gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
+    | isPlaying gstate && isJust (player2 gstate) && isInvertedEnemies (puType (powerUp gstate)) = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
@@ -322,11 +312,11 @@ setPlayerDirectionToLeft gstate _player _lastDir    | _player == player gstate =
             checkLeftFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos (xCoor - 1) yCoor)
             
 isPlaying :: GameState -> Bool
-isPlaying (PlayingLevel _ _ _ _ _ _ _ _ _ _ _) = True
+isPlaying PlayingLevel {} = True
 isPlaying _ = False
 
 isPaused :: GameState -> Bool
-isPaused (Paused _ _ _ _ _ _ _ _ _ _ _) = True
+isPaused Paused {} = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState

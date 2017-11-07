@@ -60,14 +60,14 @@ initialState filePath = do
     (_level, _points, _player, _player2, _enemies) <- loadLevel ("Levels/" ++ filePath)
     _rng <- newStdGen
     let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [] 0 _rng 1
-    return $ state
+    return state
     where   _powerUp = PowerUp NoPowerUp 0 (0, 0)
 
 levelChooserState :: IO GameState
 levelChooserState = do
     _levels <- getLevels
     let state = LevelChooser _levels
-    return $ state
+    return state
 
 playerVelocity :: Float
 playerVelocity = 0.04

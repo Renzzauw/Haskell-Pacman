@@ -18,10 +18,10 @@ viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
-viewPure (Player1WonScreen _) = playerWins !! 0
+viewPure (Player1WonScreen _) = head playerWins
 viewPure (Player2WonScreen _) = playerWins !! 1
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate
-viewPure (Paused _ _ _ _ _ _ _ _ _ _ _) = pauseScreen
+viewPure Paused {} = pauseScreen
 viewPure HelpScreen = levelTutScreen
 viewPure ControlsScreen = controlsScreen
 viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
@@ -33,7 +33,7 @@ drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: 
 
 -- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
-drawWonScreen gs = pictures [playerWins !! 0, translate (-300) (-120) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
+drawWonScreen gs = pictures [head playerWins, translate (-300) (-120) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
                  where _score = score gs
 
 -- Draw the proper text when the player dies
@@ -73,11 +73,11 @@ drawLevel gstate = translatedLevel
     where   _level = level gstate
             levelWidth = length (head _level)
             levelHeight = length _level
-            totalLevel = pictures ((map pictures ((map . map) drawTile _level)))
+            totalLevel = pictures (map (pictures . map drawTile) _level)
             startList   | isNothing (player2 gstate) = []
                         | otherwise = [drawPlayer2 gstate]
             includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : drawPowerUps gstate : drawPacman gstate : startList)
-            translatedLevel = pictures [gameBackground, (translate (0.5 * (fromIntegral (-spriteSize * levelWidth))) (-0.5 * (fromIntegral (-spriteSize * levelHeight))) includingPacmanAndPoints)]
+            translatedLevel = pictures [gameBackground, translate (0.5 * fromIntegral (-spriteSize * levelWidth)) (-0.5 * fromIntegral (-spriteSize * levelHeight)) includingPacmanAndPoints]
 
 -- Function that draws tiles
 drawTile :: Field -> Picture
@@ -88,7 +88,7 @@ drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos *
 drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
     where   rotatedPacman = sprite
-            translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
+            translatedPacman = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             currframe   = frame gstate
             _playerDir = playerDir (player gstate)
@@ -108,7 +108,7 @@ drawPlayer2 gstate = translatedPlayer
                         | _dir == DirLeft = calculateAnimationFrame _frame 3 greenGhostMovingLeft
                         | _dir == DirRight = calculateAnimationFrame _frame 3 greenGhostMovingRight
                         | otherwise = greenGhostIdle
-                translatedPlayer = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) sprite 
+                translatedPlayer = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) sprite 
                 (xPos, yPos) = playerPos _player2
                 _player2 = fromJust (player2 gstate)
                 _dir = playerDir _player2
@@ -117,15 +117,15 @@ drawPlayer2 gstate = translatedPlayer
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
-drawPoints gstate = pictures (map drawPoint (map fst usedPoints))
+drawPoints gstate = pictures (map (drawPoint . fst) usedPoints)
     where   usedPoints = pointList gstate
-            usedTile (x, y)     | fst (((level gstate) !! round y) !! round x) == BigPointField = bigPointTile
+            usedTile (x, y)     | fst ((level gstate !! round y) !! round x) == BigPointField = bigPointTile
                                 | otherwise = pointTile
-            drawPoint pos@(x, y) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedTile pos)
+            drawPoint pos@(x, y) = translate (x * fromIntegral spriteSize) (-y * fromIntegral spriteSize) (usedTile pos)
 
 -- Function that draws the ghosts
 drawEnemies :: GameState -> Picture
-drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
+drawEnemies gstate = pictures (map (drawSprite . enemy) _enemies)
     where   _powerUp = puType (powerUp gstate)
             _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e, enemyType e)
@@ -154,7 +154,7 @@ drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
                                                         else if eType == GoToPlayer
                                                                 then redGhostIdle
                                                                 else blueGhostIdle
-            drawSprite ((x, y), dir, eType) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir eType)
+            drawSprite ((x, y), dir, eType) = translate (x * fromIntegral spriteSize) (-y * fromIntegral spriteSize) (usedSprite dir eType)
             _frame = frame gstate
 
 -- Function that draws the available powerups
@@ -166,7 +166,7 @@ drawPowerUps gstate = pictures (map drawPowerUp powerUps)
                 InvertedEnemies -> invertedEnemiesPowerUp
                 Invincible      -> invinciblePowerUp
                 _               -> emptyTile
-            drawPowerUp _powerUp = translate (fst (position _powerUp) * (fromIntegral spriteSize)) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
+            drawPowerUp _powerUp = translate (fst (position _powerUp) * fromIntegral spriteSize) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
 
 -- Function that calculates the rotation of the player sprite with a given direction he should move into
 calculateRotation :: Direction -> Float

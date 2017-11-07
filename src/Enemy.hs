@@ -5,6 +5,30 @@ import Model
 
 import System.Random
 
+upPos :: Position -> Position
+upPos (ex, ey) = (ex, ey - enemyVelocity)
+
+downPos :: Position -> Position
+downPos (ex, ey) = (ex, ey + enemyVelocity)
+
+leftPos :: Position -> Position
+leftPos (ex, ey) = (ex - enemyVelocity, ey)
+
+rightPos :: Position -> Position
+rightPos (ex, ey) = (ex + enemyVelocity, ey)
+
+newUp :: Position -> (Position, Bool)
+newUp pos = newEnemyPosInX (upPos pos)
+
+newDown :: Position -> (Position, Bool)
+newDown pos = newEnemyPosInX (downPos pos)
+
+newLeft :: Position -> (Position, Bool)
+newLeft pos = newEnemyPosInY (leftPos pos)
+
+newRight :: Position -> (Position, Bool)
+newRight pos = newEnemyPosInY rightPos
+
 -- Function that returns a Direction for the enemy to move into based on the player position
 lookForPlayer :: GameState -> Direction -> Position -> Position -> (Float -> Float -> Bool) -> (Float -> Float -> Bool) -> (Position, Direction)
 lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case currDir of
@@ -17,23 +41,23 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                         -- secondOp is in normal situations >, when the enemies are inverted, it is <
       where upOrDown    | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && currDir /= DirDown = (enemypos, DirUp)
                         | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && currDir /= DirUp = (enemypos, DirDown)
-                        | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
-                        | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
-                        | deltaY `firstOp` (-1) && checkNewPosition gs DirUp upPos == False && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
-                        | deltaY `firstOp` (-1) && checkNewPosition gs DirUp upPos == False && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
-                        | deltaY `secondOp` 1 && checkNewPosition gs DirDown downPos == False && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
-                        | deltaY `secondOp` 1 && checkNewPosition gs DirDown downPos == False && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
+                        | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd (newLeft enemypos) = (fst (newLeft enemypos), DirLeft)
+                        | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd (newRight enemypos) = (fst (newRight enemypos), DirRight)
+                        | deltaY `firstOp` (-1) && not (checkNewPosition gs DirUp upPos) && checkNewPosition gs DirLeft leftPos && snd (newLeft enemypos) = (fst (newLeft enemypos), DirLeft)
+                        | deltaY `firstOp` (-1) && not (checkNewPosition gs DirUp upPos) && checkNewPosition gs DirRight rightPos && snd (newRight enemypos) = (fst (newRight enemypos), DirRight)
+                        | deltaY `secondOp` 1 && not (checkNewPosition gs DirDown downPos) && checkNewPosition gs DirLeft leftPos && snd (newLeft enemypos) = (fst (newLeft enemypos), DirLeft)
+                        | deltaY `secondOp` 1 && not (checkNewPosition gs DirDown downPos) && checkNewPosition gs DirRight rightPos && snd (newRight enemypos) = (fst (newRight enemypos), DirRight)
                         | currDir == DirUp && checkNewPosition gs DirUp upPos = (enemypos, DirUp)
                         | currDir == DirDown && checkNewPosition gs DirDown downPos = (enemypos, DirDown)
                         | otherwise = (enemypos, DirNone)
             leftOrRight | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && currDir /= DirRight = (enemypos, DirLeft)
                         | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && currDir /= DirLeft = (enemypos, DirRight)
-                        | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
-                        | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
-                        | deltaX `firstOp` (-1) && checkNewPosition gs DirLeft leftPos == False && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
-                        | deltaX `firstOp` (-1) && checkNewPosition gs DirLeft leftPos == False && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
-                        | deltaX `secondOp` 1 && checkNewPosition gs DirRight rightPos == False && checkNewPosition gs DirUp upPos && snd newUp = (fst newUp, DirUp)
-                        | deltaX `secondOp` 1 && checkNewPosition gs DirRight rightPos == False && checkNewPosition gs DirDown downPos && snd newDown = (fst newDown, DirDown)
+                        | deltaY `firstOp` (-0.05) && checkNewPosition gs DirUp upPos && snd (newUp enemypos) = (fst (newUp enemypos), DirUp)
+                        | deltaY `secondOp` 0.05 && checkNewPosition gs DirDown downPos && snd (newDown enemypos) = (fst (newDown enemypos), DirDown)
+                        | deltaX `firstOp` (-1) && not (checkNewPosition gs DirLeft leftPos) && checkNewPosition gs DirUp upPos && snd (newUp enemypos) = (fst (newUp enemypos), DirUp)
+                        | deltaX `firstOp` (-1) && not (checkNewPosition gs DirLeft leftPos) && checkNewPosition gs DirDown downPos && snd (newDown enemypos) = (fst (newDown enemypos), DirDown)
+                        | deltaX `secondOp` 1 && not (checkNewPosition gs DirRight rightPos) && checkNewPosition gs DirUp upPos && snd (newUp enemypos) = (fst (newUp enemypos), DirUp)
+                        | deltaX `secondOp` 1 && not (checkNewPosition gs DirRight rightPos) && checkNewPosition gs DirDown downPos && snd (newDown enemypos) = (fst (newDown enemypos), DirDown)
                         | currDir == DirRight && checkNewPosition gs DirRight rightPos = (enemypos, DirRight)
                         | currDir == DirLeft && checkNewPosition gs DirLeft leftPos = (enemypos, DirLeft)
                         | otherwise = (enemypos, DirNone)
@@ -42,14 +66,6 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
                         | deltaX `firstOp` (-0.05) && checkNewPosition gs DirLeft leftPos && snd newLeft = (fst newLeft, DirLeft)
                         | deltaX `secondOp` 0.05 && checkNewPosition gs DirRight rightPos && snd newRight = (fst newRight, DirRight)
                         | otherwise = (centerPosition enemypos, DirNone)
-            upPos = (ex, ey - enemyVelocity)
-            downPos = (ex, ey + enemyVelocity)
-            leftPos = (ex - enemyVelocity, ey)
-            rightPos = (ex + enemyVelocity, ey)
-            newUp = newEnemyPosInX upPos
-            newDown = newEnemyPosInX downPos
-            newLeft = newEnemyPosInY leftPos
-            newRight = newEnemyPosInY rightPos
             deltaY = py - ey
             deltaX = px - ex
 
@@ -59,17 +75,17 @@ centerPosition pos = fst (newEnemyPosInX (fst (newEnemyPosInY pos)))
 randomEnemy :: GameState -> Direction -> Position -> (Position, Direction)
 randomEnemy gstate currDir pos@(ex, ey) = if validNewTime 
                                                 then case newDir of
-                                                      DirUp       -> if currDir /= DirDown && snd newUp
-                                                                        then (fst newUp, DirUp)
+                                                      DirUp       -> if currDir /= DirDown && snd (newUp pos)
+                                                                        then (fst (newUp pos), DirUp)
                                                                         else (pos, currDir)
-                                                      DirDown     -> if currDir /= DirUp && snd newDown
-                                                                        then (fst newDown, DirDown)
+                                                      DirDown     -> if currDir /= DirUp && snd (newDown pos)
+                                                                        then (fst (newDown pos), DirDown)
                                                                         else (pos, currDir)
-                                                      DirLeft     -> if currDir /= DirRight && snd newRight
-                                                                        then (fst newRight, DirLeft)
+                                                      DirLeft     -> if currDir /= DirRight && snd (newRight pos)
+                                                                        then (fst (newRight pos), DirLeft)
                                                                         else (pos, currDir)
-                                                      DirRight    -> if currDir /= DirLeft && snd newLeft
-                                                                        then (fst newLeft, DirRight)
+                                                      DirRight    -> if currDir /= DirLeft && snd (newLeft pos)
+                                                                        then (fst (newLeft pos), DirRight)
                                                                         else (pos, currDir)
                                                       _           -> (pos, currDir)
                                                 else (pos, currDir)
@@ -81,30 +97,20 @@ randomEnemy gstate currDir pos@(ex, ey) = if validNewTime
             none = (True, DirNone)
             directions = [up, down, left, right, none]
             possibleDirections = filter ((==True).fst) directions
-            newDir = snd (possibleDirections !! (fst (randomR (0 :: Int, length possibleDirections - 1) _rng)))
-            validNewTime = (frame gstate) `mod` 30 == 0
-            upPos = (ex, ey - enemyVelocity)
-            downPos = (ex, ey + enemyVelocity)
-            leftPos = (ex - enemyVelocity, ey)
-            rightPos = (ex + enemyVelocity, ey)
-            newUp = newEnemyPosInX upPos
-            newDown = newEnemyPosInX downPos
-            newLeft = newEnemyPosInY leftPos
-            newRight = newEnemyPosInY rightPos
+            newDir = snd (possibleDirections !! fst (randomR (0 :: Int, length possibleDirections - 1) _rng))
+            validNewTime = frame gstate `mod` 30 == 0
 
 newEnemyPosInX :: Position -> (Position, Bool)
-newEnemyPosInX (ex, ey) = if (ex - fromInteger (floor ex)) < 0.2
-                              then (((fromInteger (floor ex)), ey), True)
-                              else if ex - fromInteger (floor ex) > 0.8
-                                    then (((fromInteger (ceiling ex)), ey), True)
-                                    else ((ex, ey), False)
+newEnemyPosInX (ex, ey) | deltaX < 0.2 = ((fromInteger (floor ex), ey), True)
+                        | deltaX > 0.8 = ((fromInteger (ceiling ex), ey), True)
+                        | otherwise = ((ex, ey), False)
+      where deltaX = ex - fromInteger (floor ex)
 
 newEnemyPosInY :: Position -> (Position, Bool)
-newEnemyPosInY (ex, ey) = if (ey - fromInteger (floor ey)) < 0.2
-                              then ((ex, (fromInteger (floor ey))), True)
-                              else if ey - fromInteger (floor ey) > 0.8
-                                    then ((ex, (fromInteger (ceiling ey))), True)
-                                    else ((ex, ey) , False)
+newEnemyPosInY (ex, ey) | deltaY < 0.2 = ((ex, fromInteger (floor ey)), True)
+                        | deltaY > 0.8 = ((ex, fromInteger (ceiling ey)), True)
+                        | otherwise = ((ex, ey) , False)
+      where deltaY = ey - fromInteger (floor ey)
 
 normalDirection :: GameState -> Direction -> Position -> Position -> EnemyType -> (Position, Direction)
 normalDirection gs currDir _playerPos _enemyPos eType = case eType of
@@ -119,17 +125,14 @@ checkNewPosition gstate dir (x, y) = case field of
                               WallField   -> False
                               _           -> True
       where _level = level gstate
-            (field, _) = if dir == DirUp
-                              then (_level !! floor y) !! round x
-                              else if dir == DirDown
-                                    then (_level !! ceiling y) !! round x
-                                    else if dir == DirRight
-                                          then (_level !! round y) !! ceiling x
-                                          else (_level !! round y) !! floor x 
+            (field, _)  | dir == DirUp = (_level !! floor y) !! round x
+                        | dir == DirDown = (_level !! ceiling y) !! round x
+                        | dir == DirRight = (_level !! round y) !! ceiling x
+                        | otherwise = (_level !! round y) !! floor x 
 
 -- Function that checks if the Enemy is on the same position as the player                                              
 isPlayerDead :: GameState -> Bool
-isPlayerDead gstate = elem True checkPoss
+isPlayerDead gstate = True `elem` checkPoss
       where (px, py) = playerPos (player gstate)
             enemyPoss = map enemyPos (enemies gstate)
             checkPos (ex, ey) | abs (px - ex) < 0.3 && abs (py - ey) < 0.3 = True
