@@ -11,7 +11,7 @@ data FieldType = PlayerField | WallField | PointField | BigPointField | EnemyFie
     deriving (Eq)
 data EnemyType = GoToPlayer | Random
     deriving (Eq, Enum)
-data Player = Player { playerPos :: Position, playerDir :: Direction }
+data Player = Player { playerPos :: Position, playerDir :: Direction, lastDir :: Direction }
     deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
 type Field = (FieldType, Position)
@@ -92,10 +92,10 @@ loadLevel filePath = do
     let levelValues = createRowsForLevel 0 rows
     let pointList = findPoints text
     let playerPosition = findPlayerPos text
-    let player = Player playerPosition DirNone
+    let player = Player playerPosition DirNone DirNone
     let player2Position = findPlayer2Pos text
     let player2 | isNothing player2Position = Nothing
-                | otherwise = Just (Player (fromJust player2Position) DirNone)
+                | otherwise = Just (Player (fromJust player2Position) DirNone DirNone)
     let enemyPositions = findEnemyPos text
     let amountOfEnemies = length enemyPositions
     let rngs = createRNGs rng amountOfEnemies

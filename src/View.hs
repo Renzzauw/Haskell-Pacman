@@ -87,27 +87,33 @@ drawTile (_, (xPos, yPos)) = translate (xPos * fromIntegral spriteSize) (-yPos *
 -- Function that draws the player
 drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
-    where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (calculateAnimationFrame currframe 2 pacmanseq)
+    where   rotatedPacman = sprite
             translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
             currframe   = frame gstate
+            _playerDir = playerDir (player gstate)
+            sprite      | _playerDir == DirNone = rotate (calculateRotation (lastDir (player gstate))) pacmanIdle
+                        | otherwise = rotate (calculateRotation _playerDir) (calculateAnimationFrame currframe 2 pacmanSeq)
 
 -- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
 drawPlayer2 gstate = translatedPlayer
-        where   sprite  | _powerUp == InvertedEnemies && _dir == DirUp = invertedGhostUp
-                        | _powerUp == InvertedEnemies && _dir == DirDown = invertedGhostDown
-                        | _powerUp == InvertedEnemies && _dir == DirLeft = invertedGhostLeft
-                        | _powerUp == InvertedEnemies = invertedGhostRight
-                        | _dir == DirUp = greenGhostUp
-                        | _dir == DirDown = greenGhostDown
-                        | _dir == DirLeft = greenGhostLeft
-                        | otherwise = greenGhostRight
+        where   sprite  | _powerUp == InvertedEnemies && _dir == DirUp = calculateAnimationFrame _frame 3 invertedGhostMovingUp
+                        | _powerUp == InvertedEnemies && _dir == DirDown = calculateAnimationFrame _frame 3 invertedGhostMovingDown
+                        | _powerUp == InvertedEnemies && _dir == DirLeft = calculateAnimationFrame _frame 3 invertedGhostMovingLeft
+                        | _powerUp == InvertedEnemies && _dir == DirRight = calculateAnimationFrame _frame 3 invertedGhostMovingRight
+                        | _powerUp == InvertedEnemies = invertedGhostIdle
+                        | _dir == DirUp = calculateAnimationFrame _frame 3 greenGhostMovingUp
+                        | _dir == DirDown = calculateAnimationFrame _frame 3 greenGhostMovingDown
+                        | _dir == DirLeft = calculateAnimationFrame _frame 3 greenGhostMovingLeft
+                        | _dir == DirRight = calculateAnimationFrame _frame 3 greenGhostMovingRight
+                        | otherwise = greenGhostIdle
                 translatedPlayer = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) sprite 
                 (xPos, yPos) = playerPos _player2
                 _player2 = fromJust (player2 gstate)
                 _dir = playerDir _player2
                 _powerUp = puType (powerUp gstate)
+                _frame = frame gstate
 
 -- Function that draws collectable points
 drawPoints :: GameState -> Picture
@@ -124,26 +130,32 @@ drawEnemies gstate = pictures (map drawSprite (map enemy _enemies))
             _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e, enemyType e)
             usedSprite dir eType    | dir == DirUp = if _powerUp == InvertedEnemies
-                                                        then invertedGhostUp
+                                                        then calculateAnimationFrame _frame 3 invertedGhostMovingUp
                                                         else if eType == GoToPlayer
-                                                                then redGhostUp
-                                                                else blueGhostUp
+                                                                then calculateAnimationFrame _frame 3 redGhostMovingUp
+                                                                else calculateAnimationFrame _frame 3 blueGhostMovingUp
                                     | dir == DirDown = if _powerUp == InvertedEnemies
-                                                        then invertedGhostDown
+                                                        then calculateAnimationFrame _frame 3 invertedGhostMovingDown
                                                         else if eType == GoToPlayer
-                                                                then redGhostDown
-                                                                else blueGhostDown
+                                                                then calculateAnimationFrame _frame 3 redGhostMovingDown
+                                                                else calculateAnimationFrame _frame 3 blueGhostMovingDown
                                     | dir == DirLeft = if _powerUp == InvertedEnemies
-                                                        then invertedGhostLeft
+                                                        then calculateAnimationFrame _frame 3 invertedGhostMovingLeft
                                                         else if eType == GoToPlayer
-                                                                then redGhostLeft
-                                                                else blueGhostLeft
+                                                                then calculateAnimationFrame _frame 3 redGhostMovingLeft
+                                                                else calculateAnimationFrame _frame 3 blueGhostMovingLeft
+                                    | dir == DirRight = if _powerUp == InvertedEnemies
+                                                                then calculateAnimationFrame _frame 3 invertedGhostMovingRight
+                                                                else if eType == GoToPlayer
+                                                                        then calculateAnimationFrame _frame 3 redGhostMovingRight
+                                                                        else calculateAnimationFrame _frame 3 blueGhostMovingRight
                                     | otherwise = if _powerUp == InvertedEnemies
-                                                    then invertedGhostRight
-                                                    else if eType == GoToPlayer
-                                                            then redGhostRight
-                                                            else blueGhostRight
+                                                        then invertedGhostIdle
+                                                        else if eType == GoToPlayer
+                                                                then redGhostIdle
+                                                                else blueGhostIdle
             drawSprite ((x, y), dir, eType) = translate (x * (fromIntegral spriteSize)) (-y * (fromIntegral spriteSize)) (usedSprite dir eType)
+            _frame = frame gstate
 
 -- Function that draws the available powerups
 drawPowerUps :: GameState -> Picture
@@ -196,9 +208,6 @@ emptyBackground = png "Images/new/emptybg.png"
 playerWins :: [Picture]
 playerWins = [png "Images/new/Player1Wins.png", png "Images/new/Player2Wins.png"]
 
-pacmanSprites :: [Picture]
-pacmanSprites = [scalePicture (png "Images/Pacman1.png"), scalePicture (png "Images/Pacman2.png"), scalePicture (png "Images/Pacman3.png"), scalePicture (png "Images/Pacman2.png")]
-
 redGhostMovingUp :: [Picture]
 redGhostMovingUp = [scalePicture (png "Images/Ghosts/RedGhostUp1.png"), scalePicture (png "Images/Ghosts/RedGhostUp2.png")]
 
@@ -211,17 +220,8 @@ redGhostMovingLeft = [scalePicture (png "Images/Ghosts/RedGhostLeft1.png"), scal
 redGhostMovingRight :: [Picture]
 redGhostMovingRight = [scalePicture (png "Images/Ghosts/RedGhostRight1.png"), scalePicture (png "Images/Ghosts/RedGhostRight2.png")]
 
-redGhostUp :: Picture
-redGhostUp = scalePicture (png "Images/Ghosts/RedGhostUp1.png")
-
-redGhostDown :: Picture
-redGhostDown = scalePicture (png "Images/Ghosts/RedGhostDown1.png")
-
-redGhostLeft :: Picture
-redGhostLeft = scalePicture (png "Images/Ghosts/RedGhostLeft1.png")
-
-redGhostRight :: Picture
-redGhostRight = scalePicture (png "Images/Ghosts/RedGhostRight1.png")
+redGhostIdle :: Picture
+redGhostIdle = scalePicture (png "Images/Ghosts/RedGhostRight1.png")
 
 blueGhostMovingUp :: [Picture]
 blueGhostMovingUp = [scalePicture (png "Images/Ghosts/BlueGhostUp1.png"), scalePicture (png "Images/Ghosts/BlueGhostUp2.png")]
@@ -235,17 +235,8 @@ blueGhostMovingLeft = [scalePicture (png "Images/Ghosts/BlueGhostLeft1.png"), sc
 blueGhostMovingRight :: [Picture]
 blueGhostMovingRight = [scalePicture (png "Images/Ghosts/BlueGhostRight1.png"), scalePicture (png "Images/Ghosts/BlueGhostRight2.png")]
 
-blueGhostUp :: Picture
-blueGhostUp = scalePicture (png "Images/Ghosts/BlueGhostUp1.png")
-
-blueGhostDown :: Picture
-blueGhostDown = scalePicture (png "Images/Ghosts/BlueGhostDown1.png")
-
-blueGhostLeft :: Picture
-blueGhostLeft = scalePicture (png "Images/Ghosts/BlueGhostLeft1.png")
-
-blueGhostRight :: Picture
-blueGhostRight = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
+blueGhostIdle :: Picture
+blueGhostIdle = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
 
 invertedGhostMovingUp :: [Picture]
 invertedGhostMovingUp = [scalePicture (png "Images/Ghosts/InvertedGhostUp1.png"), scalePicture (png "Images/Ghosts/InvertedGhostUp2.png")]
@@ -259,17 +250,8 @@ invertedGhostMovingLeft = [scalePicture (png "Images/Ghosts/InvertedGhostLeft1.p
 invertedGhostMovingRight :: [Picture]
 invertedGhostMovingRight = [scalePicture (png "Images/Ghosts/InvertedGhostRight1.png"), scalePicture (png "Images/Ghosts/InvertedGhostRight2.png")]
 
-invertedGhostUp :: Picture
-invertedGhostUp = scalePicture (png "Images/Ghosts/InvertedGhostUp1.png")
-
-invertedGhostDown :: Picture
-invertedGhostDown = scalePicture (png "Images/Ghosts/InvertedGhostDown1.png")
-
-invertedGhostLeft :: Picture
-invertedGhostLeft = scalePicture (png "Images/Ghosts/InvertedGhostLeft1.png")
-
-invertedGhostRight :: Picture
-invertedGhostRight = scalePicture (png "Images/Ghosts/InvertedGhostRight1.png")
+invertedGhostIdle :: Picture
+invertedGhostIdle = scalePicture (png "Images/Ghosts/InvertedGhostRight1.png")
 
 greenGhostMovingUp :: [Picture]
 greenGhostMovingUp = [scalePicture (png "Images/Ghosts/GreenGhostUp1.png"), scalePicture (png "Images/Ghosts/GreenGhostUp2.png")]
@@ -283,20 +265,14 @@ greenGhostMovingLeft = [scalePicture (png "Images/Ghosts/GreenGhostLeft1.png"), 
 greenGhostMovingRight :: [Picture]
 greenGhostMovingRight = [scalePicture (png "Images/Ghosts/GreenGhostRight1.png"), scalePicture (png "Images/Ghosts/GreenGhostRight2.png")]
 
-greenGhostUp :: Picture
-greenGhostUp = scalePicture (png "Images/Ghosts/GreenGhostUp1.png")
+greenGhostIdle :: Picture
+greenGhostIdle = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 
-greenGhostDown :: Picture
-greenGhostDown = scalePicture (png "Images/Ghosts/GreenGhostDown1.png")
+pacmanSeq :: [Picture]
+pacmanSeq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
 
-greenGhostLeft :: Picture
-greenGhostLeft = scalePicture (png "Images/Ghosts/GreenGhostLeft1.png")
-
-greenGhostRight :: Picture
-greenGhostRight = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
-
-pacmanseq :: [Picture]
-pacmanseq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
+pacmanIdle :: Picture
+pacmanIdle = scalePicture (png "Images/PacmanSeq/Pacman1.png")
 
 wallTile :: Picture
 wallTile = scalePicture (png "Images/new/WallTile.png")
