@@ -3,7 +3,6 @@
 module View where
 
 import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Game
 import Model
 import Level
@@ -91,7 +90,6 @@ drawPacman gstate = translatedPacman
     where   rotatedPacman = rotate (calculateRotation (playerDir (player gstate))) (calculateAnimationFrame currframe 2 pacmanseq)
             translatedPacman = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) rotatedPacman 
             (xPos, yPos) = playerPos (player gstate)
-            levelHeight = length (level gstate)
             currframe   = frame gstate
 
 -- Function that draws player 2 as a green ghost
@@ -107,7 +105,6 @@ drawPlayer2 gstate = translatedPlayer
                         | otherwise = greenGhostRight
                 translatedPlayer = translate (xPos * (fromIntegral spriteSize)) (-yPos * fromIntegral spriteSize) sprite 
                 (xPos, yPos) = playerPos _player2
-                levelHeight = length (level gstate)
                 _player2 = fromJust (player2 gstate)
                 _dir = playerDir _player2
                 _powerUp = puType (powerUp gstate)
@@ -157,7 +154,7 @@ drawPowerUps gstate = pictures (map drawPowerUp powerUps)
                 InvertedEnemies -> invertedEnemiesPowerUp
                 Invincible      -> invinciblePowerUp
                 _               -> emptyTile
-            drawPowerUp powerUp = translate (fst (position powerUp) * (fromIntegral spriteSize)) (-snd (position powerUp) * fromIntegral spriteSize) (sprite (puType powerUp))
+            drawPowerUp _powerUp = translate (fst (position _powerUp) * (fromIntegral spriteSize)) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
 
 -- Function that calculates the rotation of the player sprite with a given direction he should move into
 calculateRotation :: Direction -> Float
@@ -168,8 +165,8 @@ calculateRotation _ = 0
 
 -- Function that gives the current frame of an animation from a list based on the amount of cycles per second and the current frame
 calculateAnimationFrame :: Int -> Int -> [Picture] -> Picture
-calculateAnimationFrame frame cycles list = list !! usedIndex
-    where   index = (frame * _length * cycles) `div` 60
+calculateAnimationFrame _frame cycles list = list !! usedIndex
+    where   index = (_frame * _length * cycles) `div` 60
             usedIndex = index `mod` _length
             _length = length list
 
