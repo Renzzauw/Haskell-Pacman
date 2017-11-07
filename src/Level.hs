@@ -14,7 +14,6 @@ data EnemyType = GoToPlayer | Random
 data Player = Player { playerPos :: Position, playerDir :: Direction }
     deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
-    deriving (Eq)
 type Field = (FieldType, Position)
 type Row = [Field]
 type Level = [Row]
@@ -82,7 +81,7 @@ findPoints s    | null indices1 && null indices2 = []
             string = filter (/= '\n') s
             createPos index = (x index, y index)
             createPoint index   | elem index indices1 = (createPos index, False)
-                                | elem index indices2 = (createPos index, True)
+                                | otherwise = (createPos index, True)
 
 -- Function that loads a level
 loadLevel :: FilePath -> IO (Level, Points, Player, Maybe Player, [Enemy])

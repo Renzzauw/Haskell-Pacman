@@ -45,7 +45,6 @@ data GameState =
           frame :: Int }
       | HelpScreen
       | ControlsScreen
-        deriving (Eq)
 
 data PowerUp = PowerUp { 
     puType :: PowerUpType, 
@@ -55,18 +54,14 @@ data PowerUp = PowerUp {
     
 data PowerUpType = SpeedUp | Invincible | InvertedEnemies | NoPowerUp
     deriving (Eq, Enum)
-   
-instance Eq StdGen where
-        a == b = False
-        a /= b = True
-    
+       
 initialState :: FilePath -> IO GameState
 initialState filePath = do
-    (level, points, player, player2, enemies) <- loadLevel ("Levels/" ++ filePath)
-    rng <- newStdGen
-    let state = PlayingLevel 0 level player player2 points enemies powerUp [] 0 rng 1
+    (_level, _points, _player, _player2, _enemies) <- loadLevel ("Levels/" ++ filePath)
+    _rng <- newStdGen
+    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [] 0 _rng 1
     return $ state
-    where   powerUp = PowerUp NoPowerUp 0 (0, 0)
+    where   _powerUp = PowerUp NoPowerUp 0 (0, 0)
 
 levelChooserState :: IO GameState
 levelChooserState = do
