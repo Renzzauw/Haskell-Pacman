@@ -6,7 +6,6 @@ import Model
 import Level
 import Enemy
 
-import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Data.List
@@ -15,16 +14,16 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate@(PlayingLevel _ _ _ player2 _ _ _ _ _ _ _) | isNothing player2 = if levelComplete (pointList updatedGameState)
-                                                                                    then return $ WonScreen (score updatedGameState)
-                                                                                    else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
-                                                                                        then return $ DiedScreen (score updatedGameState)
-                                                                                        else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
-                                                            | otherwise = if levelComplete (pointList updatedGameState)
-                                                                            then return $ Player1WonScreen (score updatedGameState)
-                                                                            else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && isInvincible (puType (powerUp updatedGameState)) == False
-                                                                                then return $ Player2WonScreen (score updatedGameState)
-                                                                                else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _)    | isNothing _player2 = if levelComplete (pointList updatedGameState)
+                                                                                        then return $ WonScreen (score updatedGameState)
+                                                                                        else if isPlayerDead updatedGameState && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                            then return $ DiedScreen (score updatedGameState)
+                                                                                            else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+                                                                | otherwise = if levelComplete (pointList updatedGameState)
+                                                                                then return $ Player1WonScreen (score updatedGameState)
+                                                                                else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && isInvincible (puType (powerUp updatedGameState)) == False
+                                                                                    then return $ Player2WonScreen (score updatedGameState)
+                                                                                    else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                         where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
 step secs gstate = return $ updateTimeGState secs gstate
 
@@ -66,15 +65,15 @@ createNewPowerUps gstate    | chance < 0.005 && field /= WallField && elem newPo
                             | otherwise = gstate
     where   random1 = rng gstate
             (chance, random2) = randomR (0 :: Float, 1 :: Float) random1
-            (powerUp, random3) = randomR (1 :: Int, 3 :: Int) random2
+            (_powerUp, random3) = randomR (1 :: Int, 3 :: Int) random2
             (xPos, random4) = randomR (0 :: Int, (levelWidth - 1)) random3
             (yPos, random5) = randomR (0 :: Int, (levelHeight - 1)) random4
-            (randomDuration, random6) = randomR (10 :: Float, 30 :: Float) random5
+            (randomDuration, _) = randomR (10 :: Float, 30 :: Float) random5
             _level = level gstate
             (field, pos) = _level !! yPos !! xPos
             levelWidth = length (head _level)
             levelHeight = length _level
-            newPowerUp = PowerUp (types !! (powerUp - 1)) (randomDuration + secs) pos
+            newPowerUp = PowerUp (types !! (_powerUp - 1)) (randomDuration + secs) pos
             types = init [SpeedUp ..]
             secs = passedTime gstate
 
@@ -93,7 +92,7 @@ checkForNewPowerUps gstate  | index == Nothing = gstate
             _availablePowerUps = availablePowerUps gstate
             _positions = map position _availablePowerUps
             (randomDuration, _) = randomR (5 :: Float, 20 :: Float) (rng gstate)
-            index = elemIndex (fromIntegral (round x), fromIntegral (round y)) _positions
+            index = elemIndex (fromInteger (round x), fromInteger (round y)) _positions
             newPowerUp i = _availablePowerUps !! i
             secs = passedTime gstate
 
@@ -102,9 +101,9 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e)
             _playerPos = playerPos (player gstate)
-            newDirAndPos (enemyPos, enemyDir) enemyType = if isInvertedEnemies (puType (powerUp gstate))
-                                                                then invertedDirection gstate enemyDir _playerPos enemyPos
-                                                                else normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) enemyDir _playerPos enemyPos enemyType
+            newDirAndPos (_enemyPos, _enemyDir) _enemyType = if isInvertedEnemies (puType (powerUp gstate))
+                                                                then invertedDirection gstate _enemyDir _playerPos _enemyPos
+                                                                else normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) _enemyDir _playerPos _enemyPos _enemyType
             newEnemy e = Enemy (fst (newDirAndPos (enemy e) (enemyType e))) (snd (newDirAndPos (enemy e) (enemyType e))) (enemyType e)
             newEnemies = map newEnemy _enemies
 
@@ -165,11 +164,11 @@ moveEnemies gstate = gstate { enemies = newEnemies }
             newEnemies = map newEnemy _enemies
 
 checkNewPlayerPosition :: GameState -> Player -> Position -> Bool
-checkNewPlayerPosition gstate player (x, y) = case field of
+checkNewPlayerPosition gstate _player (x, y) = case field of
                                     WallField   -> False
                                     _           -> True
     where   _level = level gstate
-            _playerDir = playerDir player
+            _playerDir = playerDir _player
             (field, _) = if _playerDir == DirUp
                             then (_level !! floor y) !! round x
                             else if _playerDir == DirDown
@@ -193,14 +192,14 @@ checkNewEnemyPosition gstate e (x, y) = case field of
                                     else (_level !! round y) !! floor x
                         
 checkCurrentPosition :: GameState -> GameState
-checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointList = (delete ((fromIntegral (round x), fromIntegral (round y)), _bool index) _pointlist) }
+checkCurrentPosition gs | index /= Nothing = gs { score = newscore index, pointList = (delete ((fromInteger (round x), fromInteger (round y)), _bool index) _pointlist) }
                         | otherwise = gs
                         where (x, y)  = playerPos (player gs)
-                              index = elemIndex (fromIntegral (round x), fromIntegral (round y)) (map fst _pointlist)
+                              index = elemIndex (fromInteger (round x), fromInteger (round y)) (map fst _pointlist)
                               _pointlist = pointList gs 
-                              newscore index    | _bool index = score gs + 25
+                              newscore _index   | _bool _index = score gs + 25
                                                 | otherwise = score gs + 10
-                              _bool index = snd (_pointlist !! (fromJust index))
+                              _bool i = snd (_pointlist !! (fromJust i))
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -212,7 +211,7 @@ input e@(EventKey (Char c) Down _ _) gstate@(LevelChooser levelList) = if isDigi
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate = MainMenu
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) _ = MainMenu
 inputKey (EventKey (Char 'c') Down _ _) (LevelChooser _) = ControlsScreen
 inputKey (EventKey (Char 'h') Down _ _) (LevelChooser _) = HelpScreen
 inputKey (EventKey (Char 'p') Down _ _) gstate
@@ -253,72 +252,72 @@ inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player2WonScreen _) = MainMe
 inputKey _ gstate = gstate -- Otherwise keep the same
 
 setPlayerDirectionToUp :: GameState -> Player -> GameState
-setPlayerDirectionToUp gstate _player   | _player == player gstate = if (x - fromIntegral (floor x)) < 0.2 && checkUpperFieldFree (fromIntegral (floor x)) y
-                                                                        then gstate { player = Player (newPlayerPos (fromIntegral (floor x)) y) DirUp }
-                                                                        else if (x - fromIntegral (floor x)) > 0.8 && checkUpperFieldFree (fromIntegral (ceiling x)) y
-                                                                            then gstate { player = Player (newPlayerPos (fromIntegral (ceiling x)) y) DirUp }
+setPlayerDirectionToUp gstate _player   | _player == player gstate = if (x - fromInteger (floor x)) < 0.2 && checkUpperFieldFree (fromInteger (floor x)) y
+                                                                        then gstate { player = Player (newPlayerPos (fromInteger (floor x)) y) DirUp }
+                                                                        else if (x - fromInteger (floor x)) > 0.8 && checkUpperFieldFree (fromInteger (ceiling x)) y
+                                                                            then gstate { player = Player (newPlayerPos (fromInteger (ceiling x)) y) DirUp }
                                                                             else gstate
-                                        | otherwise = if (x - fromIntegral (floor x)) < 0.2 && checkUpperFieldFree (fromIntegral (floor x)) y
-                                                            then gstate { player2 = Just (Player (newPlayerPos (fromIntegral (floor x)) y) DirUp) }
-                                                            else if (x - fromIntegral (floor x)) > 0.8 && checkUpperFieldFree (fromIntegral (ceiling x)) y
-                                                                then gstate { player2 = Just (Player (newPlayerPos (fromIntegral (ceiling x)) y) DirUp) }
+                                        | otherwise = if (x - fromInteger (floor x)) < 0.2 && checkUpperFieldFree (fromInteger (floor x)) y
+                                                            then gstate { player2 = Just (Player (newPlayerPos (fromInteger (floor x)) y) DirUp) }
+                                                            else if (x - fromInteger (floor x)) > 0.8 && checkUpperFieldFree (fromInteger (ceiling x)) y
+                                                                then gstate { player2 = Just (Player (newPlayerPos (fromInteger (ceiling x)) y) DirUp) }
                                                                 else gstate
     where   _level = level gstate
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkUpperFieldFree x y = checkNewPlayerPosition gstate _player (newPlayerPos x (y - 1))
+            checkUpperFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos xCoor (yCoor - 1))
 
 setPlayerDirectionToDown :: GameState -> Player -> GameState
-setPlayerDirectionToDown gstate _player     | _player == player gstate = if (x - fromIntegral (floor x)) < 0.2 && checkLowerFieldFree (fromIntegral (floor x)) y
-                                                                            then gstate { player = Player (newPlayerPos (fromIntegral (floor x)) y) DirDown }
-                                                                            else if (x - fromIntegral (floor x)) > 0.8 && checkLowerFieldFree (fromIntegral (ceiling x)) y
-                                                                                then gstate { player = Player (newPlayerPos (fromIntegral (ceiling x)) y) DirDown }
+setPlayerDirectionToDown gstate _player     | _player == player gstate = if (x - fromInteger (floor x)) < 0.2 && checkLowerFieldFree (fromInteger (floor x)) y
+                                                                            then gstate { player = Player (newPlayerPos (fromInteger (floor x)) y) DirDown }
+                                                                            else if (x - fromInteger (floor x)) > 0.8 && checkLowerFieldFree (fromInteger (ceiling x)) y
+                                                                                then gstate { player = Player (newPlayerPos (fromInteger (ceiling x)) y) DirDown }
                                                                                 else gstate
-                                            | otherwise = if (x - fromIntegral (floor x)) < 0.2 && checkLowerFieldFree (fromIntegral (floor x)) y
-                                                                then gstate { player2 = Just (Player (newPlayerPos (fromIntegral (floor x)) y) DirDown) }
-                                                                else if (x - fromIntegral (floor x)) > 0.8 && checkLowerFieldFree (fromIntegral (ceiling x)) y
-                                                                    then gstate { player2 = Just (Player (newPlayerPos (fromIntegral (ceiling x)) y) DirDown) }
+                                            | otherwise = if (x - fromInteger (floor x)) < 0.2 && checkLowerFieldFree (fromInteger (floor x)) y
+                                                                then gstate { player2 = Just (Player (newPlayerPos (fromInteger (floor x)) y) DirDown) }
+                                                                else if (x - fromInteger (floor x)) > 0.8 && checkLowerFieldFree (fromInteger (ceiling x)) y
+                                                                    then gstate { player2 = Just (Player (newPlayerPos (fromInteger (ceiling x)) y) DirDown) }
                                                                     else gstate
     where   _level = level gstate
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkLowerFieldFree x y = checkNewPlayerPosition gstate _player (newPlayerPos x (y + 1))
+            checkLowerFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos xCoor (yCoor + 1))
             
 setPlayerDirectionToRight :: GameState -> Player -> GameState
-setPlayerDirectionToRight gstate _player    | _player == player gstate = if (y - fromIntegral (floor y)) < 0.2 && checkRightFieldFree x (fromIntegral (floor y))
-                                                                            then gstate { player = Player (newPlayerPos x (fromIntegral (floor y))) DirRight }
-                                                                            else if (y - fromIntegral (floor y)) > 0.8 && checkRightFieldFree x (fromIntegral (ceiling y))
-                                                                                then gstate { player = Player (newPlayerPos x (fromIntegral (ceiling y))) DirRight }
+setPlayerDirectionToRight gstate _player    | _player == player gstate = if (y - fromInteger (floor y)) < 0.2 && checkRightFieldFree x (fromInteger (floor y))
+                                                                            then gstate { player = Player (newPlayerPos x (fromInteger (floor y))) DirRight }
+                                                                            else if (y - fromInteger (floor y)) > 0.8 && checkRightFieldFree x (fromInteger (ceiling y))
+                                                                                then gstate { player = Player (newPlayerPos x (fromInteger (ceiling y))) DirRight }
                                                                                 else gstate
-                                            | otherwise = if (y - fromIntegral (floor y)) < 0.2 && checkRightFieldFree x (fromIntegral (floor y))
-                                                                then gstate { player2 = Just (Player (newPlayerPos x (fromIntegral (floor y))) DirRight) }
-                                                                else if (y - fromIntegral (floor y)) > 0.8 && checkRightFieldFree x (fromIntegral (ceiling y))
-                                                                    then gstate { player2 = Just (Player (newPlayerPos x (fromIntegral (ceiling y))) DirRight) }
+                                            | otherwise = if (y - fromInteger (floor y)) < 0.2 && checkRightFieldFree x (fromInteger (floor y))
+                                                                then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (floor y))) DirRight) }
+                                                                else if (y - fromInteger (floor y)) > 0.8 && checkRightFieldFree x (fromInteger (ceiling y))
+                                                                    then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (ceiling y))) DirRight) }
                                                                     else gstate
     where   _level = level gstate
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkRightFieldFree x y = checkNewPlayerPosition gstate _player (newPlayerPos (x + 1) y)
+            checkRightFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos (xCoor + 1) yCoor)
             
 setPlayerDirectionToLeft :: GameState -> Player -> GameState
-setPlayerDirectionToLeft gstate _player     | _player == player gstate = if (y - fromIntegral (floor y)) < 0.2 && checkLeftFieldFree x (fromIntegral (floor y))
-                                                                            then gstate { player = Player (newPlayerPos x (fromIntegral (floor y))) DirLeft }
-                                                                            else if (y - fromIntegral (floor y)) > 0.8 && checkLeftFieldFree x (fromIntegral (ceiling y))
-                                                                                then gstate { player = Player (newPlayerPos x (fromIntegral (ceiling y))) DirLeft }
+setPlayerDirectionToLeft gstate _player     | _player == player gstate = if (y - fromInteger (floor y)) < 0.2 && checkLeftFieldFree x (fromInteger (floor y))
+                                                                            then gstate { player = Player (newPlayerPos x (fromInteger (floor y))) DirLeft }
+                                                                            else if (y - fromInteger (floor y)) > 0.8 && checkLeftFieldFree x (fromInteger (ceiling y))
+                                                                                then gstate { player = Player (newPlayerPos x (fromInteger (ceiling y))) DirLeft }
                                                                                 else gstate
-                                            | otherwise = if (y - fromIntegral (floor y)) < 0.2 && checkLeftFieldFree x (fromIntegral (floor y))
-                                                                then gstate { player2 = Just (Player (newPlayerPos x (fromIntegral (floor y))) DirLeft) }
-                                                                else if (y - fromIntegral (floor y)) > 0.8 && checkLeftFieldFree x (fromIntegral (ceiling y))
-                                                                    then gstate { player2 = Just (Player (newPlayerPos x (fromIntegral (ceiling y))) DirLeft) }
+                                            | otherwise = if (y - fromInteger (floor y)) < 0.2 && checkLeftFieldFree x (fromInteger (floor y))
+                                                                then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (floor y))) DirLeft) }
+                                                                else if (y - fromInteger (floor y)) > 0.8 && checkLeftFieldFree x (fromInteger (ceiling y))
+                                                                    then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (ceiling y))) DirLeft) }
                                                                     else gstate
     where   _level = level gstate
             _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
-            checkLeftFieldFree x y = checkNewPlayerPosition gstate _player (newPlayerPos (x - 1) y)
+            checkLeftFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos (xCoor - 1) yCoor)
             
 isPlaying :: GameState -> Bool
 isPlaying (PlayingLevel _ _ _ _ _ _ _ _ _ _ _) = True
