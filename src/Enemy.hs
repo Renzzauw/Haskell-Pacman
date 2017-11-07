@@ -89,26 +89,26 @@ randomEnemy gstate currDir pos@(ex, ey) = if validNewTime
             newRight = newEnemyPosInY rightPos
 
 newEnemyPosInX :: Position -> (Position, Bool)
-newEnemyPosInX (ex, ey) = if (ex - fromIntegral (floor ex)) < 0.2
-                              then (((fromIntegral (floor ex)), ey), True)
-                              else if ex - fromIntegral (floor ex) > 0.8
-                                    then (((fromIntegral (ceiling ex)), ey), True)
+newEnemyPosInX (ex, ey) = if (ex - fromInteger (floor ex)) < 0.2
+                              then (((fromInteger (floor ex)), ey), True)
+                              else if ex - fromInteger (floor ex) > 0.8
+                                    then (((fromInteger (ceiling ex)), ey), True)
                                     else ((ex, ey), False)
 
 newEnemyPosInY :: Position -> (Position, Bool)
-newEnemyPosInY (ex, ey) = if (ey - fromIntegral (floor ey)) < 0.2
-                              then ((ex, (fromIntegral (floor ey))), True)
-                              else if ey - fromIntegral (floor ey) > 0.8
-                                    then ((ex, (fromIntegral (ceiling ey))), True)
+newEnemyPosInY (ex, ey) = if (ey - fromInteger (floor ey)) < 0.2
+                              then ((ex, (fromInteger (floor ey))), True)
+                              else if ey - fromInteger (floor ey) > 0.8
+                                    then ((ex, (fromInteger (ceiling ey))), True)
                                     else ((ex, ey) , False)
 
 normalDirection :: GameState -> Direction -> Position -> Position -> EnemyType -> (Position, Direction)
-normalDirection gs currDir playerPos enemyPos eType = case eType of
-      GoToPlayer  -> lookForPlayer gs currDir playerPos enemyPos (<) (>)
-      _           -> randomEnemy gs currDir enemyPos
+normalDirection gs currDir _playerPos _enemyPos eType = case eType of
+      GoToPlayer  -> lookForPlayer gs currDir _playerPos _enemyPos (<) (>)
+      _           -> randomEnemy gs currDir _enemyPos
 
 invertedDirection :: GameState -> Direction -> Position -> Position -> (Position, Direction)
-invertedDirection gs currDir playerPos enemyPos = lookForPlayer gs currDir playerPos enemyPos (>) (<)
+invertedDirection gs currDir _playerPos _enemyPos = lookForPlayer gs currDir _playerPos _enemyPos (>) (<)
 
 checkNewPosition :: GameState -> Direction -> Position -> Bool
 checkNewPosition gstate dir (x, y) = case field of
