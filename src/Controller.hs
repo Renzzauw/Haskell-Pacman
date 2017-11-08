@@ -320,29 +320,9 @@ isPaused Paused {} = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame gstate = Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
-    where   _score = score gstate
-            _level = level gstate
-            _player = player gstate
-            _player2 = player2 gstate
-            _pointList = pointList gstate
-            _enemies = enemies gstate
-            _powerUp = powerUp gstate
-            _availablePowerUps = availablePowerUps gstate
-            _passedTime = passedTime gstate
-            _rng = rng gstate
-            _frame = frame gstate
+pauseGame (PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame) = Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
+pauseGame gstate = gstate
 
 unPauseGame :: GameState -> GameState
-unPauseGame gstate = PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
-    where   _score = score gstate
-            _level = level gstate
-            _player = player gstate
-            _player2 = player2 gstate
-            _pointList = pointList gstate
-            _enemies = enemies gstate
-            _powerUp = powerUp gstate
-            _availablePowerUps = availablePowerUps gstate
-            _passedTime = passedTime gstate
-            _rng = rng gstate
-            _frame = frame gstate
+unPauseGame (Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame) = PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
+unPauseGame gstate = gstate
