@@ -164,7 +164,7 @@ drawPowerUps gstate = pictures (map drawPowerUp powerUps)
             sprite x = case x of
                 SpeedUp         -> speedUpPowerUp
                 InvertedEnemies -> invertedEnemiesPowerUp
-                Invincible      -> invinciblePowerUp
+                EatEnemies      -> eatEnemiesPowerUp
                 _               -> emptyTile
             drawPowerUp _powerUp = translate (fst (position _powerUp) * fromIntegral spriteSize) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
 
@@ -292,7 +292,7 @@ speedUpPowerUp = scalePicture (png "Images/New/PowerUpSpeed.png")
 invertedEnemiesPowerUp :: Picture
 invertedEnemiesPowerUp = scalePicture (png "Images/New/PowerUpReverse.png")
 
-invinciblePowerUp :: Picture
-invinciblePowerUp = scalePicture (png "Images/New/PowerUpImmune.png")
+eatEnemiesPowerUp :: Picture
+eatEnemiesPowerUp = scalePicture (png "Images/New/PowerUpEatEnemies.png")
 
 -- #############################################################################################################################################################################

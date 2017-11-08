@@ -4,6 +4,7 @@ import Level
 import Model
 
 import System.Random
+import Data.List
 
 upPos :: Position -> Position
 upPos (ex, ey) = (ex, ey - enemyVelocity)
@@ -131,8 +132,8 @@ checkNewPosition gstate dir (x, y) = case field of
                         | otherwise = (_level !! round y) !! floor x 
 
 -- Function that checks if the Enemy is on the same position as the player                                              
-isPlayerDead :: GameState -> Bool
-isPlayerDead gstate = True `elem` checkPoss
+isPlayerDead :: GameState -> [Int]
+isPlayerDead gstate = elemIndices True checkPoss
       where (px, py) = playerPos (player gstate)
             enemyPoss = map enemyPos (enemies gstate)
             checkPos (ex, ey) | abs (px - ex) < 0.3 && abs (py - ey) < 0.3 = True

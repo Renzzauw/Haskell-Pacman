@@ -16,14 +16,18 @@ import Data.Char
 step :: Float -> GameState -> IO GameState
 step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _)    | isNothing _player2 = if levelComplete (pointList updatedGameState)
                                                                                         then return $ WonScreen (score updatedGameState)
-                                                                                        else if isPlayerDead updatedGameState && not (isInvincible (puType (powerUp updatedGameState)))
+                                                                                        else if not (null (isPlayerDead updatedGameState)) && not (isEatEnemies (puType (powerUp updatedGameState)))
                                                                                             then return $ DiedScreen (score updatedGameState)
-                                                                                            else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+                                                                                            else if not (null (isPlayerDead updatedGameState))
+                                                                                                    then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
+                                                                                                    else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                                                 | otherwise = if levelComplete (pointList updatedGameState)
                                                                                 then return $ Player1WonScreen (score updatedGameState)
-                                                                                else if (isPlayerDead updatedGameState || checkPlayer2Won updatedGameState) && not (isInvincible (puType (powerUp updatedGameState)))
+                                                                                else if (not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState) && not (isEatEnemies (puType (powerUp updatedGameState)))
                                                                                     then return $ Player2WonScreen (score updatedGameState)
-                                                                                    else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
+                                                                                    else if (not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState)
+                                                                                        then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
+                                                                                        else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
                                         where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
 step secs gstate = return $ updateTimeGState secs gstate
 
@@ -44,6 +48,18 @@ updateRNG gstate = do
     newRng <- newStdGen
     let newState = gstate { rng = newRng }
     return newState
+
+deleteEnemies :: GameState -> [Int] -> GameState
+deleteEnemies gstate indices = gstate { enemies = newEnemies }
+    where   _enemies = enemies gstate
+            newEnemies = deleteAtIndices indices _enemies
+
+deleteAtIndices :: [Int] -> [Enemy] -> [Enemy]
+deleteAtIndices _ [] = []
+deleteAtIndices [] list = list
+deleteAtIndices list list2 = deleteAtIndices (tail list) list3
+    where   toDelete = list2 !! (head list)
+            list3 = delete toDelete list2
 
 checkPlayer2Won :: GameState -> Bool
 checkPlayer2Won gstate = checkPos
@@ -89,7 +105,7 @@ checkForNewPowerUps gstate  | isNothing index = gstate
     where   (x, y) = playerPos (player gstate)
             _availablePowerUps = availablePowerUps gstate
             _positions = map position _availablePowerUps
-            (randomDuration, _) = randomR (5 :: Float, 20 :: Float) (rng gstate)
+            (randomDuration, _) = randomR (5 :: Float, 15 :: Float) (rng gstate)
             index = elemIndex (fromInteger (round x), fromInteger (round y)) _positions
             newPowerUp i = _availablePowerUps !! i
             secs = passedTime gstate
@@ -138,9 +154,9 @@ isSpeedUp :: PowerUpType -> Bool
 isSpeedUp SpeedUp = True
 isSpeedUp _ = False
 
-isInvincible :: PowerUpType -> Bool
-isInvincible Invincible = True
-isInvincible _ = False
+isEatEnemies :: PowerUpType -> Bool
+isEatEnemies EatEnemies = True
+isEatEnemies _ = False
 
 isInvertedEnemies :: PowerUpType -> Bool
 isInvertedEnemies InvertedEnemies = True

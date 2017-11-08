@@ -14,6 +14,7 @@ data EnemyType = GoToPlayer | Random
 data Player = Player { playerPos :: Position, playerDir :: Direction, lastDir :: Direction }
     deriving (Eq)
 data Enemy = Enemy { enemyPos :: Position, enemyDir :: Direction, enemyType :: EnemyType }
+    deriving (Eq)
 type Field = (FieldType, Position)
 type Row = [Field]
 type Level = [Row]

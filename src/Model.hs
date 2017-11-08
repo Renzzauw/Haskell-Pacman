@@ -52,14 +52,14 @@ data PowerUp = PowerUp {
     position :: Position }
         deriving (Eq)
     
-data PowerUpType = SpeedUp | Invincible | InvertedEnemies | NoPowerUp
+data PowerUpType = SpeedUp | EatEnemies | InvertedEnemies | NoPowerUp
     deriving (Eq, Enum)
        
 initialState :: FilePath -> IO GameState
 initialState filePath = do
     (_level, _points, _player, _player2, _enemies) <- loadLevel ("Levels/" ++ filePath)
     _rng <- newStdGen
-    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [] 0 _rng 1
+    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [PowerUp EatEnemies 100 (13, 13)] 0 _rng 1
     return state
     where   _powerUp = PowerUp NoPowerUp 0 (0, 0)
 
