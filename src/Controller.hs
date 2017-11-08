@@ -255,7 +255,6 @@ setPlayerDirectionToUp gstate _player _lastDir  | _player == player gstate = if 
                                                                         then gstate { player2 = Just (Player (newPlayerPos (fromInteger (ceiling x)) y) DirUp _lastDir) }
                                                                         else gstate
     where   _level = level gstate
-            _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
             checkUpperFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos xCoor (yCoor - 1))
@@ -272,7 +271,6 @@ setPlayerDirectionToDown gstate _player _lastDir    | _player == player gstate =
                                                                             then gstate { player2 = Just (Player (newPlayerPos (fromInteger (ceiling x)) y) DirDown _lastDir) }
                                                                             else gstate
     where   _level = level gstate
-            _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
             checkLowerFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos xCoor (yCoor + 1))
@@ -289,7 +287,6 @@ setPlayerDirectionToRight gstate _player _lastDir   | _player == player gstate =
                                                                             then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (ceiling y))) DirRight _lastDir) }
                                                                             else gstate
     where   _level = level gstate
-            _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
             checkRightFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos (xCoor + 1) yCoor)
@@ -306,7 +303,6 @@ setPlayerDirectionToLeft gstate _player _lastDir    | _player == player gstate =
                                                                             then gstate { player2 = Just (Player (newPlayerPos x (fromInteger (ceiling y))) DirLeft _lastDir) }
                                                                             else gstate
     where   _level = level gstate
-            _playerDir = playerDir _player
             (x, y) = playerPos _player
             newPlayerPos _x _y = (_x, _y)
             checkLeftFieldFree xCoor yCoor = checkNewPlayerPosition gstate _player (newPlayerPos (xCoor - 1) yCoor)
