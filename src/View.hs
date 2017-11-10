@@ -175,7 +175,9 @@ drawAnimation secs anim = translate (x * fromIntegral spriteSize) (-y * fromInte
             _animType = animationType anim
             (x, y) = animPos anim
             usedPictures        | _animType == RedEnemyDied = redEnemyDiedAnimation
-                                | _animType == Trigger      = orangeTrigger
+                                | _animType == OrangeTrigger      = orangeTrigger
+                                | _animType == PurpleTrigger      = purpleTrigger
+                                | _animType == RedTrigger         = redTrigger
                                 | otherwise = blueEnemyDiedAnimation
             numberOfSprites = length usedPictures
             index = floor ((secs - _startTime) / ((_stopTime - _startTime) / fromIntegral numberOfSprites))
