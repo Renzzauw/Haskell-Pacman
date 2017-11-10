@@ -25,7 +25,7 @@ getScore string = read ((words string) !! 1)
 getScores :: IO [String] -> IO [Int]
 getScores string = do
     strings <- string
-    let scores = map getScore strings
+    let scores = map getScore (tail strings)
     return scores
 
 newScore :: Int -> [Int] -> [Int]
@@ -46,4 +46,4 @@ updateHighScore :: Int -> IO ()
 updateHighScore score = do
     scores <- getScores getHighScoreData
     let newScores = newScore score scores
-    writeHighScore newScores
+    length scores `seq` writeHighScore newScores
