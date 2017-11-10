@@ -140,11 +140,10 @@ eatEnemiesPowerUp :: Picture
 eatEnemiesPowerUp = scalePicture (png "Images/New/PowerUpEatEnemies.png")
 
 redEnemyDiedAnimation :: [Picture]
-redEnemyDiedAnimation = [scalePicture (png "Images/PointTile.png"), scalePicture (png "Images/BigPointTile.png"), scalePicture (png "Images/PointTile.png"), scalePicture (png "Images/BigPointTile.png")]
+redEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
 
 blueEnemyDiedAnimation :: [Picture]
-blueEnemyDiedAnimation = [wall, scale 0.8 0.8 wall, scale 0.6 0.6 wall, scale 0.4 0.4 wall, scale 0.2 0.2 wall]
-    where   wall = scalePicture (png "Images/WallTile.png")
+blueEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
 
 -- Triggers --
 
