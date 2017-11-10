@@ -21,4 +21,5 @@ executable hakell-pacman
                        Enemy,
                        Level,
                        Model,
-                       View
+                       View,
+                       Images
