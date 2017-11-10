@@ -16,7 +16,7 @@ view = return . viewPure
 -- Show the right screen with the given GameState
 viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
-viewPure gstate@(WonScreen _) = drawWonScreen gstate
+viewPure gstate@(WonScreen _ _) = drawWonScreen gstate
 viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
 viewPure (Player1WonScreen _) = head playerWins
 viewPure (Player2WonScreen _) = playerWins !! 1

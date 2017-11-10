@@ -27,7 +27,8 @@ data GameState =
       | DiedScreen {
           score :: Int }
       | WonScreen {
-          score :: Int }
+          score :: Int,
+          updatedHighScore :: Bool }
       | Player1WonScreen {
           score :: Int }
       | Player2WonScreen {

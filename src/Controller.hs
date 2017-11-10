@@ -5,6 +5,7 @@ module Controller where
 import Model
 import Level
 import Enemy
+import HighScoreHandler
 
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
@@ -16,7 +17,7 @@ import Data.Char
 step :: Float -> GameState -> IO GameState
 step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _ _)    
         | isNothing _player2 = if levelComplete (pointList updatedGameState)
-                                then return $ WonScreen (score updatedGameState)
+                                then return $ WonScreen (score updatedGameState) False
                                 else if not (null (isPlayerDead updatedGameState)) && puType (powerUp updatedGameState) /= EatEnemies
                                     then return $ DiedScreen (score updatedGameState)
                                     else if not (null (isPlayerDead updatedGameState))
@@ -30,6 +31,10 @@ step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _ _)
                                 then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
                                 else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints updatedGameState))))
     where   updatedGameState = updateAnimations (checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate))))))
+step _ gstate@(WonScreen _score _updatedScore)  | _updatedScore = return gstate
+                                                | otherwise = do
+                                                    updateHighScore _score
+                                                    return gstate { updatedHighScore = True }
 step secs gstate = return $ updateTimeGState secs gstate
 
 -- Update the passedTime in the gamestate
@@ -144,9 +149,8 @@ updateEnemyDirection gstate = gstate { enemies = newEnemies }
     where   _enemies = enemies gstate
             enemy e = (enemyPos e, enemyDir e)
             _playerPos = playerPos (player gstate)
-            newDirAndPos (_enemyPos, _enemyDir) _enemyType = if puType (powerUp gstate) == InvertedEnemies
-                                                                then invertedDirection gstate _enemyDir _playerPos _enemyPos
-                                                                else normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) _enemyDir _playerPos _enemyPos _enemyType
+            newDirAndPos (_enemyPos, _enemyDir) _enemyType  | puType (powerUp gstate) == InvertedEnemies = invertedDirection gstate _enemyDir _playerPos _enemyPos
+                                                            | otherwise = normalDirection (gstate { rng = snd (randomR (0 :: Float, 1 :: Float) (rng gstate)) }) _enemyDir _playerPos _enemyPos _enemyType
             newEnemy e = uncurry Enemy (newDirAndPos (enemy e) (enemyType e)) (enemyType e)
             newEnemies = map newEnemy _enemies
 
@@ -192,9 +196,8 @@ moveEnemies gstate = gstate { enemies = newEnemies }
                 DirRight    ->  (oldXPos + enemyVelocity, oldYPos)
                 DirLeft     ->  (oldXPos - enemyVelocity, oldYPos)
                 _           ->  (oldXPos, oldYPos)
-            newEnemy e = if checkNewEnemyPosition gstate e (uncurry newPos (enemy e))
-                            then Enemy (uncurry newPos (enemy e)) (snd (enemy e)) (enemyType e)
-                            else uncurry Enemy (enemy e) (enemyType e)
+            newEnemy e  | checkNewEnemyPosition gstate e (uncurry newPos (enemy e)) = Enemy (uncurry newPos (enemy e)) (snd (enemy e)) (enemyType e)
+                        | otherwise = uncurry Enemy (enemy e) (enemyType e)
             newEnemies = map newEnemy _enemies
 
 -- Function that checks whether a new position for a player is valid
@@ -235,10 +238,9 @@ checkCurrentPositionForPoints gs    | isJust index = gs { score = newscore index
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
 input (EventKey (SpecialKey KeyEnter) Down _ _) MainMenu = levelChooserState
-input e@(EventKey (Char c) Down _ _) gstate@(LevelChooser levelList) = if isDigit c && length levelList >= number
-                                                                            then initialState (levelList !! (number - 1))
-                                                                            else return (inputKey e gstate)
-                                                                 where   number = digitToInt c
+input e@(EventKey (Char c) Down _ _) gstate@(LevelChooser levelList)    | isDigit c && length levelList >= number = initialState (levelList !! (number - 1))
+                                                                        | otherwise = return (inputKey e gstate)
+    where   number = digitToInt c
 input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
@@ -276,7 +278,7 @@ inputKey (EventKey (SpecialKey KeyRight) _ _ _) gstate
     | isPlaying gstate && isJust (player2 gstate) && puType (powerUp gstate) /= InvertedEnemies = setPlayerDirectionToRight gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | isPlaying gstate && isJust (player2 gstate) && puType (powerUp gstate) == InvertedEnemies = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
-inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _) = MainMenu
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _ _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player1WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player2WonScreen _) = MainMenu

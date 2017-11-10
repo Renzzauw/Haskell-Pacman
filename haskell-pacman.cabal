@@ -22,4 +22,5 @@ executable hakell-pacman
                        Level,
                        Model,
                        View,
-                       Images
+                       Images,
+                       HighScoreHandler
