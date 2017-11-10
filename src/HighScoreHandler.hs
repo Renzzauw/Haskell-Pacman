@@ -1,6 +1,8 @@
 module HighScoreHandler where
 
 import Data.List
+import System.IO
+import System.Directory
 
 -- The high score file looks like this:
 {-
@@ -13,17 +15,21 @@ Highscores:
 Last score: 0
 -}
 
-getScore :: String -> Int
-getScore string = read ((words string) !! 1)
+getScore :: String -> String
+getScore string = whatToRead
+    where   whatToRead = ((words string) !! 1)
 
-getScores :: String -> [Int]
+getScores :: String -> [String]
 getScores string = map getScore usedRows
     where   rows = lines string
-            usedRows = tail rows
+            usedRows = init (tail rows)
 
-newScore :: Int -> [Int] -> [Int]
-newScore score list = take 5 newList
-    where   newList = insert score list
+newScore :: Int -> String -> [Int]
+newScore score string = take 5 (reverse (insertedNewScore))
+    where   list = getScores string
+            ints = map read list :: [Int]
+            sortedInts = sort ints
+            insertedNewScore = insert score sortedInts
 
 writeHighScore :: Int -> [Int] -> String
 writeHighScore score highScores = total
@@ -36,7 +42,21 @@ writeHighScore score highScores = total
             s6 = "Last score: " ++ show score
             total = unlines (header : s1 : s2 : s3 : s4 : s5 : [s6])
 
+createOrOpenHighScores :: IO Handle
+createOrOpenHighScores = do
+    exists <- doesFileExist "Highscores.txt"
+    if not (exists)
+        then writeFile "Highscores.txt" startHighScores
+        else return ()
+    openFile "Highscores.txt" ReadMode
+    where   startHighScores = "Highscores:\n1. 0\n2. 0\n3. 0\n4. 0\n5. 0\nLast score: 0"
+
 updateHighScore :: Int -> IO ()
 updateHighScore score = do
-    text <- readFile "Highscores.txt"
-    length text `seq` (writeFile "Highscores.txt" $ writeHighScore score (newScore score (getScores text)))
+    h2 <- createOrOpenHighScores
+    h <- openFile "HighscoresTEMP.txt" WriteMode
+    originalFileContents <- hGetContents h2
+    hPutStr h $ writeHighScore score (newScore score originalFileContents)
+    hClose h2
+    hClose h
+    renameFile "HighscoresTEMP.txt" "Highscores.txt"
