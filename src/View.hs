@@ -157,11 +157,13 @@ drawPowerUps gstate = pictures (map drawPowerUp powerUps)
                 _               -> emptyTile
             drawPowerUp _powerUp = translate (fst (position _powerUp) * fromIntegral spriteSize) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
 
+-- Function that draws all the active animations
 drawAnimations :: GameState -> Picture
 drawAnimations gstate = pictures (map (drawAnimation secs) animations)
     where   animations = activeAnimations gstate
             secs = passedTime gstate
 
+-- Function that draws one animation
 drawAnimation :: Float -> Animation -> Picture
 drawAnimation secs anim = translate (x * fromIntegral spriteSize) (-y * fromIntegral spriteSize) (usedPictures !! index)
     where   _startTime = startTime anim

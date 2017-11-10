@@ -6,6 +6,7 @@ import Model
 import System.Random
 import Data.List
 
+-- The position an enemy would get if it moved respectively up, down, left or right
 upPos :: Position -> Position
 upPos (ex, ey) = (ex, ey - enemyVelocity)
 
@@ -18,6 +19,7 @@ leftPos (ex, ey) = (ex - enemyVelocity, ey)
 rightPos :: Position -> Position
 rightPos (ex, ey) = (ex + enemyVelocity, ey)
 
+-- Function that returns a new position and whether or not this is a valid position for respectively up, down, left and right
 newUp :: Position -> (Position, Bool)
 newUp pos = newEnemyPosInX (upPos pos)
 
@@ -70,9 +72,11 @@ lookForPlayer gs currDir (px, py) enemypos@(ex, ey) firstOp secondOp = case curr
             deltaY = py - ey
             deltaX = px - ex
 
+-- function that takes a position and returns it centered on the current tile
 centerPosition :: Position -> Position
 centerPosition pos = fst (newEnemyPosInX (fst (newEnemyPosInY pos)))
 
+-- function that moves the random enemies
 randomEnemy :: GameState -> Direction -> Position -> (Position, Direction)
 randomEnemy gstate currDir pos = if validNewTime 
                                     then case newDir of
@@ -101,26 +105,31 @@ randomEnemy gstate currDir pos = if validNewTime
             newDir = snd (possibleDirections !! fst (randomR (0 :: Int, length possibleDirections - 1) _rng))
             validNewTime = frame gstate `mod` 30 == 0
 
+-- Function that take a position and returns it with the x centered on the current tile and whether or not it is a valid position
 newEnemyPosInX :: Position -> (Position, Bool)
 newEnemyPosInX (ex, ey) | deltaX < 0.2 = ((fromInteger (floor ex), ey), True)
                         | deltaX > 0.8 = ((fromInteger (ceiling ex), ey), True)
                         | otherwise = ((ex, ey), False)
       where deltaX = ex - fromInteger (floor ex)
 
+-- Does the same as the function above, except for y instead of x
 newEnemyPosInY :: Position -> (Position, Bool)
 newEnemyPosInY (ex, ey) | deltaY < 0.2 = ((ex, fromInteger (floor ey)), True)
                         | deltaY > 0.8 = ((ex, fromInteger (ceiling ey)), True)
                         | otherwise = ((ex, ey) , False)
       where deltaY = ey - fromInteger (floor ey)
 
+-- Function that handles the enemy movement if the enemies behave normally
 normalDirection :: GameState -> Direction -> Position -> Position -> EnemyType -> (Position, Direction)
 normalDirection gs currDir _playerPos _enemyPos eType = case eType of
       GoToPlayer  -> lookForPlayer gs currDir _playerPos _enemyPos (<) (>)
       _           -> randomEnemy gs currDir _enemyPos
 
+-- Function that handles the enemy movement if the enemies are inverted
 invertedDirection :: GameState -> Direction -> Position -> Position -> (Position, Direction)
 invertedDirection gs currDir _playerPos _enemyPos = lookForPlayer gs currDir _playerPos _enemyPos (>) (<)
 
+-- Function that returns whether or not a position is valid
 checkNewPosition :: GameState -> Direction -> Position -> Bool
 checkNewPosition gstate dir (x, y) = case field of
                               WallField   -> False
