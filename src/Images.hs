@@ -139,16 +139,21 @@ invertedEnemiesPowerUp = scalePicture (png "Images/New/PowerUpReverse.png")
 eatEnemiesPowerUp :: Picture
 eatEnemiesPowerUp = scalePicture (png "Images/New/PowerUpEatEnemies.png")
 
-redEnemyDiedAnimation :: [Picture]
-redEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
-
-blueEnemyDiedAnimation :: [Picture]
-blueEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
-
 -- Triggers --
 
 orangeTrigger :: [Picture]
 orangeTrigger = map (scale 0.6 0.6) [png "Images/Trigger/Orange/OrangeCirkel0.png", png "Images/Trigger/Orange/OrangeCirkel1.png", png "Images/Trigger/Orange/OrangeCirkel2.png", png "Images/Trigger/Orange/OrangeCirkel3.png", png "Images/Trigger/Orange/OrangeCirkel4.png", png "Images/Trigger/Orange/OrangeCirkel5.png", png "Images/Trigger/Orange/OrangeCirkel6.png", png "Images/Trigger/Orange/OrangeCirkel7.png"]
 
+redTrigger :: [Picture]
+redTrigger = map (scale 0.6 0.6) [png "Images/Trigger/Red/RedCirkel0.png", png "Images/Trigger/Red/RedCirkel1.png", png "Images/Trigger/Red/RedCirkel2.png", png "Images/Trigger/Red/RedCirkel3.png", png "Images/Trigger/Red/RedCirkel4.png", png "Images/Trigger/Red/RedCirkel5.png", png "Images/Trigger/Red/RedCirkel6.png", png "Images/Trigger/Red/RedCirkel7.png"]
+
+purpleTrigger :: [Picture]
+purpleTrigger = map (scale 0.6 0.6) [png "Images/Trigger/Purple/PurpleCirkel0.png", png "Images/Trigger/Purple/PurpleCirkel1.png", png "Images/Trigger/Purple/PurpleCirkel2.png", png "Images/Trigger/Purple/PurpleCirkel3.png", png "Images/Trigger/Purple/PurpleCirkel4.png", png "Images/Trigger/Purple/PurpleCirkel5.png", png "Images/Trigger/Purple/PurpleCirkel6.png", png "Images/Trigger/Purple/PurpleCirkel7.png"]
+
+redEnemyDiedAnimation :: [Picture]
+redEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
+
+blueEnemyDiedAnimation :: [Picture]
+blueEnemyDiedAnimation = [scalePicture (png "Images/DieSeq/Bluedie0.png"), scalePicture (png "Images/DieSeq/Bluedie1.png"), scalePicture (png "Images/DieSeq/Bluedie2.png"), scalePicture (png "Images/DieSeq/Bluedie3.png"), scalePicture (png "Images/DieSeq/Bluedie4.png"), scalePicture (png "Images/DieSeq/Bluedie5.png"), scalePicture (png "Images/DieSeq/Bluedie6.png"), scalePicture (png "Images/DieSeq/Bluedie7.png"), scalePicture (png "Images/DieSeq/Bluedie8.png"), scalePicture (png "Images/DieSeq/Bluedie9.png"), scalePicture (png "Images/DieSeq/Bluedie10.png"), scalePicture (png "Images/DieSeq/Bluedie11.png"), scalePicture (png "Images/DieSeq/Bluedie12.png"), scalePicture (png "Images/DieSeq/Bluedie13.png")]
 
 -- #############################################################################################################################################################################

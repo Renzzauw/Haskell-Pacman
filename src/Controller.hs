@@ -143,7 +143,10 @@ checkForNewPowerUps gstate  | isNothing index = gstate
             newPowerUp i = _availablePowerUps !! i
             secs = passedTime gstate
             currAnimations = activeAnimations gstate
-            newAnimation = Animation Trigger (x, y) secs (secs + 1)
+            currPowerUp = puType (newPowerUp (fromJust index))
+            newAnimation | currPowerUp == SpeedUp         = Animation RedTrigger (x, y) secs (secs + 1)
+                         | currPowerUp == EatEnemies      = Animation OrangeTrigger (x, y) secs (secs + 1)
+                         | otherwise                      = Animation PurpleTrigger (x, y) secs (secs + 1)
 
 -- Function that updates the direction of the enemies using functions in Enemy.hs
 updateEnemyDirection :: GameState -> GameState
