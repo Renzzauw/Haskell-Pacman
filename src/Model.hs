@@ -1,7 +1,7 @@
 -- | This module contains the data types
 --   which represent the state of the game
 module Model where
-  
+
 import Level 
 
 import System.Random
@@ -25,7 +25,8 @@ data GameState =
       | LevelChooser {
           levels :: [FilePath] }
       | DiedScreen {
-          score :: Int }
+          score :: Int,
+          updatedHighScore :: Bool }
       | WonScreen {
           score :: Int,
           updatedHighScore :: Bool }
@@ -76,7 +77,7 @@ initialState :: FilePath -> IO GameState
 initialState filePath = do
     (_level, _points, _player, _player2, _enemies) <- loadLevel ("Levels/" ++ filePath)
     _rng <- newStdGen
-    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [PowerUp EatEnemies 10 (13, 13)] 0 _rng 1 []
+    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [] 0 _rng 1 []
     return state
     where   _powerUp = PowerUp NoPowerUp 0 (0, 0)
 

@@ -17,7 +17,7 @@ view = return . viewPure
 viewPure :: GameState -> Picture
 viewPure MainMenu = mainmenuBackground
 viewPure gstate@(WonScreen _ _) = drawWonScreen gstate
-viewPure gstate@(DiedScreen _) = drawDiedScreen gstate
+viewPure gstate@(DiedScreen _ _) = drawDiedScreen gstate
 viewPure (Player1WonScreen _) = head playerWins
 viewPure (Player2WonScreen _) = playerWins !! 1
 viewPure gstate@(LevelChooser _) = drawLevelChooser gstate

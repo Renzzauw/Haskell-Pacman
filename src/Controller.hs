@@ -19,7 +19,7 @@ step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _ _)
         | isNothing _player2 = if levelComplete (pointList updatedGameState)
                                 then return $ WonScreen (score updatedGameState) False
                                 else if not (null (isPlayerDead updatedGameState)) && puType (powerUp updatedGameState) /= EatEnemies
-                                    then return $ DiedScreen (score updatedGameState)
+                                    then return $ DiedScreen (score updatedGameState) False
                                     else if not (null (isPlayerDead updatedGameState))
                                             then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
                                             else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints updatedGameState))))
@@ -35,6 +35,10 @@ step _ gstate@(WonScreen _score _updatedScore)  | _updatedScore = return gstate
                                                 | otherwise = do
                                                     updateHighScore _score
                                                     return gstate { updatedHighScore = True }
+step _ gstate@(DiedScreen _score _updatedScore) | _updatedScore = return gstate
+                                                | otherwise = do
+                                                    updateHighScore _score
+                                                    return gstate { updatedHighScore = True }  
 step secs gstate = return $ updateTimeGState secs gstate
 
 -- Update the passedTime in the gamestate
@@ -281,7 +285,7 @@ inputKey (EventKey (SpecialKey KeyRight) _ _ _) gstate
     | isPlaying gstate && isJust (player2 gstate) && puType (powerUp gstate) == InvertedEnemies = setPlayerDirectionToLeft gstate (fromJust (player2 gstate)) (playerDir (fromJust (player2 gstate)))
     | otherwise = gstate
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (WonScreen _ _) = MainMenu
-inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _) = MainMenu
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (DiedScreen _ _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player1WonScreen _) = MainMenu
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) (Player2WonScreen _) = MainMenu
 inputKey _ gstate = gstate -- Otherwise keep the same
