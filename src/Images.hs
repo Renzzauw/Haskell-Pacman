@@ -102,6 +102,21 @@ greenGhostMovingRight = [scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 greenGhostIdle :: Picture
 greenGhostIdle = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 
+purpleGhostMovingUp :: [Picture]
+purpleGhostMovingUp = [scalePicture (png "Images/Ghosts/PurpleGhostUp1.png"), scalePicture (png "Images/Ghosts/PurpleGhostUp2.png")]
+
+purpleGhostMovingDown :: [Picture]
+purpleGhostMovingDown = [scalePicture (png "Images/Ghosts/PurpleGhostDown1.png"), scalePicture (png "Images/Ghosts/PurpleGhostDown2.png")]
+
+purpleGhostMovingLeft :: [Picture]
+purpleGhostMovingLeft = [scalePicture (png "Images/Ghosts/PurpleGhostLeft1.png"), scalePicture (png "Images/Ghosts/PurpleGhostLeft2.png")]
+
+purpleGhostMovingRight :: [Picture]
+purpleGhostMovingRight = [scalePicture (png "Images/Ghosts/PurpleGhostRight1.png"), scalePicture (png "Images/Ghosts/PurpleGhostRight2.png")]
+
+purpleGhostIdle :: Picture
+purpleGhostIdle = scalePicture (png "Images/Ghosts/PurpleGhostRight1.png")
+
 -- Pacman --
 
 pacmanSeq :: [Picture]

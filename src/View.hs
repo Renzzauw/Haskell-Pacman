@@ -91,11 +91,11 @@ drawPacman gstate = translatedPacman
 -- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
 drawPlayer2 gstate = translatedPlayer
-        where   sprite  | _powerUp == InvertedEnemies && _dir == DirUp = calculateAnimationFrame _frame 3 invertedGhostMovingUp
-                        | _powerUp == InvertedEnemies && _dir == DirDown = calculateAnimationFrame _frame 3 invertedGhostMovingDown
-                        | _powerUp == InvertedEnemies && _dir == DirLeft = calculateAnimationFrame _frame 3 invertedGhostMovingLeft
-                        | _powerUp == InvertedEnemies && _dir == DirRight = calculateAnimationFrame _frame 3 invertedGhostMovingRight
-                        | _powerUp == InvertedEnemies = invertedGhostIdle
+        where   sprite  | _powerUp == InvertedEnemies && _dir == DirUp = calculateAnimationFrame _frame 3 purpleGhostMovingUp
+                        | _powerUp == InvertedEnemies && _dir == DirDown = calculateAnimationFrame _frame 3 purpleGhostMovingDown
+                        | _powerUp == InvertedEnemies && _dir == DirLeft = calculateAnimationFrame _frame 3 purpleGhostMovingLeft
+                        | _powerUp == InvertedEnemies && _dir == DirRight = calculateAnimationFrame _frame 3 purpleGhostMovingRight
+                        | _powerUp == InvertedEnemies = purpleGhostIdle
                         | _dir == DirUp = calculateAnimationFrame _frame 3 greenGhostMovingUp
                         | _dir == DirDown = calculateAnimationFrame _frame 3 greenGhostMovingDown
                         | _dir == DirLeft = calculateAnimationFrame _frame 3 greenGhostMovingLeft
