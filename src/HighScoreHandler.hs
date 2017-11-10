@@ -5,45 +5,38 @@ import Data.List
 -- The high score file looks like this:
 {-
 Highscores:
-1. score
-2. score
-3. score
-4. score
-5. score
+1. 0
+2. 0
+3. 0
+4. 0
+5. 0
+Last score: 0
 -}
-
--- Function that gets the current high score data from the file
-getHighScoreData :: IO [String]
-getHighScoreData = do
-    text <- readFile "Highscores.txt"
-    let rows = lines text
-    return rows
 
 getScore :: String -> Int
 getScore string = read ((words string) !! 1)
 
-getScores :: IO [String] -> IO [Int]
-getScores string = do
-    strings <- string
-    let scores = map getScore (tail strings)
-    return scores
+getScores :: String -> [Int]
+getScores string = map getScore usedRows
+    where   rows = lines string
+            usedRows = tail rows
 
 newScore :: Int -> [Int] -> [Int]
 newScore score list = take 5 newList
-    where   newList = insert score list ++ [0, 0, 0, 0, 0]
+    where   newList = insert score list
 
-writeHighScore :: [Int] -> IO ()
-writeHighScore highScores = writeFile "Highscores.txt" total
+writeHighScore :: Int -> [Int] -> String
+writeHighScore score highScores = total
     where   header = "Highscores: "
             s1 = "1. " ++ show (highScores !! 0)
             s2 = "2. " ++ show (highScores !! 1)
             s3 = "3. " ++ show (highScores !! 2)
             s4 = "4. " ++ show (highScores !! 3)
             s5 = "5. " ++ show (highScores !! 4)
-            total = unlines (header : s1 : s2 : s3 : s4 : [s5])
+            s6 = "Last score: " ++ show score
+            total = unlines (header : s1 : s2 : s3 : s4 : s5 : [s6])
 
 updateHighScore :: Int -> IO ()
 updateHighScore score = do
-    scores <- getScores getHighScoreData
-    let newScores = newScore score scores
-    length scores `seq` writeHighScore newScores
+    text <- readFile "Highscores.txt"
+    length text `seq` (writeFile "Highscores.txt" $ writeHighScore score (newScore score (getScores text)))
