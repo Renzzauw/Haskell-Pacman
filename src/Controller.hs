@@ -134,7 +134,7 @@ updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <=
 -- Function that checks if the player picks up a powerup
 checkForNewPowerUps :: GameState -> GameState
 checkForNewPowerUps gstate  | isNothing index = gstate
-                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps }
+                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps, activeAnimations = (newAnimation : currAnimations)  }
     where   (x, y) = playerPos (player gstate)
             _availablePowerUps = availablePowerUps gstate
             _positions = map position _availablePowerUps
@@ -142,6 +142,8 @@ checkForNewPowerUps gstate  | isNothing index = gstate
             index = elemIndex (fromInteger (round x), fromInteger (round y)) _positions
             newPowerUp i = _availablePowerUps !! i
             secs = passedTime gstate
+            currAnimations = activeAnimations gstate
+            newAnimation = Animation Trigger (x, y) secs (secs + 1)
 
 -- Function that updates the direction of the enemies using functions in Enemy.hs
 updateEnemyDirection :: GameState -> GameState

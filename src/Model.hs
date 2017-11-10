@@ -68,7 +68,7 @@ data Animation = Animation {
     stopTime :: Float }
 
 -- The different types of animations in the game
-data AnimationType = RedEnemyDied | BlueEnemyDied
+data AnimationType = RedEnemyDied | BlueEnemyDied | Trigger
     deriving (Eq)
 
 -- Function that creates the initial of a level based on its filepath

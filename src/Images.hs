@@ -146,4 +146,10 @@ blueEnemyDiedAnimation :: [Picture]
 blueEnemyDiedAnimation = [wall, scale 0.8 0.8 wall, scale 0.6 0.6 wall, scale 0.4 0.4 wall, scale 0.2 0.2 wall]
     where   wall = scalePicture (png "Images/WallTile.png")
 
+-- Triggers --
+
+orangeTrigger :: [Picture]
+orangeTrigger = map (scale 0.6 0.6) [png "Images/Trigger/Orange/OrangeCirkel0.png", png "Images/Trigger/Orange/OrangeCirkel1.png", png "Images/Trigger/Orange/OrangeCirkel2.png", png "Images/Trigger/Orange/OrangeCirkel3.png", png "Images/Trigger/Orange/OrangeCirkel4.png", png "Images/Trigger/Orange/OrangeCirkel5.png", png "Images/Trigger/Orange/OrangeCirkel6.png", png "Images/Trigger/Orange/OrangeCirkel7.png"]
+
+
 -- #############################################################################################################################################################################
