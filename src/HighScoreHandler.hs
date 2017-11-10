@@ -3,6 +3,7 @@ module HighScoreHandler where
 import Data.List
 import System.IO
 import System.Directory
+import Control.Monad
 
 -- The high score file looks like this:
 {-
