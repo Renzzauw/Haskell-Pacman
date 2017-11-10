@@ -15,6 +15,7 @@ scalePicture p = scale xScale yScale p
 
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
 
+-- Backgrounds / Screens --
 gameBackground :: Picture
 gameBackground = png "Images/new/AchtergrondIngame.png"
 
@@ -38,6 +39,8 @@ emptyBackground = png "Images/new/emptybg.png"
 
 playerWins :: [Picture]
 playerWins = [png "Images/new/Player1Wins.png", png "Images/new/Player2Wins.png"]
+
+-- Ghosts --
 
 redGhostMovingUp :: [Picture]
 redGhostMovingUp = [scalePicture (png "Images/Ghosts/RedGhostUp1.png"), scalePicture (png "Images/Ghosts/RedGhostUp2.png")]
@@ -99,11 +102,21 @@ greenGhostMovingRight = [scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 greenGhostIdle :: Picture
 greenGhostIdle = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
 
+-- Pacman --
+
 pacmanSeq :: [Picture]
 pacmanSeq = [scalePicture (png "Images/PacmanSeq/Pacman0.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png"), scalePicture (png "Images/PacmanSeq/Pacman2.png"), scalePicture (png "Images/PacmanSeq/Pacman1.png")] 
 
 pacmanIdle :: Picture
 pacmanIdle = scalePicture (png "Images/PacmanSeq/Pacman1.png")
+
+redPacmanSeq :: [Picture]
+redPacmanSeq = [scalePicture (png "Images/PacmanSeq/RedPacman0.png"), scalePicture (png "Images/PacmanSeq/RedPacman1.png"), scalePicture (png "Images/PacmanSeq/RedPacman2.png"), scalePicture (png "Images/PacmanSeq/RedPacman1.png")] 
+
+orangePacmanSeq :: [Picture]
+orangePacmanSeq = [scalePicture (png "Images/PacmanSeq/OrangePacman0.png"), scalePicture (png "Images/PacmanSeq/OrangePacman1.png"), scalePicture (png "Images/PacmanSeq/OrangePacman2.png"), scalePicture (png "Images/PacmanSeq/OrangePacman1.png")] 
+
+-- Tiles -- 
 
 wallTile :: Picture
 wallTile = scalePicture (png "Images/new/WallTile.png")
