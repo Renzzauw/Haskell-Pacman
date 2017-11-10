@@ -19,7 +19,8 @@ data GameState =
           availablePowerUps :: [PowerUp],
           passedTime :: Float,
           rng :: StdGen,
-          frame :: Int } 
+          frame :: Int,
+          activeAnimations :: [Animation] } 
       | MainMenu 
       | LevelChooser {
           levels :: [FilePath] }
@@ -42,7 +43,8 @@ data GameState =
           availablePowerUps :: [PowerUp],
           passedTime :: Float,
           rng :: StdGen,
-          frame :: Int }
+          frame :: Int,
+          activeAnimations :: [Animation] }
       | HelpScreen
       | ControlsScreen
 
@@ -54,12 +56,21 @@ data PowerUp = PowerUp {
     
 data PowerUpType = SpeedUp | EatEnemies | InvertedEnemies | NoPowerUp
     deriving (Eq, Enum)
-       
+
+data Animation = Animation {
+    animationType :: AnimationType,
+    animPos :: Position,
+    startTime :: Float,
+    stopTime :: Float }
+
+data AnimationType = RedEnemyDied | BlueEnemyDied
+    deriving (Eq)
+
 initialState :: FilePath -> IO GameState
 initialState filePath = do
     (_level, _points, _player, _player2, _enemies) <- loadLevel ("Levels/" ++ filePath)
     _rng <- newStdGen
-    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [PowerUp EatEnemies 100 (13, 13)] 0 _rng 1
+    let state = PlayingLevel 0 _level _player _player2 _points _enemies _powerUp [PowerUp EatEnemies 10 (13, 13)] 0 _rng 1 []
     return state
     where   _powerUp = PowerUp NoPowerUp 0 (0, 0)
 

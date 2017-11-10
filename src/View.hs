@@ -29,17 +29,17 @@ viewPure gstate = pictures (drawLevel gstate : [drawScore gstate])
 -- Draw the score of the player on the screen
 drawScore :: GameState -> Picture
 drawScore gs = translate (-600) 200 (scale 0.2 0.2 (color yellow (text ("Score: " ++ show _score))))
-           where _score = score gs
+        where _score = score gs
 
 -- Draw the proper text when the player completes the level          
 drawWonScreen :: GameState -> Picture
 drawWonScreen gs = pictures [head playerWins, translate (-300) (-120) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
-                 where _score = score gs
+        where _score = score gs
 
 -- Draw the proper text when the player dies
 drawDiedScreen :: GameState -> Picture
 drawDiedScreen gs = pictures [emptyBackground, translate (-300) 50 (scale 0.7 0.7 (color red (text "You Died!"))), translate (-300) (-50) (scale 0.6 0.6 (color yellow (text ("You scored: " ++ show _score))))]
-                where _score = score gs
+        where _score = score gs
 
 -- Draw the proper text when the player has to choose a level
 drawLevelChooser :: GameState -> Picture
@@ -65,7 +65,7 @@ drawLevel gstate = translatedLevel
             totalLevel = pictures (map (pictures . map drawTile) _level)
             startList   | isNothing (player2 gstate) = []
                         | otherwise = [drawPlayer2 gstate]
-            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawEnemies gstate : drawPowerUps gstate : drawPacman gstate : startList)
+            includingPacmanAndPoints = pictures (totalLevel : drawPoints gstate : drawAnimations gstate : drawEnemies gstate : drawPowerUps gstate : drawPacman gstate : startList)
             translatedLevel = pictures [gameBackground, translate (0.5 * fromIntegral (-spriteSize * levelWidth)) (-0.5 * fromIntegral (-spriteSize * levelHeight)) includingPacmanAndPoints]
 
 -- Function that draws tiles
@@ -156,6 +156,22 @@ drawPowerUps gstate = pictures (map drawPowerUp powerUps)
                 EatEnemies      -> eatEnemiesPowerUp
                 _               -> emptyTile
             drawPowerUp _powerUp = translate (fst (position _powerUp) * fromIntegral spriteSize) (-snd (position _powerUp) * fromIntegral spriteSize) (sprite (puType _powerUp))
+
+drawAnimations :: GameState -> Picture
+drawAnimations gstate = pictures (map (drawAnimation secs) animations)
+    where   animations = activeAnimations gstate
+            secs = passedTime gstate
+
+drawAnimation :: Float -> Animation -> Picture
+drawAnimation secs anim = translate (x * fromIntegral spriteSize) (-y * fromIntegral spriteSize) (usedPictures !! index)
+    where   _startTime = startTime anim
+            _stopTime = stopTime anim
+            _animType = animationType anim
+            (x, y) = animPos anim
+            usedPictures        | _animType == RedEnemyDied = redEnemyDiedAnimation
+                                | otherwise = blueEnemyDiedAnimation
+            numberOfSprites = length usedPictures
+            index = floor ((secs - _startTime) / ((_stopTime - _startTime) / fromIntegral numberOfSprites))
 
 -- Function that calculates the rotation of the player sprite with a given direction he should move into
 calculateRotation :: Direction -> Float

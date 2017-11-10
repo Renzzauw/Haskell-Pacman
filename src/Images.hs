@@ -126,4 +126,11 @@ invertedEnemiesPowerUp = scalePicture (png "Images/New/PowerUpReverse.png")
 eatEnemiesPowerUp :: Picture
 eatEnemiesPowerUp = scalePicture (png "Images/New/PowerUpEatEnemies.png")
 
+redEnemyDiedAnimation :: [Picture]
+redEnemyDiedAnimation = [scalePicture (png "Images/PointTile.png"), scalePicture (png "Images/BigPointTile.png"), scalePicture (png "Images/PointTile.png"), scalePicture (png "Images/BigPointTile.png")]
+
+blueEnemyDiedAnimation :: [Picture]
+blueEnemyDiedAnimation = [wall, scale 0.8 0.8 wall, scale 0.6 0.6 wall, scale 0.4 0.4 wall, scale 0.2 0.2 wall]
+    where   wall = scalePicture (png "Images/WallTile.png")
+
 -- #############################################################################################################################################################################

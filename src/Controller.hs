@@ -14,7 +14,7 @@ import Data.Char
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
-step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _)    
+step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _ _)    
         | isNothing _player2 = if levelComplete (pointList updatedGameState)
                                 then return $ WonScreen (score updatedGameState)
                                 else if not (null (isPlayerDead updatedGameState)) && not (isEatEnemies (puType (powerUp updatedGameState)))
@@ -29,7 +29,7 @@ step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _)
                             else if (not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState)
                                 then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
                                 else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPosition updatedGameState))))
-                                        where   updatedGameState = checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate)))))
+    where   updatedGameState = updateAnimations (checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate))))))
 step secs gstate = return $ updateTimeGState secs gstate
 
 updateTimeGState :: Float -> GameState -> GameState
@@ -51,9 +51,25 @@ updateRNG gstate = do
     return newState
 
 deleteEnemies :: GameState -> [Int] -> GameState
-deleteEnemies gstate indices = gstate { enemies = newEnemies }
+deleteEnemies gstate indices = gstate { enemies = newEnemies, activeAnimations = addAnimations ++ activeAnimations gstate }
     where   _enemies = enemies gstate
             newEnemies = deleteAtIndices indices _enemies
+            secs = passedTime gstate
+            addAnimations = map (addEnemyDiesAnimation secs) (map (_enemies !!) indices)
+
+addEnemyDiesAnimation :: Float -> Enemy -> Animation
+addEnemyDiesAnimation secs _enemy = anim
+    where   eType = enemyType _enemy
+            pos = enemyPos _enemy
+            animType    | eType == GoToPlayer = RedEnemyDied
+                        | otherwise = BlueEnemyDied
+            anim = Animation animType pos secs (1 + secs)
+
+updateAnimations :: GameState -> GameState
+updateAnimations gstate = gstate { activeAnimations = foldr ((++) . handleAnimation) [] currentAnimations }
+    where   currentAnimations = activeAnimations gstate
+            secs = passedTime gstate
+            handleAnimation anim = [anim | stopTime anim > secs]
 
 deleteAtIndices :: [Int] -> [Enemy] -> [Enemy]
 deleteAtIndices _ [] = []
@@ -94,8 +110,8 @@ createNewPowerUps gstate    | chance < 0.005 && field /= WallField && notElem ne
 
 updatePowerUp :: GameState -> GameState
 updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <= secs
-                                                    then gstate { powerUp = PowerUp NoPowerUp 0 (0, 0) }
-                                                    else gstate
+                                                            then gstate { powerUp = PowerUp NoPowerUp 0 (0, 0) }
+                                                            else gstate
                         | otherwise = gstate
     where   _powerUp = powerUp gstate
             secs = passedTime gstate
@@ -333,9 +349,11 @@ isPaused Paused {} = True
 isPaused _ = False
 
 pauseGame :: GameState -> GameState
-pauseGame (PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame) = Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
+pauseGame (PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame _activeAnimations) 
+    = Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame _activeAnimations
 pauseGame gstate = gstate
 
 unPauseGame :: GameState -> GameState
-unPauseGame (Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame) = PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame
+unPauseGame (Paused _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame _activeAnimations) 
+    = PlayingLevel _score _level _player _player2 _pointList _enemies _powerUp _availablePowerUps _passedTime _rng _frame _activeAnimations
 unPauseGame gstate = gstate
