@@ -16,106 +16,107 @@ scalePicture p = scale xScale yScale p
 -- ######################################### This part contains loading in images / animations for all sprites in the game #########################################
 
 -- Backgrounds / Screens --
+
 gameBackground :: Picture
-gameBackground = png "Images/new/AchtergrondIngame.png"
+gameBackground = png "Images/New/AchtergrondIngame.png"
 
 mainmenuBackground :: Picture 
-mainmenuBackground = png "Images/new/AchtergrondMenu.png"
+mainmenuBackground = png "Images/New/AchtergrondMenu.png"
 
 levelTutScreen :: Picture
-levelTutScreen = png "Images/new/LevelTutScreen.png"
+levelTutScreen = png "Images/New/LevelTutScreen.png"
 
 controlsScreen :: Picture
-controlsScreen = png "Images/new/ControlsScreen.png"
+controlsScreen = png "Images/New/ControlsScreen.png"
 
 levelSelectScreen :: Picture
-levelSelectScreen = png "Images/new/LevelSelect.png"
+levelSelectScreen = png "Images/New/LevelSelect.png"
 
 pauseScreen :: Picture
-pauseScreen = png "Images/new/PauseMenu.png"
+pauseScreen = png "Images/New/PauseMenu.png"
 
 emptyBackground :: Picture
-emptyBackground = png "Images/new/emptybg.png"
+emptyBackground = png "Images/New/emptybg.png"
 
 playerWins :: [Picture]
-playerWins = [png "Images/new/Player1Wins.png", png "Images/new/Player2Wins.png"]
+playerWins = [png "Images/New/Player1Wins.png", png "Images/New/Player2Wins.png"]
 
 -- Ghosts --
 
 redGhostMovingUp :: [Picture]
-redGhostMovingUp = [scalePicture (png "Images/Ghosts/RedGhostUp1.png"), scalePicture (png "Images/Ghosts/RedGhostUp2.png")]
+redGhostMovingUp = [scalePicture (png "Images/Ghosts/Red/RedGhostUp1.png"), scalePicture (png "Images/Ghosts/Red/RedGhostUp2.png")]
 
 redGhostMovingDown :: [Picture]
-redGhostMovingDown = [scalePicture (png "Images/Ghosts/RedGhostDown1.png"), scalePicture (png "Images/Ghosts/RedGhostDown2.png")]
+redGhostMovingDown = [scalePicture (png "Images/Ghosts/Red/RedGhostDown1.png"), scalePicture (png "Images/Ghosts/Red/RedGhostDown2.png")]
 
 redGhostMovingLeft :: [Picture]
-redGhostMovingLeft = [scalePicture (png "Images/Ghosts/RedGhostLeft1.png"), scalePicture (png "Images/Ghosts/RedGhostLeft2.png")]
+redGhostMovingLeft = [scalePicture (png "Images/Ghosts/Red/RedGhostLeft1.png"), scalePicture (png "Images/Ghosts/Red/RedGhostLeft2.png")]
 
 redGhostMovingRight :: [Picture]
-redGhostMovingRight = [scalePicture (png "Images/Ghosts/RedGhostRight1.png"), scalePicture (png "Images/Ghosts/RedGhostRight2.png")]
+redGhostMovingRight = [scalePicture (png "Images/Ghosts/Red/RedGhostRight1.png"), scalePicture (png "Images/Ghosts/Red/RedGhostRight2.png")]
 
 redGhostIdle :: Picture
-redGhostIdle = scalePicture (png "Images/Ghosts/RedGhostRight1.png")
+redGhostIdle = scalePicture (png "Images/Ghosts/Red/RedGhostRight1.png")
 
 blueGhostMovingUp :: [Picture]
-blueGhostMovingUp = [scalePicture (png "Images/Ghosts/BlueGhostUp1.png"), scalePicture (png "Images/Ghosts/BlueGhostUp2.png")]
+blueGhostMovingUp = [scalePicture (png "Images/Ghosts/Blue/BlueGhostUp1.png"), scalePicture (png "Images/Ghosts/Blue/BlueGhostUp2.png")]
 
 blueGhostMovingDown :: [Picture]
-blueGhostMovingDown = [scalePicture (png "Images/Ghosts/BlueGhostDown1.png"), scalePicture (png "Images/Ghosts/BlueGhostDown2.png")]
+blueGhostMovingDown = [scalePicture (png "Images/Ghosts/Blue/BlueGhostDown1.png"), scalePicture (png "Images/Ghosts/Blue/BlueGhostDown2.png")]
 
 blueGhostMovingLeft :: [Picture]
-blueGhostMovingLeft = [scalePicture (png "Images/Ghosts/BlueGhostLeft1.png"), scalePicture (png "Images/Ghosts/BlueGhostLeft2.png")]
+blueGhostMovingLeft = [scalePicture (png "Images/Ghosts/Blue/BlueGhostLeft1.png"), scalePicture (png "Images/Ghosts/Blue/BlueGhostLeft2.png")]
 
 blueGhostMovingRight :: [Picture]
-blueGhostMovingRight = [scalePicture (png "Images/Ghosts/BlueGhostRight1.png"), scalePicture (png "Images/Ghosts/BlueGhostRight2.png")]
+blueGhostMovingRight = [scalePicture (png "Images/Ghosts/Blue/BlueGhostRight1.png"), scalePicture (png "Images/Ghosts/Blue/BlueGhostRight2.png")]
 
 blueGhostIdle :: Picture
-blueGhostIdle = scalePicture (png "Images/Ghosts/BlueGhostRight1.png")
+blueGhostIdle = scalePicture (png "Images/Ghosts/Blue/BlueGhostRight1.png")
 
 invertedGhostMovingUp :: [Picture]
-invertedGhostMovingUp = [scalePicture (png "Images/Ghosts/InvertedGhostUp1.png"), scalePicture (png "Images/Ghosts/InvertedGhostUp2.png")]
+invertedGhostMovingUp = [scalePicture (png "Images/Ghosts/Inverted/InvertedGhostUp1.png"), scalePicture (png "Images/Ghosts/Inverted/InvertedGhostUp2.png")]
 
 invertedGhostMovingDown :: [Picture]
-invertedGhostMovingDown = [scalePicture (png "Images/Ghosts/InvertedGhostDown1.png"), scalePicture (png "Images/Ghosts/InvertedGhostDown2.png")]
+invertedGhostMovingDown = [scalePicture (png "Images/Ghosts/Inverted/InvertedGhostDown1.png"), scalePicture (png "Images/Ghosts/Inverted/InvertedGhostDown2.png")]
 
 invertedGhostMovingLeft :: [Picture]
-invertedGhostMovingLeft = [scalePicture (png "Images/Ghosts/InvertedGhostLeft1.png"), scalePicture (png "Images/Ghosts/InvertedGhostLeft2.png")]
+invertedGhostMovingLeft = [scalePicture (png "Images/Ghosts/Inverted/InvertedGhostLeft1.png"), scalePicture (png "Images/Ghosts/Inverted/InvertedGhostLeft2.png")]
 
 invertedGhostMovingRight :: [Picture]
-invertedGhostMovingRight = [scalePicture (png "Images/Ghosts/InvertedGhostRight1.png"), scalePicture (png "Images/Ghosts/InvertedGhostRight2.png")]
+invertedGhostMovingRight = [scalePicture (png "Images/Ghosts/Inverted/InvertedGhostRight1.png"), scalePicture (png "Images/Ghosts/Inverted/InvertedGhostRight2.png")]
 
 invertedGhostIdle :: Picture
-invertedGhostIdle = scalePicture (png "Images/Ghosts/InvertedGhostRight1.png")
+invertedGhostIdle = scalePicture (png "Images/Ghosts/Inverted/InvertedGhostRight1.png")
 
 greenGhostMovingUp :: [Picture]
-greenGhostMovingUp = [scalePicture (png "Images/Ghosts/GreenGhostUp1.png"), scalePicture (png "Images/Ghosts/GreenGhostUp2.png")]
+greenGhostMovingUp = [scalePicture (png "Images/Ghosts/Green/GreenGhostUp1.png"), scalePicture (png "Images/Ghosts/Green/GreenGhostUp2.png")]
 
 greenGhostMovingDown :: [Picture]
-greenGhostMovingDown = [scalePicture (png "Images/Ghosts/GreenGhostDown1.png"), scalePicture (png "Images/Ghosts/GreenGhostDown2.png")]
+greenGhostMovingDown = [scalePicture (png "Images/Ghosts/Green/GreenGhostDown1.png"), scalePicture (png "Images/Ghosts/Green/GreenGhostDown2.png")]
 
 greenGhostMovingLeft :: [Picture]
-greenGhostMovingLeft = [scalePicture (png "Images/Ghosts/GreenGhostLeft1.png"), scalePicture (png "Images/Ghosts/GreenGhostLeft2.png")]
+greenGhostMovingLeft = [scalePicture (png "Images/Ghosts/Green/GreenGhostLeft1.png"), scalePicture (png "Images/Ghosts/Green/GreenGhostLeft2.png")]
 
 greenGhostMovingRight :: [Picture]
-greenGhostMovingRight = [scalePicture (png "Images/Ghosts/GreenGhostRight1.png"), scalePicture (png "Images/Ghosts/GreenGhostRight2.png")]
+greenGhostMovingRight = [scalePicture (png "Images/Ghosts/Green/GreenGhostRight1.png"), scalePicture (png "Images/Ghosts/Green/GreenGhostRight2.png")]
 
 greenGhostIdle :: Picture
-greenGhostIdle = scalePicture (png "Images/Ghosts/GreenGhostRight1.png")
+greenGhostIdle = scalePicture (png "Images/Ghosts/Green/GreenGhostRight1.png")
 
 purpleGhostMovingUp :: [Picture]
-purpleGhostMovingUp = [scalePicture (png "Images/Ghosts/PurpleGhostUp1.png"), scalePicture (png "Images/Ghosts/PurpleGhostUp2.png")]
+purpleGhostMovingUp = [scalePicture (png "Images/Ghosts/Purple/PurpleGhostUp1.png"), scalePicture (png "Images/Ghosts/Purple/PurpleGhostUp2.png")]
 
 purpleGhostMovingDown :: [Picture]
-purpleGhostMovingDown = [scalePicture (png "Images/Ghosts/PurpleGhostDown1.png"), scalePicture (png "Images/Ghosts/PurpleGhostDown2.png")]
+purpleGhostMovingDown = [scalePicture (png "Images/Ghosts/Purple/PurpleGhostDown1.png"), scalePicture (png "Images/Ghosts/Purple/PurpleGhostDown2.png")]
 
 purpleGhostMovingLeft :: [Picture]
-purpleGhostMovingLeft = [scalePicture (png "Images/Ghosts/PurpleGhostLeft1.png"), scalePicture (png "Images/Ghosts/PurpleGhostLeft2.png")]
+purpleGhostMovingLeft = [scalePicture (png "Images/Ghosts/Purple/PurpleGhostLeft1.png"), scalePicture (png "Images/Ghosts/Purple/PurpleGhostLeft2.png")]
 
 purpleGhostMovingRight :: [Picture]
-purpleGhostMovingRight = [scalePicture (png "Images/Ghosts/PurpleGhostRight1.png"), scalePicture (png "Images/Ghosts/PurpleGhostRight2.png")]
+purpleGhostMovingRight = [scalePicture (png "Images/Ghosts/Purple/PurpleGhostRight1.png"), scalePicture (png "Images/Ghosts/Purple/PurpleGhostRight2.png")]
 
 purpleGhostIdle :: Picture
-purpleGhostIdle = scalePicture (png "Images/Ghosts/PurpleGhostRight1.png")
+purpleGhostIdle = scalePicture (png "Images/Ghosts/Purple/PurpleGhostRight1.png")
 
 -- Pacman --
 
@@ -134,16 +135,16 @@ orangePacmanSeq = [scalePicture (png "Images/PacmanSeq/OrangePacman0.png"), scal
 -- Tiles -- 
 
 wallTile :: Picture
-wallTile = scalePicture (png "Images/new/WallTile.png")
+wallTile = scalePicture (png "Images/New/WallTile.png")
 
 pointTile :: Picture
-pointTile = scalePicture (png "Images/new/PointTile.png")
+pointTile = scalePicture (png "Images/New/PointTile.png")
 
 bigPointTile :: Picture
-bigPointTile = scalePicture (png "Images/new/BigPointTile.png")
+bigPointTile = scalePicture (png "Images/New/BigPointTile.png")
 
 emptyTile :: Picture
-emptyTile = scalePicture (png "Images/Empty.png")
+emptyTile = scalePicture (png "Images/New/Empty.png")
 
 speedUpPowerUp :: Picture
 speedUpPowerUp = scalePicture (png "Images/New/PowerUpSpeed.png")
