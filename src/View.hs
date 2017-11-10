@@ -78,11 +78,15 @@ drawPacman :: GameState -> Picture
 drawPacman gstate = translatedPacman
     where   rotatedPacman = sprite
             translatedPacman = translate (xPos * fromIntegral spriteSize) (-yPos * fromIntegral spriteSize) rotatedPacman 
+            currPowerUp = puType (powerUp gstate)          
             (xPos, yPos) = playerPos (player gstate)
             currframe   = frame gstate
             _playerDir = playerDir (player gstate)
-            sprite      | _playerDir == DirNone = rotate (calculateRotation (lastDir (player gstate))) pacmanIdle
-                        | otherwise = rotate (calculateRotation _playerDir) (calculateAnimationFrame currframe 2 pacmanSeq)
+            sprite        | _playerDir == DirNone = rotate (calculateRotation (lastDir (player gstate))) (currPacmanSeq !! 1)
+                          | otherwise = rotate (calculateRotation _playerDir) (calculateAnimationFrame currframe 2 currPacmanSeq)
+            currPacmanSeq | currPowerUp == SpeedUp         = redPacmanSeq
+                          | currPowerUp == EatEnemies      = orangePacmanSeq
+                          | otherwise                      = pacmanSeq
 
 -- Function that draws player 2 as a green ghost
 drawPlayer2 :: GameState -> Picture
