@@ -27,7 +27,7 @@ step secs gstate@(PlayingLevel _ _ _ _player2 _ _ _ _ _ _ _ _)
                         then return $ Player1WonScreen (score updatedGameState)
                         else if (not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState) && puType (powerUp updatedGameState) /= EatEnemies
                             then return $ Player2WonScreen (score updatedGameState)
-                            else if (not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState)
+                            else if not (null (isPlayerDead updatedGameState)) || checkPlayer2Won updatedGameState
                                 then updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints (deleteEnemies updatedGameState (isPlayerDead updatedGameState))))))
                                 else updateRNG (moveEnemies (updateEnemyDirection (movePlayers (checkCurrentPositionForPoints updatedGameState))))
     where   updatedGameState = updateAnimations (checkForNewPowerUps (createNewPowerUps (deleteOldPowerUps (updatePowerUp (updateFrameGState (updateTimeGState secs gstate))))))
@@ -67,7 +67,7 @@ deleteEnemies gstate indices = gstate { enemies = newEnemies, activeAnimations =
     where   _enemies = enemies gstate
             newEnemies = deleteAtIndices indices _enemies
             secs = passedTime gstate
-            addAnimations = map (addEnemyDiesAnimation secs) (map (_enemies !!) indices)
+            addAnimations = map (addEnemyDiesAnimation secs . (_enemies !!)) indices
 
 -- Function that adds an animation of an enemy that died
 addEnemyDiesAnimation :: Float -> Enemy -> Animation
@@ -90,7 +90,7 @@ deleteAtIndices :: [Int] -> [Enemy] -> [Enemy]
 deleteAtIndices _ [] = []
 deleteAtIndices [] list = list
 deleteAtIndices list list2 = deleteAtIndices (tail list) list3
-    where   toDelete = list2 !! (head list)
+    where   toDelete = list2 !! head list
             list3 = delete toDelete list2
 
 -- Function that checks the win condition for player 2
@@ -138,7 +138,7 @@ updatePowerUp gstate    | puType _powerUp /= NoPowerUp = if duration _powerUp <=
 -- Function that checks if the player picks up a powerup
 checkForNewPowerUps :: GameState -> GameState
 checkForNewPowerUps gstate  | isNothing index = gstate
-                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps, activeAnimations = (newAnimation : currAnimations)  }
+                            | otherwise = gstate { powerUp = (newPowerUp (fromJust index)) { duration = randomDuration + secs }, availablePowerUps = delete (newPowerUp (fromJust index)) _availablePowerUps, activeAnimations = newAnimation : currAnimations  }
     where   (x, y) = playerPos (player gstate)
             _availablePowerUps = availablePowerUps gstate
             _positions = map position _availablePowerUps

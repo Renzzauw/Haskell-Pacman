@@ -17,7 +17,7 @@ Last score: 0
 
 getScore :: String -> String
 getScore string = whatToRead
-    where   whatToRead = ((words string) !! 1)
+    where   whatToRead = words string !! 1
 
 getScores :: String -> [String]
 getScores string = map getScore usedRows
@@ -25,7 +25,7 @@ getScores string = map getScore usedRows
             usedRows = init (tail rows)
 
 newScore :: Int -> String -> [Int]
-newScore score string = take 5 (reverse (insertedNewScore))
+newScore score string = take 5 (reverse insertedNewScore)
     where   list = getScores string
             ints = map read list :: [Int]
             sortedInts = sort ints
@@ -34,7 +34,7 @@ newScore score string = take 5 (reverse (insertedNewScore))
 writeHighScore :: Int -> [Int] -> String
 writeHighScore score highScores = total
     where   header = "Highscores: "
-            s1 = "1. " ++ show (highScores !! 0)
+            s1 = "1. " ++ show (head highScores)
             s2 = "2. " ++ show (highScores !! 1)
             s3 = "3. " ++ show (highScores !! 2)
             s4 = "4. " ++ show (highScores !! 3)
@@ -45,9 +45,7 @@ writeHighScore score highScores = total
 createOrOpenHighScores :: IO Handle
 createOrOpenHighScores = do
     exists <- doesFileExist "Highscores.txt"
-    if not (exists)
-        then writeFile "Highscores.txt" startHighScores
-        else return ()
+    unless exists $ writeFile "Highscores.txt" startHighScores
     openFile "Highscores.txt" ReadMode
     where   startHighScores = "Highscores:\n1. 0\n2. 0\n3. 0\n4. 0\n5. 0\nLast score: 0"
 
