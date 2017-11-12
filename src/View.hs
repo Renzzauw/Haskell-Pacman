@@ -114,7 +114,7 @@ drawPoints gstate = pictures (map (drawPoint . fst) usedPoints)
     where   usedPoints                                                                         = pointList gstate
             usedTile (x, y)      | fst ((level gstate !! round y) !! round x) == BigPointField = bigPointTile
                                  | otherwise                                                   = pointTile
-            
+            drawPoint pos@(x, y)                                                               = translate (x * fromIntegral spriteSize) (-y * fromIntegral spriteSize) (usedTile pos)
 
 -- Function that draws the ghosts
 drawEnemies :: GameState -> Picture
